@@ -4,6 +4,8 @@ import Hero from "../components/Hero";
 import Portfolio from "../components/Portfolio";
 import SolarCalculator from "../components/SolarCalculator";
 import Contact from "../components/Contact";
+import FAQ from "../components/FAQ";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
@@ -13,6 +15,8 @@ export default function Home() {
       <Portfolio />
       <SolarCalculator /> 
       <Contact />
+      <FAQ />
+      <Footer />
     </main>
   );
 }
