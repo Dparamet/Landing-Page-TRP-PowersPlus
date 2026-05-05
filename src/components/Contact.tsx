@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Contact() {
+  const { t } = useLanguage();
   // Contact information with links
   const contactLinks = [
     {
@@ -49,9 +51,9 @@ export default function Contact() {
     <section id="contact" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4">
         {/* Heading */}
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-orange-600 mb-4">ติดต่อเรา</h2>
+        <h2 className="text-4xl md:text-5xl font-bold text-center text-orange-600 mb-4">{t('contact.title')}</h2>
         <p className="text-center text-gray-600 text-lg mb-12 max-w-2xl mx-auto">
-          พร้อมช่วยเหลือคุณได้ทุกเวลา ติดต่อเราผ่านช่องทางต่าง ๆ ตามสะดวก
+          {t('contact.description')}
         </p>
 
         {/* Contact Grid */}

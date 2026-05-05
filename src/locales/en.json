@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Electrical System & Solar Cell Installation",
+    "subtitle": "Clean energy for a sustainable future",
+    "cta": "Contact Us Today"
+  },
+  "services": {
+    "title": "Our Services",
+    "description": "We provide electrical systems and renewable energy solutions",
+    "solar": "Solar Cell Installation",
+    "electrical": "Electrical Systems",
+    "consultation": "Free Consultation",
+    "installation": "Installation & Maintenance"
+  },
+  "portfolio": {
+    "title": "Our Portfolio",
+    "description": "We are proud of our diverse projects for customers",
+    "viewMore": "View More"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Want to learn more about our free consultation and services? Check out our most frequently asked questions below",
+    "questions": [
+      {
+        "question": "How long does it take to install solar panels?",
+        "answer": "Installation time depends on the size of your system. Typically, installation takes 3-7 days for a medium-sized system. We also include thorough inspection and testing procedures."
+      },
+      {
+        "question": "What warranty do you provide?",
+        "answer": "We provide a 5-year warranty on installation and engineering work. Solar panels come with a 25-30 year manufacturer's warranty. We also offer lifetime maintenance and support services."
+      },
+      {
+        "question": "What is the installation cost and what are the terms?",
+        "answer": "The cost depends on your system size and the number of solar panels needed. We offer free site surveys and can provide accurate quotations after inspecting your property."
+      },
+      {
+        "question": "Does solar panels require maintenance?",
+        "answer": "Solar systems require minimal maintenance, such as occasional panel cleaning. We offer affordable annual maintenance services to keep your system running efficiently."
+      },
+      {
+        "question": "How much can I save on electricity costs?",
+        "answer": "Savings depend on your energy consumption, system size, and local weather conditions. Typically, our customers see 50-80% reduction in electricity bills based on their system design."
+      },
+      {
+        "question": "Why should I choose TRP Powers Plus?",
+        "answer": "We have over 10 years of experience in electrical systems and solar installations. Our team consists of certified engineers and skilled technicians who provide excellent service and comprehensive after-installation support."
+      },
+      {
+        "question": "Do you have portfolio examples?",
+        "answer": "Absolutely! We have completed over 500 projects ranging from residential homes to large commercial buildings. You can view our portfolio on our 'Portfolio' page."
+      }
+    ],
+    "cta": "Have other questions or need a price estimate?"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Contact us for free consultation",
+    "name": "Your Name",
+    "email": "Email",
+    "message": "Message",
+    "phone": "Phone",
+    "submit": "Submit",
+    "address": "Address",
+    "hours": "Business Hours"
+  },
+  "footer": {
+    "copyright": "© 2024 TRP Powers Plus All Rights Reserved",
+    "allRightsReserved": "All Rights Reserved",
+    "followUs": "Follow Us"
+  }
+}
