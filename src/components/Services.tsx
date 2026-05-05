@@ -1,8 +1,14 @@
+'use client';
+
+import { useLanguage } from '@/context/LanguageContext';
+
 export default function Services() {
+  const { t } = useLanguage();
+
   return (
     <section id="services" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-blue-800 mb-12">บริการของเรา</h2>
+        <h2 className="text-3xl font-bold text-blue-800 mb-12">{t('services.title')}</h2>
         
         {/* สร้างกล่อง Grid 3 ช่อง แทนรูปและเนื้อหาบริการ */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
+import { ClientLayout } from "./ClientLayout";
 
 export const metadata: Metadata = {
   title: "TRP Powers Plus | บริษัทติดตั้งระบบไฟฟ้า โซลาร์เซลล์ รับเหมาครบวงจร",
@@ -31,7 +32,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f97316" />
       </head>
-      <body className="bg-white text-gray-900">{children}</body>
+      <body className="bg-white text-gray-900">
+        <ClientLayout>{children}</ClientLayout>
+      </body>
     </html>
   );
 }

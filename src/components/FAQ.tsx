@@ -1,40 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+import th from '@/locales/th.json';
+import en from '@/locales/en.json';
 
 export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const { t, language } = useLanguage();
 
-  const faqs = [
-    {
-      question: 'ต้องใช้เวลานานแค่ไหนสำหรับการติดตั้งโซลาร์เซลล์?',
-      answer: 'ระยะเวลาการติดตั้งขึ้นอยู่กับขนาดของระบบ โดยทั่วไปการติดตั้งใช้เวลา 3-7 วัน สำหรับระบบขนาดกลาง นอกจากนี้เรายังมีขั้นตอนตรวจสอบและทดสอบอย่างละเอียด'
-    },
-    {
-      question: 'ประกันสินค้าและการติดตั้งนานเท่าไหร่?',
-      answer: 'เรามีการรับประกัน 5 ปีสำหรับการติดตั้งและงานวิศวกรรม และสินค้าโซลาร์เซลล์มีการรับประกัน 25-30 ปี นอกจากนี้เรายังให้บริการซ่อมบำรุงตลอดชีวิตของระบบ'
-    },
-    {
-      question: 'ราคาการติดตั้งเท่าไหร่ และมีเงื่อนไขอะไรบ้าง?',
-      answer: 'ราคาขึ้นอยู่กับขนาดของระบบ และจำนวนแผงโซลาร์เซลล์ที่ต้องการ เราให้บริการประเมินหน้างานฟรี โดยสามารถให้ใบเสนอราคาที่แน่นอนหลังจากตรวจสอบสภาพอาคารเรียบร้อยแล้ว'
-    },
-    {
-      question: 'ระบบโซลาร์เซลล์ต้องการการบำรุงรักษาหรือไม่?',
-      answer: 'ระบบโซลาร์เซลล์ต้องการการดูแลเพียงเล็กน้อย เช่น การทำความสะอาดแผงเป็นครั้งคราว เรามีบริการดูแลรักษาประจำปีที่ราคาไม่แพง'
-    },
-    {
-      question: 'สามารถลดค่าไฟของบ้านได้มากแค่ไหน?',
-      answer: 'การลดค่าไฟขึ้นอยู่กับการใช้พลังงาน ขนาดระบบ และสภาพอากาศในพื้นที่ โดยทั่วไปลูกค้าของเรามีค่าไฟลดลง 50-80% ตามการออกแบบระบบ'
-    },
-    {
-      question: 'ทำไมต้องเลือก TRP Powers Plus?',
-      answer: 'เรามีประสบการณ์กว่า 10 ปี ในการติดตั้งระบบไฟฟ้าและโซลาร์เซลล์ ทีมของเราประกอบด้วยวิศวกรและช่างผู้ชำนาญการที่ได้รับการรับรองสากล ให้บริการฉันทนะสูง และดูแลรักษาหลังการติดตั้งอย่างยาวนาน'
-    },
-    {
-      question: 'มีตัวอย่างผลงานของเราไหม?',
-      answer: 'ใช่แน่นอน! เรามีผลงานมากกว่า 500 โครงการที่สมบูรณ์แล้ว จากบ้านเดี่ยว ท่าเรือ ไปจนถึงอาคารสูง คุณสามารถดูผลงานของเราในหน้า "ผลงาน" ของเว็บไซต์นี้'
-    }
-  ];
+  // Get FAQ data from translations
+  const translations = language === 'th' ? th : en;
+  const faqs = translations.faq.questions;
 
   return (
     <section id="faq" className="py-20 bg-white">
@@ -42,10 +19,10 @@ export default function FAQ() {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            ยังไม่ได้ติดสินใจ?
+            {t('faq.title')}
           </h2>
           <p className="text-gray-600 text-lg">
-            คิดอยากเรียนรู้เพิ่มเติมเกี่ยวกับการประเมินราคาฟรี และบริการของเรา? ตรวจสอบคำถามที่บ่อยสุดได้ที่นี่
+            {t('faq.subtitle')}
           </p>
         </div>
 
@@ -84,13 +61,13 @@ export default function FAQ() {
         {/* CTA */}
         <div className="mt-16 text-center">
           <p className="text-gray-600 mb-6">
-            ยังมีคำถามอื่นๆ หรือต้องการประเมินราคา?
+            {t('faq.cta')}
           </p>
           <a
             href="#contact"
             className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-bold transition-colors"
           >
-            โทรประเมินหน้างานฟรี
+            {t('contact.title')}
           </a>
         </div>
       </div>

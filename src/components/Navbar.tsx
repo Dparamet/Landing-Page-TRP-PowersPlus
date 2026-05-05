@@ -3,15 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   const navLinks = [
-    { href: '#hero', label: 'หน้าแรก' },
-    { href: '#services', label: 'บริการ' },
-    { href: '#portfolio', label: 'ผลงาน' },
-    { href: '#contact', label: 'ติดต่อเรา' },
+    { href: '#hero', label: t('nav.home') },
+    { href: '#services', label: t('nav.services') },
+    { href: '#portfolio', label: t('nav.portfolio') },
+    { href: '#contact', label: t('nav.contact') },
   ];
 
   return (
@@ -46,13 +49,16 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button - Desktop */}
-        <Link 
-          href="#contact" 
-          className="hidden rounded-lg bg-orange-600 px-6 py-2 font-bold text-white transition-all duration-200 hover:bg-orange-700 md:inline-block"
-        >
-          ประเมินราคา
-        </Link>
+        {/* Language Switcher + CTA Button - Desktop */}
+        <div className="hidden items-center gap-4 md:flex">
+          <LanguageSwitcher />
+          <Link 
+            href="#contact" 
+            className="rounded-lg bg-orange-600 px-6 py-2 font-bold text-white transition-all duration-200 hover:bg-orange-700"
+          >
+            {t('hero.cta')}
+          </Link>
+        </div>
 
         {/* Hamburger Menu - Mobile */}
         <button
@@ -81,12 +87,15 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <div className="py-2">
+              <LanguageSwitcher />
+            </div>
             <Link 
               href="#contact" 
               className="rounded-lg bg-orange-600 py-2 text-center font-bold text-white hover:bg-orange-700 transition-all"
               onClick={() => setMobileMenuOpen(false)}
             >
-              ประเมินราคา
+              {t('hero.cta')}
             </Link>
           </div>
         </div>
