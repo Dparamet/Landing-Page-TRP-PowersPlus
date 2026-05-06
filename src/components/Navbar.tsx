@@ -14,11 +14,12 @@ export default function Navbar() {
     { href: '#hero', label: t('nav.home') },
     { href: '#services', label: t('nav.services') },
     { href: '#portfolio', label: t('nav.portfolio') },
+    { href: '#calculator', label: t('nav.calculator') },
     { href: '#contact', label: t('nav.contact') },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white shadow-md" role="navigation" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur" role="navigation" aria-label="Main navigation">
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
         
         {/* โลโก้: พร้อม SEO-friendly alt text */}
@@ -28,7 +29,7 @@ export default function Navbar() {
           aria-label="TRP Powers Plus - บริษัทติดตั้งระบบไฟฟ้าและโซลาร์เซลล์"
         > 
           <Image 
-            src="/images/LogoTRP.png" 
+            src="/images/LogoTRP.webp" 
             alt="TRP Powers Plus - ผู้เชี่ยวชาญด้านระบบไฟฟ้าและพลังงาน" 
             fill 
             className="object-contain"
@@ -37,12 +38,12 @@ export default function Navbar() {
         </Link>
 
         {/* เมนูเดสก์ทอป */}
-        <div className="hidden items-center gap-8 text-base font-semibold text-gray-700 md:flex">
+        <div className="hidden items-center gap-7 text-sm font-bold text-slate-700 lg:flex">
           {navLinks.map((link) => (
             <Link 
               key={link.href}
               href={link.href} 
-              className="transition-colors duration-200 hover:text-orange-600"
+              className="relative transition-colors duration-200 after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-0 after:bg-[#f08a24] after:transition-all hover:text-[#12345f] hover:after:w-full"
             >
               {link.label}
             </Link>
@@ -54,7 +55,7 @@ export default function Navbar() {
           <LanguageSwitcher />
           <Link 
             href="#contact" 
-            className="rounded-lg bg-orange-600 px-6 py-2 font-bold text-white transition-all duration-200 hover:bg-orange-700"
+            className="rounded-lg bg-[#f08a24] px-6 py-2 font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#b85c00] hover:shadow-lg hover:shadow-orange-100"
           >
             {t('hero.cta')}
           </Link>
@@ -63,25 +64,25 @@ export default function Navbar() {
         {/* Hamburger Menu - Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex flex-col gap-1.5"
+          className="flex flex-col gap-1.5 lg:hidden"
           aria-label="Toggle mobile menu"
           aria-expanded={mobileMenuOpen}
         >
-          <span className={`h-0.5 w-6 bg-gray-800 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`h-0.5 w-6 bg-gray-800 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`h-0.5 w-6 bg-gray-800 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-slate-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-slate-700 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-slate-700 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t bg-white md:hidden">
+        <div className="border-t border-slate-200 bg-white lg:hidden">
           <div className="flex flex-col gap-4 px-4 py-4">
             {navLinks.map((link) => (
               <Link 
                 key={link.href}
                 href={link.href} 
-                className="text-gray-700 font-semibold hover:text-orange-600 transition-colors"
+                className="font-semibold text-slate-700 transition-colors hover:text-[#12345f]"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
@@ -92,7 +93,7 @@ export default function Navbar() {
             </div>
             <Link 
               href="#contact" 
-              className="rounded-lg bg-orange-600 py-2 text-center font-bold text-white hover:bg-orange-700 transition-all"
+              className="rounded-lg bg-[#f08a24] py-3 text-center font-bold text-white transition-all hover:bg-[#b85c00]"
               onClick={() => setMobileMenuOpen(false)}
             >
               {t('hero.cta')}

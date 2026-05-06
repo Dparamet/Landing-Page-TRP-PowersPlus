@@ -3,6 +3,7 @@
     "home": "Home",
     "services": "Services",
     "portfolio": "Portfolio",
+    "calculator": "Solar Calculator",
     "contact": "Contact"
   },
   "hero": {
@@ -41,8 +42,14 @@
   },
   "portfolio": {
     "title": "Our Portfolio",
-    "description": "We are proud of our diverse projects for customers",
-    "viewMore": "View More"
+    "eyebrow": "Our Work",
+    "description": "Sample electrical and solar projects in an easy-to-scan carousel. Business owners can add new projects from the central content file.",
+    "viewMore": "View Project",
+    "previous": "Previous",
+    "next": "Next",
+    "slide": "Slide",
+    "size": "Project Size",
+    "location": "Area"
   },
   "faq": {
     "title": "Frequently Asked Questions",
@@ -107,6 +114,12 @@
     "investment": "Estimated investment",
     "payback": "Estimated payback",
     "years": "years",
+    "formulaTitle": "Calculation method",
+    "formulaSolar": "System size = monthly kWh × daytime usage share ÷ 120",
+    "formulaSavings": "Monthly savings = current bill - bill after usable solar energy is deducted",
+    "formulaPayback": "Payback period = investment ÷ yearly savings",
+    "onGridDescription": "Best for homes or businesses with strong daytime usage. Energy is produced and consumed immediately to reduce the bill.",
+    "hybridDescription": "Best for sites that need backup power or critical loads. Batteries increase flexibility and investment cost.",
     "assumptionsTitle": "Assumptions",
     "assumptions": "Calculated with residential progressive tariffs, Ft 0.1623 THB/kWh, 7% VAT, and average production of 120 kWh/month per 1 kWp. Actual results depend on roof direction, shade, equipment, and usage behavior.",
     "disclaimer": "This is a preliminary estimate only. A site survey and real electricity bill are required before issuing a quotation."

@@ -7,49 +7,49 @@ export default function HeroContent() {
   const { t } = useLanguage();
 
   return (
-    <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-      <p className="text-orange-300 text-sm md:text-base font-semibold mb-3 uppercase tracking-wider">
+    <div className="relative z-10 mx-auto max-w-5xl px-4 text-center">
+      <p className="mb-4 inline-flex rounded-full border border-slate-200 bg-white/85 px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#b85c00] shadow-sm">
         {t('hero.eyebrow')}
       </p>
 
-      <h1 className="text-4xl md:text-7xl font-black text-white mb-6 leading-tight">
+      <h1 className="mb-6 text-5xl font-black leading-tight text-[#182230] md:text-7xl">
         {t('hero.title')}
       </h1>
 
-      <p className="text-lg md:text-2xl text-gray-100 mb-8 font-medium">
+      <p className="mx-auto mb-6 max-w-3xl text-xl font-bold text-[#12345f] md:text-2xl">
         {t('hero.subtitle')}
       </p>
 
-      <p className="text-base md:text-lg text-gray-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+      <p className="mx-auto mb-10 max-w-3xl text-base leading-relaxed text-slate-700 md:text-lg">
         {t('hero.description')}
       </p>
 
       <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
         <Link 
           href="#contact" 
-          className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 shadow-lg hover:shadow-orange-600/50 w-full md:w-auto"
+          className="w-full rounded-lg bg-[#f08a24] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-100 transition-all duration-200 hover:-translate-y-1 hover:bg-[#b85c00] md:w-auto"
         >
           {t('hero.cta')}
         </Link>
         <Link 
           href="#services" 
-          className="border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 w-full md:w-auto"
+          className="w-full rounded-lg border-2 border-slate-200 bg-white/80 px-8 py-4 text-lg font-bold text-[#12345f] transition-all duration-200 hover:-translate-y-1 hover:border-[#f08a24] hover:bg-white hover:text-[#b85c00] md:w-auto"
         >
           {t('services.title')}
         </Link>
       </div>
 
-      <div className="mt-12 flex flex-col md:flex-row justify-center gap-6 text-white text-sm md:text-base">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-2xl">✓</span>
+      <div className="mt-12 grid grid-cols-1 gap-3 text-sm text-slate-700 md:grid-cols-3 md:text-base">
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+          <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.engineers')}</span>
         </div>
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-2xl">✓</span>
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+          <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.warranty')}</span>
         </div>
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-2xl">✓</span>
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+          <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.survey')}</span>
         </div>
       </div>
