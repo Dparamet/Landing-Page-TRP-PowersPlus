@@ -27,7 +27,7 @@ export default function HeroContent() {
       <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
         <Link 
           href="#contact" 
-          className="w-full rounded-lg bg-[#f08a24] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-100 transition-all duration-200 hover:-translate-y-1 hover:bg-[#b85c00] md:w-auto"
+          className="w-full rounded-lg bg-[#b85c00] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-100 transition-all duration-200 hover:-translate-y-1 hover:bg-[#8a4300] md:w-auto"
         >
           {t('hero.cta')}
         </Link>

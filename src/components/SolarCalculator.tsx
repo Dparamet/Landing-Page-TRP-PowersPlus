@@ -90,7 +90,7 @@ export default function SolarCalculator() {
     systemType === 'onGrid' ? t('calculator.onGridDescription') : t('calculator.hybridDescription');
 
   return (
-    <section id="calculator" className="bg-white py-20">
+    <section id="calculator" className="section-reveal bg-white py-20">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <span className="inline-flex rounded-full bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
@@ -101,7 +101,7 @@ export default function SolarCalculator() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.88fr_1.12fr]">
-          <div className="rounded-lg border border-slate-200 bg-[#f8fafc] p-6 shadow-sm">
+          <div className="reveal-item rounded-lg border border-slate-200 bg-[#f8fafc] p-6 shadow-sm">
             <div className="grid grid-cols-2 gap-3">
               {(['onGrid', 'hybrid'] as SystemType[]).map((type) => (
                 <button
@@ -155,7 +155,7 @@ export default function SolarCalculator() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="reveal-item rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Result label={t('calculator.recommendedSize')} value={`${result.recommendedSize.toFixed(1)} kWp`} highlight />
               <Result label={t('calculator.investment')} value={`฿${formatNumber(result.investment)}`} highlight />

@@ -33,6 +33,7 @@ export default function Navbar() {
             alt="TRP Powers Plus - ผู้เชี่ยวชาญด้านระบบไฟฟ้าและพลังงาน" 
             fill 
             className="object-contain"
+            sizes="(min-width: 768px) 192px, 160px"
             priority 
           />
         </Link>
@@ -55,7 +56,7 @@ export default function Navbar() {
           <LanguageSwitcher />
           <Link 
             href="#contact" 
-            className="rounded-lg bg-[#f08a24] px-6 py-2 font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#b85c00] hover:shadow-lg hover:shadow-orange-100"
+            className="rounded-lg bg-[#b85c00] px-6 py-2 font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-lg hover:shadow-orange-100"
           >
             {t('hero.cta')}
           </Link>
@@ -93,7 +94,7 @@ export default function Navbar() {
             </div>
             <Link 
               href="#contact" 
-              className="rounded-lg bg-[#f08a24] py-3 text-center font-bold text-white transition-all hover:bg-[#b85c00]"
+              className="rounded-lg bg-[#b85c00] py-3 text-center font-bold text-white transition-all hover:bg-[#8a4300]"
               onClick={() => setMobileMenuOpen(false)}
             >
               {t('hero.cta')}

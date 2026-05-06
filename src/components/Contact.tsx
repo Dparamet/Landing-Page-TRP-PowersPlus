@@ -47,7 +47,7 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="bg-white py-20">
+    <section id="contact" className="section-reveal bg-white py-20">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="mb-4 text-center text-4xl font-black text-[#12345f] md:text-5xl">{t('contact.title')}</h2>
         <p className="mx-auto mb-12 max-w-2xl text-center text-lg text-slate-600">
@@ -62,9 +62,9 @@ export default function Contact() {
                 href={contact.href}
                 target={contact.external ? '_blank' : undefined}
                 rel={contact.external ? 'noopener noreferrer' : undefined}
-                className="group flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#f08a24] hover:shadow-md"
+                className="group reveal-item flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#f08a24] hover:shadow-md"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#f4f8ff] text-2xl text-[#12345f] transition-colors group-hover:bg-[#f08a24] group-hover:text-white">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#f4f8ff] text-2xl text-[#12345f] transition-colors group-hover:bg-[#b85c00] group-hover:text-white">
                   {contact.icon}
                 </div>
 
@@ -78,8 +78,9 @@ export default function Contact() {
             ))}
           </div>
 
-          <div className="h-[400px] w-full overflow-hidden rounded-lg border-2 border-slate-200 shadow-lg">
+          <div className="reveal-item h-[400px] w-full overflow-hidden rounded-lg border-2 border-slate-200 shadow-lg">
             <iframe
+              title="TRP Powers Plus office location map"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.451493193648!2d100.53169!3d13.7563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d6b7a63b63b63%3A0x1234567890!2s123%20Solar%20Street%20Green%20Energy%20District%20Bangkok!5e0!3m2!1sen!2sth!4v1234567890123"
               width="100%"
               height="100%"

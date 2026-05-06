@@ -1,9 +1,10 @@
 // src/app/layout.tsx
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClientLayout } from "./ClientLayout";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://trppowersplus.com"),
   title: "TRP Powers Plus | บริษัทติดตั้งระบบไฟฟ้า โซลาร์เซลล์ รับเหมาครบวงจร",
   description: "บริษัทติดตั้งระบบไฟฟ้า โซลาร์เซลล์ และพลังงานทดแทน โดยวิศวกรผู้ชำนาญการ ประเมินหน้างานฟรี รับประกัน 5 ปี",
   keywords: "ติดตั้งไฟฟ้า,โซลาร์เซลล์,รับเหมาไฟฟ้า,วิศวกรไฟฟ้า,ประเมินหน้างาน,ระบบไฟฟ้า,โซลูชั่นพลังงาน",
@@ -19,6 +20,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f08a24",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,11 +33,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className="scroll-smooth">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#f97316" />
-      </head>
       <body className="bg-white text-gray-900">
         <ClientLayout>{children}</ClientLayout>
       </body>

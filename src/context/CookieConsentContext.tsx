@@ -12,20 +12,28 @@ export type CookieConsentContextValue = {
   saveSettings: (options: CookieConsent) => void;
   openSettings: () => void;
   closeSettings: () => void;
-  dismissBanner: () => void;
 };
 
 const CookieConsentContext = createContext<CookieConsentContextValue | undefined>(undefined);
 
+const subscribeToClientReady = () => () => {};
+const getClientReadySnapshot = () => true;
+const getServerReadySnapshot = () => false;
+
 export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const consent = useSyncExternalStore(subscribeToConsentChanges, getConsentSnapshot, getServerConsentSnapshot);
+  const isClientReady = useSyncExternalStore(
+    subscribeToClientReady,
+    getClientReadySnapshot,
+    getServerReadySnapshot
+  );
   const [hasDecision, setHasDecision] = useState<boolean | null>(() => {
     if (typeof window === 'undefined') return null;
     return readConsentFromStorage() !== null;
   });
   const [showModal, setShowModal] = useState(false);
 
-  const showBanner = hasDecision === false;
+  const showBanner = isClientReady && hasDecision === false;
 
   const persistConsent = (nextConsent: CookieConsent) => {
     writeConsentToStorage(nextConsent);
@@ -69,17 +77,12 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setShowModal(false);
   };
 
-  const dismissBanner = () => {
-    setHasDecision(true);
-  };
-
   const value: CookieConsentContextValue = {
     consent,
     showBanner,
     showModal,
     openSettings,
     closeSettings,
-    dismissBanner,
     acceptAll,
     rejectAll,
     saveSettings,
