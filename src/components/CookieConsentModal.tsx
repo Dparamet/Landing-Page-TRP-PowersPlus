@@ -2,14 +2,42 @@
 
 import { useState } from 'react';
 import { useCookieConsent } from '@/context/CookieConsentContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { COOKIE_CATEGORIES, CookieCategoryId, COOKIE_COLORS } from '@/lib/cookieConfig';
 import { CookieConsent } from '@/lib/cookieStorage';
 
 export default function CookieConsentModal() {
   const { showModal, consent, saveSettings, closeSettings } = useCookieConsent();
-  const [settings, setSettings] = useState<CookieConsent>(consent);
+  const { t, language } = useLanguage();
 
   if (!showModal) return null;
+
+  return (
+    <CookieConsentDialog
+      key={consent.timestamp}
+      consent={consent}
+      language={language}
+      saveSettings={saveSettings}
+      closeSettings={closeSettings}
+      t={t}
+    />
+  );
+}
+
+function CookieConsentDialog({
+  consent,
+  language,
+  saveSettings,
+  closeSettings,
+  t,
+}: {
+  consent: CookieConsent;
+  language: 'th' | 'en';
+  saveSettings: (options: CookieConsent) => void;
+  closeSettings: () => void;
+  t: (key: string) => string;
+}) {
+  const [settings, setSettings] = useState<CookieConsent>(consent);
 
   const categories: CookieCategoryId[] = ['necessary', 'analytics', 'marketing', 'preferences'];
 
@@ -18,9 +46,9 @@ export default function CookieConsentModal() {
       <div className={`w-full max-w-2xl rounded-2xl ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-2xl border-2 ${COOKIE_COLORS.borderPrimary}`}>
         {/* Header */}
         <div className={`border-b-2 ${COOKIE_COLORS.borderPrimary} p-6 sm:p-8 bg-gradient-to-r from-orange-50 to-blue-50`}>
-          <h2 className="text-2xl font-bold text-orange-600">Cookie Settings</h2>
+          <h2 className="text-2xl font-bold text-orange-600">{t('cookie.settingsTitle')}</h2>
           <p className={`mt-2 text-sm ${COOKIE_COLORS.textSecondary}`}>
-            Manage your cookie preferences. Some cookies are essential for the website to work.
+            {t('cookie.settingsDescription')}
           </p>
         </div>
 
@@ -34,19 +62,21 @@ export default function CookieConsentModal() {
               <label
                 key={categoryId}
                 className={`flex cursor-pointer items-start justify-between gap-4 rounded-xl border ${COOKIE_COLORS.borderPrimary} ${COOKIE_COLORS.bgSecondary} p-4 transition ${
-                  !category.required && `hover:${COOKIE_COLORS.borderHover}`
+                  !category.required ? 'hover:border-orange-400' : ''
                 }`}
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold">{category.nameTh}</p>
+                    <p className="font-semibold">{language === 'th' ? category.nameTh : category.nameEn}</p>
                     {category.required && (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300">
-                        Required
+                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                        {t('cookie.required')}
                       </span>
                     )}
                   </div>
-                  <p className={`mt-1 text-sm ${COOKIE_COLORS.textTertiary}`}>{category.descTh}</p>
+                  <p className={`mt-1 text-sm ${COOKIE_COLORS.textTertiary}`}>
+                    {language === 'th' ? category.descTh : category.descEn}
+                  </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {category.examples.map((ex, i) => (
                       <code key={i} className={`text-xs px-2 py-1 rounded ${COOKIE_COLORS.bgTertiary}`}>
@@ -95,14 +125,14 @@ export default function CookieConsentModal() {
             onClick={closeSettings}
             className={`rounded-lg border ${COOKIE_COLORS.borderPrimary} px-6 py-2.5 font-semibold transition ${COOKIE_COLORS.btnSecondaryBgHover}`}
           >
-            Cancel
+            {t('cookie.cancel')}
           </button>
           <button
             type="button"
             onClick={() => saveSettings(settings)}
             className={`rounded-lg ${COOKIE_COLORS.btnPrimaryBg} px-6 py-2.5 font-semibold text-white transition ${COOKIE_COLORS.btnPrimaryBgHover}`}
           >
-            Save Preferences
+            {t('cookie.save')}
           </button>
         </div>
       </div>

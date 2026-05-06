@@ -1,10 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useSyncExternalStore, ReactNode } from 'react';
 import th from '@/locales/th.json';
 import en from '@/locales/en.json';
 
 type Language = 'th' | 'en';
+const LANGUAGE_KEY = 'language';
+const LANGUAGE_EVENT = 'trp-language-updated';
 
 interface LanguageContextType {
   language: Language;
@@ -14,32 +16,47 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('th');
-  const [mounted, setMounted] = useState(false);
+function readLanguage(): Language {
+  if (typeof window === 'undefined') return 'th';
 
-  // Load language from localStorage on mount
+  const saved = localStorage.getItem(LANGUAGE_KEY);
+  return saved === 'en' || saved === 'th' ? saved : 'th';
+}
+
+function subscribeToLanguageChanges(listener: () => void) {
+  if (typeof window === 'undefined') return () => {};
+
+  window.addEventListener(LANGUAGE_EVENT, listener);
+  window.addEventListener('storage', listener);
+
+  return () => {
+    window.removeEventListener(LANGUAGE_EVENT, listener);
+    window.removeEventListener('storage', listener);
+  };
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const language = useSyncExternalStore<Language>(subscribeToLanguageChanges, readLanguage, () => 'th');
+
   useEffect(() => {
-    const saved = localStorage.getItem('language') as Language | null;
-    if (saved && (saved === 'th' || saved === 'en')) {
-      setLanguageState(saved);
-    }
-    setMounted(true);
-  }, []);
+    document.documentElement.lang = language;
+  }, [language]);
 
   const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('language', lang);
+    localStorage.setItem(LANGUAGE_KEY, lang);
+    window.dispatchEvent(new Event(LANGUAGE_EVENT));
   };
 
-  // Translation function with nested key support (e.g., "nav.home")
   const t = (key: string): string => {
     const translations = language === 'th' ? th : en;
     const keys = key.split('.');
-    let value: any = translations;
+    let value: unknown = translations;
     
     for (const k of keys) {
-      value = value?.[k];
+      value =
+        typeof value === 'object' && value !== null && k in value
+          ? (value as Record<string, unknown>)[k]
+          : undefined;
     }
     
     return typeof value === 'string' ? value : key;
@@ -52,14 +69,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Default translation function for use outside of context
 const defaultT = (key: string, lang: Language = 'th'): string => {
   const translations = lang === 'th' ? th : en;
   const keys = key.split('.');
-  let value: any = translations;
+  let value: unknown = translations;
   
   for (const k of keys) {
-    value = value?.[k];
+    value =
+      typeof value === 'object' && value !== null && k in value
+        ? (value as Record<string, unknown>)[k]
+        : undefined;
   }
   
   return typeof value === 'string' ? value : key;

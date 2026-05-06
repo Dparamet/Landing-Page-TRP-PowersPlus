@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, ReactNode, useContext, useEffect, useSyncExternalStore, useState } from 'react';
+import { createContext, ReactNode, useContext, useSyncExternalStore, useState } from 'react';
 import { CookieConsent, readConsentFromStorage, writeConsentToStorage, subscribeToConsentChanges, getConsentSnapshot, getServerConsentSnapshot } from '@/lib/cookieStorage';
 
 export type CookieConsentContextValue = {
@@ -19,21 +19,13 @@ const CookieConsentContext = createContext<CookieConsentContextValue | undefined
 
 export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const consent = useSyncExternalStore(subscribeToConsentChanges, getConsentSnapshot, getServerConsentSnapshot);
-  const [hasDecision, setHasDecision] = useState(false);
+  const [hasDecision, setHasDecision] = useState<boolean | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return readConsentFromStorage() !== null;
+  });
   const [showModal, setShowModal] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
-  // Initialize mounted state and check localStorage on client side only
-  useEffect(() => {
-    setIsMounted(true);
-    const saved = readConsentFromStorage();
-    if (saved) {
-      setHasDecision(true);
-    }
-  }, []);
-
-  // Check if user has already made a decision (only show banner on first visit)
-  const showBanner = isMounted && !hasDecision;
+  const showBanner = hasDecision === false;
 
   const persistConsent = (nextConsent: CookieConsent) => {
     writeConsentToStorage(nextConsent);

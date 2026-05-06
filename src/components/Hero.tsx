@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import HeroContent from './HeroContent';
 
@@ -24,7 +23,7 @@ export default function Hero() {
         {/* Background Layer with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/solar-cell-installation-banner.jpg"
+            src="/images/hero-solar-banner.svg"
             alt="การติดตั้งระบบโซลาร์เซลล์และไฟฟ้าโดยทีมวิศวกรผู้ชำนาญการ"
             fill
             className="object-cover"

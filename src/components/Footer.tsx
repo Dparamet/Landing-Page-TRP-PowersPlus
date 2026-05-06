@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import FooterContent from './FooterContent';
 
 export default function Footer() {

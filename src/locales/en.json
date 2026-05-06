@@ -6,17 +6,38 @@
     "contact": "Contact"
   },
   "hero": {
-    "title": "Electrical System & Solar Cell Installation",
-    "subtitle": "Clean energy for a sustainable future",
-    "cta": "Contact Us Today"
+    "eyebrow": "Complete electrical and energy solutions",
+    "title": "TRP Powers Plus",
+    "subtitle": "Design, installation, and care for electrical and solar systems for homes, buildings, and businesses",
+    "description": "We size systems from real electricity usage, inspect the site before quoting, and explain practical options clearly, from low-voltage electrical work to on-grid and hybrid solar systems.",
+    "cta": "Request Consultation",
+    "trust": {
+      "engineers": "Assessed by technicians and engineers",
+      "warranty": "Handover documents and care guidance included",
+      "survey": "Site survey before final quotation"
+    }
   },
   "services": {
     "title": "Our Services",
-    "description": "We provide electrical systems and renewable energy solutions",
+    "description": "Choose the right service for your site, budget, and electricity usage pattern",
     "solar": "Solar Cell Installation",
     "electrical": "Electrical Systems",
     "consultation": "Free Consultation",
-    "installation": "Installation & Maintenance"
+    "installation": "Installation & Maintenance",
+    "items": [
+      {
+        "title": "On-grid solar systems",
+        "description": "Size the system from daytime electricity use to reduce bills without batteries."
+      },
+      {
+        "title": "Hybrid solar systems",
+        "description": "Add battery storage for sites that need backup power or more nighttime usage."
+      },
+      {
+        "title": "Building electrical systems",
+        "description": "Wiring, control panels, electrical loads, and safety checks before operation."
+      }
+    ]
   },
   "portfolio": {
     "title": "Our Portfolio",
@@ -68,6 +89,40 @@
     "submit": "Submit",
     "address": "Address",
     "hours": "Business Hours"
+  },
+  "calculator": {
+    "title": "Preliminary Solar Sizing Calculator",
+    "subtitle": "Enter monthly electricity usage and daytime usage share to estimate system size, investment, and payback.",
+    "monthlyUsage": "Monthly electricity usage",
+    "daytimeUsage": "Daytime usage",
+    "systemType": "System type",
+    "onGrid": "On-grid",
+    "hybrid": "Hybrid",
+    "recommendedSize": "Recommended size",
+    "monthlyProduction": "Monthly production",
+    "usableSolar": "Usable solar energy",
+    "baselineBill": "Estimated current bill",
+    "newBill": "Estimated bill after install",
+    "monthlySavings": "Monthly savings",
+    "investment": "Estimated investment",
+    "payback": "Estimated payback",
+    "years": "years",
+    "assumptionsTitle": "Assumptions",
+    "assumptions": "Calculated with residential progressive tariffs, Ft 0.1623 THB/kWh, 7% VAT, and average production of 120 kWh/month per 1 kWp. Actual results depend on roof direction, shade, equipment, and usage behavior.",
+    "disclaimer": "This is a preliminary estimate only. A site survey and real electricity bill are required before issuing a quotation."
+  },
+  "cookie": {
+    "badge": "Cookie Policy",
+    "title": "We use cookies to improve your experience",
+    "description": "This site uses essential cookies for functionality and asks consent for analytics, marketing, and preference cookies.",
+    "reject": "Reject All",
+    "customize": "Customize",
+    "accept": "Accept All",
+    "settingsTitle": "Cookie Settings",
+    "settingsDescription": "Choose which cookie categories to allow. Necessary cookies are always enabled.",
+    "required": "Required",
+    "cancel": "Cancel",
+    "save": "Save Preferences"
   },
   "footer": {
     "copyright": "© 2024 TRP Powers Plus All Rights Reserved",
