@@ -1,10 +1,12 @@
 'use client';
 
 import { useCookieConsent } from '@/context/CookieConsentContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { COOKIE_COLORS } from '@/lib/cookieConfig';
 
 export default function CookieConsentBanner() {
-  const { showBanner, acceptAll, rejectAll, dismissBanner, openSettings } = useCookieConsent();
+  const { showBanner, acceptAll, rejectAll, openSettings } = useCookieConsent();
+  const { t } = useLanguage();
 
   if (!showBanner) return null;
 
@@ -15,13 +17,13 @@ export default function CookieConsentBanner() {
           {/* Content */}
           <div className="flex-1">
             <div className={`inline-flex items-center rounded-full border ${COOKIE_COLORS.badgeBorder} ${COOKIE_COLORS.badgeBg} px-3 py-1 text-xs font-semibold uppercase tracking-wider ${COOKIE_COLORS.badgeText}`}>
-              🍪 Cookie Policy
+              {t('cookie.badge')}
             </div>
             <h2 className="mt-4 text-xl font-bold sm:text-2xl text-orange-600">
-              We use cookies to enhance your experience
+              {t('cookie.title')}
             </h2>
             <p className={`mt-3 text-sm leading-relaxed ${COOKIE_COLORS.textSecondary} sm:text-base`}>
-              We use cookies for essential functionality and (with your consent) for analytics and marketing. You can review and customize your preferences.
+              {t('cookie.description')}
             </p>
           </div>
 
@@ -32,21 +34,21 @@ export default function CookieConsentBanner() {
               onClick={rejectAll}
               className={`rounded-lg border-2 border-gray-300 ${COOKIE_COLORS.btnSecondaryBg} px-6 py-2.5 font-semibold transition ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap hover:border-blue-400`}
             >
-              Reject All
+              {t('cookie.reject')}
             </button>
             <button
               type="button"
               onClick={openSettings}
               className={`rounded-lg border-2 border-blue-300 ${COOKIE_COLORS.btnSecondaryBg} px-6 py-2.5 font-semibold transition ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap text-blue-700 hover:border-blue-500`}
             >
-              Customize
+              {t('cookie.customize')}
             </button>
             <button
               type="button"
               onClick={acceptAll}
               className={`rounded-lg ${COOKIE_COLORS.btnPrimaryBg} px-6 py-2.5 font-semibold text-white transition ${COOKIE_COLORS.btnPrimaryBgHover} whitespace-nowrap`}
             >
-              Accept All
+              {t('cookie.accept')}
             </button>
           </div>
         </div>
