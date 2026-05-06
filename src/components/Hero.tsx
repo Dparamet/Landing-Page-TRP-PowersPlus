@@ -19,7 +19,7 @@ export default function Hero() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
 
-      <section id="hero" className="relative w-full h-[700px] flex items-center justify-center overflow-hidden">
+      <section id="hero" className="relative flex min-h-[680px] w-full items-center justify-center overflow-hidden bg-white">
         {/* Background Layer with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -31,7 +31,8 @@ export default function Hero() {
             quality={85}
           />
           {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-black/55"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/94 via-white/88 to-[#f4f8ff]/72"></div>
+          <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-white via-white/75 to-transparent"></div>
         </div>
 
         {/* Content */}

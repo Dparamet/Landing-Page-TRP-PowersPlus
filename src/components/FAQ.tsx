@@ -14,33 +14,31 @@ export default function FAQ() {
   const faqs = translations.faq.questions;
 
   return (
-    <section id="faq" className="py-20 bg-white">
+    <section id="faq" className="bg-[#f8fafc] py-20">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="mb-4 text-4xl font-black text-[#12345f] md:text-5xl">
             {t('faq.title')}
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-lg text-slate-600">
             {t('faq.subtitle')}
           </p>
         </div>
 
-        {/* FAQ Items */}
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-200"
+              className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-[#f08a24] hover:shadow-md"
             >
-              {/* Question Button */}
               <button
                 onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors flex justify-between items-center"
+                className="flex w-full items-center justify-between gap-4 bg-white px-6 py-4 text-left transition-colors hover:bg-[#fff7ed]"
+                aria-expanded={activeIndex === index}
               >
-                <h3 className="font-semibold text-gray-900 text-lg">{faq.question}</h3>
+                <h3 className="text-lg font-bold text-[#182230]">{faq.question}</h3>
                 <span
-                  className={`text-orange-600 text-2xl transition-transform duration-300 ${
+                  className={`text-2xl font-bold text-[#f08a24] transition-transform duration-300 ${
                     activeIndex === index ? 'rotate-45' : ''
                   }`}
                 >
@@ -48,24 +46,22 @@ export default function FAQ() {
                 </span>
               </button>
 
-              {/* Answer */}
               {activeIndex === index && (
-                <div className="px-6 py-4 bg-white border-t border-gray-200">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                <div className="border-t border-slate-200 bg-white px-6 py-4">
+                  <p className="leading-relaxed text-slate-700">{faq.answer}</p>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        {/* CTA */}
         <div className="mt-16 text-center">
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-slate-600">
             {t('faq.cta')}
           </p>
           <a
             href="#contact"
-            className="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-bold transition-colors"
+            className="inline-block rounded-lg bg-[#f08a24] px-8 py-4 font-black text-white transition hover:-translate-y-0.5 hover:bg-[#b85c00] hover:shadow-lg"
           >
             {t('contact.title')}
           </a>

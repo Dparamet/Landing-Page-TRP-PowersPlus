@@ -47,17 +47,14 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
+    <section id="contact" className="bg-white py-20">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Heading */}
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-orange-600 mb-4">{t('contact.title')}</h2>
-        <p className="text-center text-gray-600 text-lg mb-12 max-w-2xl mx-auto">
+        <h2 className="mb-4 text-center text-4xl font-black text-[#12345f] md:text-5xl">{t('contact.title')}</h2>
+        <p className="mx-auto mb-12 max-w-2xl text-center text-lg text-slate-600">
           {t('contact.description')}
         </p>
 
-        {/* Contact Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Left Column: Contact Info */}
           <div className="space-y-6">
             {contactLinks.map((contact, index) => (
               <a
@@ -65,17 +62,15 @@ export default function Contact() {
                 href={contact.href}
                 target={contact.external ? '_blank' : undefined}
                 rel={contact.external ? 'noopener noreferrer' : undefined}
-                className="flex items-start gap-4 p-4 rounded-lg hover:bg-white transition-all duration-200 group"
+                className="group flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#f08a24] hover:shadow-md"
               >
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-full bg-orange-600 flex items-center justify-center text-white text-2xl shrink-0 group-hover:bg-orange-700 transition-colors">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#f4f8ff] text-2xl text-[#12345f] transition-colors group-hover:bg-[#f08a24] group-hover:text-white">
                   {contact.icon}
                 </div>
 
-                {/* Text */}
                 <div className="flex flex-col">
-                  <span className="font-semibold text-gray-800 text-sm">{contact.label}</span>
-                  <span className="text-orange-600 hover:text-orange-700 font-medium text-base break-all">
+                  <span className="text-sm font-bold text-[#182230]">{contact.label}</span>
+                  <span className="break-all text-base font-semibold text-[#b85c00]">
                     {contact.value}
                   </span>
                 </div>
@@ -83,8 +78,7 @@ export default function Contact() {
             ))}
           </div>
 
-          {/* Right Column: Map */}
-          <div className="w-full h-[400px] rounded-xl shadow-lg overflow-hidden border-2 border-orange-100">
+          <div className="h-[400px] w-full overflow-hidden rounded-lg border-2 border-slate-200 shadow-lg">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.451493193648!2d100.53169!3d13.7563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d6b7a63b63b63%3A0x1234567890!2s123%20Solar%20Street%20Green%20Energy%20District%20Bangkok!5e0!3m2!1sen!2sth!4v1234567890123"
               width="100%"
