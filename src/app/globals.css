@@ -28,6 +28,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-padding-top: 88px;
+}
+
 ::selection {
   background: rgba(245, 158, 11, 0.24);
 }
@@ -35,6 +39,43 @@ body {
 :focus-visible {
   outline: 3px solid var(--ring);
   outline-offset: 3px;
+}
+
+.section-reveal,
+.reveal-item {
+  animation: reveal-up 0.72s ease both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 26%;
+}
+
+.reveal-item {
+  animation-duration: 0.58s;
+}
+
+.reveal-delay-1 {
+  animation-delay: 90ms;
+}
+
+.reveal-delay-2 {
+  animation-delay: 180ms;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .section-reveal,
+  .reveal-item {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -45,5 +86,12 @@ body {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .section-reveal,
+  .reveal-item {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

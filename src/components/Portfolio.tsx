@@ -20,7 +20,7 @@ export default function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className="overflow-hidden bg-[#f8fafc] py-20 text-[#182230]">
+    <section id="portfolio" className="section-reveal overflow-hidden bg-[#f8fafc] py-20 text-[#182230]">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mx-auto mb-14 max-w-3xl text-center">
           <span className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-[#12345f] shadow-sm">
@@ -42,7 +42,7 @@ export default function Portfolio() {
                 <article
                   key={`${project.title.en}-${offset}`}
                   aria-current={isActive ? 'true' : undefined}
-                  className={`group relative min-h-[360px] overflow-hidden rounded-lg border transition duration-500 ${
+                  className={`group reveal-item relative min-h-[360px] overflow-hidden rounded-lg border transition duration-500 ${
                     isActive
                       ? 'scale-100 border-white shadow-2xl shadow-orange-100'
                       : 'scale-[0.94] border-white/80 opacity-75 max-lg:hidden'

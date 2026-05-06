@@ -14,7 +14,7 @@ export default function FAQ() {
   const faqs = translations.faq.questions;
 
   return (
-    <section id="faq" className="bg-[#f8fafc] py-20">
+    <section id="faq" className="section-reveal bg-[#f8fafc] py-20">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="mb-4 text-4xl font-black text-[#12345f] md:text-5xl">
@@ -29,7 +29,7 @@ export default function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-[#f08a24] hover:shadow-md"
+              className="reveal-item overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-[#f08a24] hover:shadow-md"
             >
               <button
                 onClick={() => setActiveIndex(activeIndex === index ? null : index)}
@@ -61,7 +61,7 @@ export default function FAQ() {
           </p>
           <a
             href="#contact"
-            className="inline-block rounded-lg bg-[#f08a24] px-8 py-4 font-black text-white transition hover:-translate-y-0.5 hover:bg-[#b85c00] hover:shadow-lg"
+            className="inline-block rounded-lg bg-[#b85c00] px-8 py-4 font-black text-white transition hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-lg"
           >
             {t('contact.title')}
           </a>
