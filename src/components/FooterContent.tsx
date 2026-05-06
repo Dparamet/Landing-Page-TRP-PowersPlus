@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { useCookieConsent } from '@/context/CookieConsentContext';
 
 export default function FooterContent() {
   const { t } = useLanguage();
+  const { openSettings } = useCookieConsent();
 
   return (
     <>
@@ -27,6 +29,11 @@ export default function FooterContent() {
               <li><Link href="#services" className="hover:text-orange-500 transition">{t('nav.services')}</Link></li>
               <li><Link href="#portfolio" className="hover:text-orange-500 transition">{t('nav.portfolio')}</Link></li>
               <li><Link href="#contact" className="hover:text-orange-500 transition">{t('nav.contact')}</Link></li>
+              <li>
+                <button type="button" onClick={openSettings} className="text-left hover:text-orange-500 transition">
+                  ตั้งค่าคุกกี้
+                </button>
+              </li>
             </ul>
           </div>
 

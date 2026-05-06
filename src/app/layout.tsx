@@ -27,7 +27,6 @@ export default function RootLayout({
   return (
     <html lang="th" className="scroll-smooth">
       <head>
-        {/* Google Analytics */}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f97316" />
