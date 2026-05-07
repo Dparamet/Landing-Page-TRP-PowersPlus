@@ -1,6 +1,10 @@
+'use client';
+
+import { useLanguage } from '@/context/LanguageContext';
 import FooterContent from './FooterContent';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -10,10 +14,10 @@ export default function Footer() {
       {/* Copyright Bar */}
       <div className="border-t border-orange-100 bg-white px-4 py-6 text-center text-sm">
         <p className="text-slate-600">
-          © {currentYear} <span className="font-bold text-[#12345f]">TRP Powers Plus</span>. สงวนลิขสิทธิ์ทั้งหมด | บริษัท TRP Powers Plus จำกัด
+          © {currentYear} <span className="font-bold text-[#12345f]">TRP Powers Plus</span>. {t('footer.legal')}
         </p>
         <p className="mt-2 text-xs text-slate-500">
-          การติดตั้งระบบไฟฟ้าและโซลาร์เซลล์ | ให้คำปรึกษาฟรี | บริการครบวงจร
+          {t('footer.tagline')}
         </p>
       </div>
     </footer>

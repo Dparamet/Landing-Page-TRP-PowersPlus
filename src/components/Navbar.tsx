@@ -19,18 +19,18 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur" role="navigation" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur" role="navigation" aria-label={t('nav.mainNavigation')}>
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
         
         {/* โลโก้: พร้อม SEO-friendly alt text */}
         <Link 
           href="/" 
           className="relative flex h-12 w-40 shrink-0 items-center md:h-14 md:w-48"
-          aria-label="TRP Powers Plus - บริษัทติดตั้งระบบไฟฟ้าและโซลาร์เซลล์"
+          aria-label={t('nav.logoLinkLabel')}
         > 
           <Image 
             src="/images/LogoTRP.webp" 
-            alt="TRP Powers Plus - ผู้เชี่ยวชาญด้านระบบไฟฟ้าและพลังงาน" 
+            alt={t('nav.logoAlt')} 
             fill 
             className="object-contain"
             sizes="(min-width: 768px) 192px, 160px"
@@ -66,7 +66,7 @@ export default function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="flex flex-col gap-1.5 lg:hidden"
-          aria-label="Toggle mobile menu"
+          aria-label={t('nav.toggleMenu')}
           aria-expanded={mobileMenuOpen}
         >
           <span className={`h-0.5 w-6 bg-slate-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>

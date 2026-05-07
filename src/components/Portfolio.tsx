@@ -7,6 +7,7 @@ import { useLanguage } from '@/context/LanguageContext';
 export default function Portfolio() {
   const { t, language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'next' | 'previous'>('next');
 
   const visibleProjects = useMemo(() => {
     return [-1, 0, 1].map((offset) => {
@@ -16,7 +17,14 @@ export default function Portfolio() {
   }, [activeIndex]);
 
   const goToSlide = (nextIndex: number) => {
-    setActiveIndex((nextIndex + portfolioProjects.length) % portfolioProjects.length);
+    const normalizedIndex = (nextIndex + portfolioProjects.length) % portfolioProjects.length;
+    const forwardDistance = (normalizedIndex - activeIndex + portfolioProjects.length) % portfolioProjects.length;
+    const backwardDistance = (activeIndex - normalizedIndex + portfolioProjects.length) % portfolioProjects.length;
+
+    if (normalizedIndex === activeIndex) return;
+
+    setSlideDirection(forwardDistance <= backwardDistance ? 'next' : 'previous');
+    setActiveIndex(normalizedIndex);
   };
 
   return (
@@ -33,16 +41,19 @@ export default function Portfolio() {
         </div>
 
         <div className="relative">
-          <div className="grid grid-cols-[minmax(260px,0.74fr)_minmax(280px,1.6fr)_minmax(260px,0.74fr)] items-stretch gap-5 max-lg:grid-cols-1">
+          <div
+            key={activeIndex}
+            className={`portfolio-slide portfolio-slide-${slideDirection} grid grid-cols-[minmax(260px,0.74fr)_minmax(280px,1.6fr)_minmax(260px,0.74fr)] items-stretch gap-5 max-lg:grid-cols-1`}
+          >
             {visibleProjects.map(({ project, index, offset }) => {
               const isActive = offset === 0;
               const accentClass = project.accent === 'orange' ? 'from-[#f97316]' : 'from-[#2563eb]';
 
               return (
                 <article
-                  key={`${project.title.en}-${offset}`}
+                  key={`${project.title.en}-${activeIndex}-${offset}`}
                   aria-current={isActive ? 'true' : undefined}
-                  className={`group reveal-item relative min-h-[360px] overflow-hidden rounded-lg border transition duration-500 ${
+                  className={`group relative min-h-[360px] overflow-hidden rounded-lg border transition duration-500 ${
                     isActive
                       ? 'scale-100 border-white shadow-2xl shadow-orange-100'
                       : 'scale-[0.94] border-white/80 opacity-75 max-lg:hidden'
