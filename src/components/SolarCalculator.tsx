@@ -50,12 +50,12 @@ function calculateResidentialBill(units: number) {
   return beforeVat * (1 + vatRate);
 }
 
-function formatNumber(value: number, maximumFractionDigits = 0) {
-  return new Intl.NumberFormat('th-TH', { maximumFractionDigits }).format(value);
+function formatNumber(value: number, locale: 'th' | 'en', maximumFractionDigits = 0) {
+  return new Intl.NumberFormat(locale === 'th' ? 'th-TH' : 'en-US', { maximumFractionDigits }).format(value);
 }
 
 export default function SolarCalculator() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [monthlyUnits, setMonthlyUnits] = useState(600);
   const [daytimePercent, setDaytimePercent] = useState(65);
   const [systemType, setSystemType] = useState<SystemType>('onGrid');
@@ -125,9 +125,9 @@ export default function SolarCalculator() {
             </p>
 
             <div className="mt-8 space-y-8">
-              <RangeInput
+                <RangeInput
                 label={t('calculator.monthlyUsage')}
-                value={`${formatNumber(monthlyUnits)} kWh`}
+                value={`${formatNumber(monthlyUnits, language)} kWh`}
                 min={100}
                 max={3000}
                 step={50}
@@ -158,12 +158,12 @@ export default function SolarCalculator() {
           <div className="reveal-item rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Result label={t('calculator.recommendedSize')} value={`${result.recommendedSize.toFixed(1)} kWp`} highlight />
-              <Result label={t('calculator.investment')} value={`฿${formatNumber(result.investment)}`} highlight />
-              <Result label={t('calculator.monthlyProduction')} value={`${formatNumber(result.monthlyProduction)} kWh`} />
-              <Result label={t('calculator.usableSolar')} value={`${formatNumber(result.usableSolar)} kWh`} />
-              <Result label={t('calculator.baselineBill')} value={`฿${formatNumber(result.baselineBill)}`} />
-              <Result label={t('calculator.newBill')} value={`฿${formatNumber(result.newBill)}`} />
-              <Result label={t('calculator.monthlySavings')} value={`฿${formatNumber(result.monthlySavings)}`} highlight />
+              <Result label={t('calculator.investment')} value={`฿${formatNumber(result.investment, language)}`} highlight />
+              <Result label={t('calculator.monthlyProduction')} value={`${formatNumber(result.monthlyProduction, language)} kWh`} />
+              <Result label={t('calculator.usableSolar')} value={`${formatNumber(result.usableSolar, language)} kWh`} />
+              <Result label={t('calculator.baselineBill')} value={`฿${formatNumber(result.baselineBill, language)}`} />
+              <Result label={t('calculator.newBill')} value={`฿${formatNumber(result.newBill, language)}`} />
+              <Result label={t('calculator.monthlySavings')} value={`฿${formatNumber(result.monthlySavings, language)}`} highlight />
               <Result
                 label={t('calculator.payback')}
                 value={`${result.paybackYears.toFixed(1)} ${t('calculator.years')}`}

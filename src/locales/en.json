@@ -4,7 +4,15 @@
     "services": "Services",
     "portfolio": "Portfolio",
     "calculator": "Solar Calculator",
-    "contact": "Contact"
+    "contact": "Contact",
+    "mainNavigation": "Main navigation",
+    "logoLinkLabel": "TRP Powers Plus home",
+    "logoAlt": "TRP Powers Plus electrical and energy specialist",
+    "toggleMenu": "Toggle menu"
+  },
+  "language": {
+    "switchToThai": "Switch to Thai",
+    "switchToEnglish": "Switch to English"
   },
   "hero": {
     "eyebrow": "Complete electrical and energy solutions",
@@ -24,6 +32,7 @@
     "solar": "Solar Cell Installation",
     "electrical": "Electrical Systems",
     "consultation": "Free Consultation",
+    "maintenance": "Maintenance",
     "installation": "Installation & Maintenance",
     "items": [
       {
@@ -89,13 +98,21 @@
   "contact": {
     "title": "Contact Us",
     "description": "Contact us for free consultation",
+    "company": "Company Name",
     "name": "Your Name",
     "email": "Email",
     "message": "Message",
     "phone": "Phone",
+    "open": "Open",
+    "openPage": "Open Page",
+    "copy": "Copy",
+    "copied": "Copied",
     "submit": "Submit",
     "address": "Address",
-    "hours": "Business Hours"
+    "hours": "Business Hours",
+    "pagePreviewTitle": "Company Page",
+    "pagePreviewDescription": "View page details and latest updates from Facebook",
+    "mapTitle": "Office Map"
   },
   "calculator": {
     "title": "Preliminary Solar Sizing Calculator",
@@ -140,6 +157,13 @@
   "footer": {
     "copyright": "© 2024 TRP Powers Plus All Rights Reserved",
     "allRightsReserved": "All Rights Reserved",
-    "followUs": "Follow Us"
+    "followUs": "Follow Us",
+    "menu": "Menu",
+    "services": "Services",
+    "cookieSettings": "Cookie Settings",
+    "companySummary": "A professional electrical contractor, solar installer, and renewable energy service provider.",
+    "legal": "All rights reserved | TRP Powers Plus Co., Ltd.",
+    "tagline": "Electrical and solar installation | Free consultation | Complete service",
+    "brandStory": "TRP Powers Plus is an electrical and solar energy specialist providing consultation, site surveys, system design, installation, safety inspection, and after-handover care so homes, buildings, and businesses receive systems matched to real usage with clear documentation and accountable work standards."
   }
 }
