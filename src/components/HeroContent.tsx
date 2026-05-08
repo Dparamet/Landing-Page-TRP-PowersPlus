@@ -24,18 +24,18 @@ export default function HeroContent() {
         {t('hero.description')}
       </p>
 
-      <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+      <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
         <Link 
-          href="#contact" 
-          className="w-full rounded-lg bg-[#b85c00] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-100 transition-all duration-200 hover:-translate-y-1 hover:bg-[#8a4300] md:w-auto"
+          href="#calculator" 
+          className="w-full rounded-lg bg-[#b85c00] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-100 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-[#8a4300] hover:shadow-xl md:w-auto"
         >
-          {t('hero.cta')}
+          {t('nav.calculator')}
         </Link>
         <Link 
-          href="#services" 
-          className="w-full rounded-lg border-2 border-slate-200 bg-white/80 px-8 py-4 text-lg font-bold text-[#12345f] transition-all duration-200 hover:-translate-y-1 hover:border-[#f08a24] hover:bg-white hover:text-[#b85c00] md:w-auto"
+          href="#portfolio" 
+          className="w-full rounded-lg border-2 border-slate-200 bg-white/85 px-8 py-4 text-lg font-bold text-[#12345f] transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-[#f08a24] hover:bg-white hover:text-[#b85c00] md:w-auto"
         >
-          {t('services.title')}
+          {t('nav.portfolio')}
         </Link>
       </div>
 

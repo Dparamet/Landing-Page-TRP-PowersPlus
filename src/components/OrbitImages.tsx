@@ -109,15 +109,15 @@ function OrbitItem({
     >
       <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-md border border-white/20 bg-[#12345f]/60">
         <Image
-          src="/images/LogoTRP.webp"
-          alt="TRP Powers Plus"
+          src={project.coverImage.src}
+          alt={project.coverImage.alt[language]}
           fill
           sizes="220px"
           className="object-contain p-5"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#f08a24]/20 via-transparent to-[#1e4f8f]/30" />
       </div>
-      <p className="font-serif text-xl italic leading-none text-[#fff7ed]">{project.size}</p>
+      <p className="text-xl font-black leading-none text-[#fff7ed]">{project.systemSize}</p>
       <h3 className="mt-1 text-sm font-extrabold leading-tight">{project.title[language]}</h3>
       <p className="mt-1 text-xs font-semibold text-white/72">{project.category[language]}</p>
     </motion.article>

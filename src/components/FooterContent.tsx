@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCookieConsent } from '@/context/CookieConsentContext';
+import { companyProfile } from '@/content/site';
 
 export default function FooterContent() {
   const { t } = useLanguage();
@@ -24,7 +25,7 @@ export default function FooterContent() {
                 height={74}
                 className="h-auto w-40 object-contain"
               />
-              <h3 className="text-lg font-black text-[#12345f]">TRP Powers Plus</h3>
+              <h3 className="text-lg font-black text-[#12345f]">{companyProfile.name}</h3>
             </div>
             <p className="text-sm leading-relaxed">
               {t('footer.companySummary')}
@@ -63,9 +64,10 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#182230]">{t('contact.title')}</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="tel:+66012345678" className="transition hover:text-[#f08a24]">📞 +66 (0) 12-345-6789</a></li>
-              <li><a href="mailto:TRPPowersplus@gmail.com" className="transition hover:text-[#f08a24]">✉️ TRPPowersplus@gmail.com</a></li>
-              <li><a href="https://facebook.com/TRPPowersplus" target="_blank" rel="noopener noreferrer" className="transition hover:text-[#f08a24]">📘 Facebook</a></li>
+              <li><a href={`tel:${companyProfile.phoneHref}`} className="transition hover:text-[#f08a24]">☎ {companyProfile.phoneDisplay}</a></li>
+              <li><a href={`mailto:${companyProfile.email}`} className="transition hover:text-[#f08a24]">@ {companyProfile.email}</a></li>
+              <li><a href={companyProfile.lineUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#f08a24]">LINE {companyProfile.lineId}</a></li>
+              <li><a href={companyProfile.facebookUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#f08a24]">Facebook {companyProfile.facebookDisplay}</a></li>
             </ul>
           </div>
         </div>

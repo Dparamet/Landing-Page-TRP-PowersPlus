@@ -13,10 +13,7 @@ export default function Hero() {
   return (
     <>
       {/* Schema Markup สำหรับ SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-      />
+      <script type="application/ld+json">{JSON.stringify(schemaData)}</script>
 
       <section id="hero" className="relative flex min-h-[680px] w-full items-center justify-center overflow-hidden bg-white">
         <div className="absolute inset-0 z-0">

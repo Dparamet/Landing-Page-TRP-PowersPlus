@@ -1,361 +1,297 @@
-# TRP Powers Plus - Landing Page
- Demo:[Link](https://landing-page-trp-powers-plus.vercel.app/)
-## 📋 Overview
+# TRP Powers Plus Web
 
-**TRP Powers Plus** เป็นเว็บไซต์ Landing Page สำหรับบริษัทรับเหมาติดตั้งระบบไฟฟ้า และโซลาร์เซลล์ (Solar Cell Installation Service)
+เว็บไซต์ Landing Page สำหรับบริษัท TRP Powers Plus งานระบบไฟฟ้า โซลาร์เซลล์ และบริการประเมินเบื้องต้นสำหรับลูกค้าในประเทศไทย
 
-เว็บนี้สร้างขึ้นเพื่อ:
-- 📱 แสดงข้อมูลบริการของบริษัท
-- 💼 สร้างความเชื่อมั่นและมืออาชีพ
-- 📈 เพิ่ม SEO Ranking เพื่อการค้นหาออนไลน์
-- 🔗 เชื่อมต่อลูกค้ากับช่องทางติดต่อหลัก
+โปรเจกต์นี้ถูกจัดให้ส่งมอบต่อได้ง่าย: ข้อมูลธุรกิจและผลงานอยู่ในไฟล์ content กลาง, ข้อความภาษาไทย/อังกฤษอยู่ใน locale files, และมีคู่มือสำหรับคนที่ไม่เคยเขียนโปรแกรมมาก่อน
 
----
+## สารบัญ
 
-## 🛠️ Tech Stack
+- [สิ่งที่ต้องติดตั้งก่อน](#สิ่งที่ต้องติดตั้งก่อน)
+- [เริ่มใช้งานในเครื่อง](#เริ่มใช้งานในเครื่อง)
+- [คำสั่งทั้งหมด](#คำสั่งทั้งหมด)
+- [โครงสร้างโปรเจกต์](#โครงสร้างโปรเจกต์)
+- [แก้ข้อความ รูปภาพ และข้อมูลบริษัท](#แก้ข้อความ-รูปภาพ-และข้อมูลบริษัท)
+- [ระบบคำนวณโซลาร์เซลล์](#ระบบคำนวณโซลาร์เซลล์)
+- [การตรวจงานก่อนส่งมอบ](#การตรวจงานก่อนส่งมอบ)
+- [การ Build และ Deploy](#การ-build-และ-deploy)
+- [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
 
-- **Framework**: [Next.js 16.2.4](https://nextjs.org) (App Router)
-- **Language**: TypeScript
-- **Styling**: [Tailwind CSS](https://tailwindcss.com)
-- **Components**: React 19+
-- **Build Tool**: Turbopack
-- **Node Version**: 18.x or higher
+## สิ่งที่ต้องติดตั้งก่อน
 
----
+ติดตั้งโปรแกรมเหล่านี้ก่อนเริ่มงาน:
 
-## 📂 Project Structure
+- Node.js 20 ขึ้นไป แนะนำ Node.js 22
+- npm ซึ่งติดมากับ Node.js
+- Git
+- โปรแกรมแก้ไฟล์ เช่น VS Code
 
-```
-trp-powers-plus-web/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx          # Root layout + SEO metadata
-│   │   ├── page.tsx            # Main landing page
-│   │   ├── globals.css         # Global styles
-│   │   └── favicon.ico         # Favicon
-│   └── components/
-│       ├── Navbar.tsx          # Navigation bar with mobile menu
-│       ├── Hero.tsx            # Hero section with CTA
-│       ├── Services.tsx        # Services showcase
-│       ├── Portfolio.tsx       # Project portfolio
-│       ├── SolarCalculator.tsx # Solar system price calculator
-│       ├── Contact.tsx         # Contact information & map
-│       ├── FAQ.tsx             # Frequently asked questions
-│       └── Footer.tsx          # Footer with copyright
-├── public/
-│   ├── images/                 # Images (logo, hero banner, etc)
-│   └── ...
-├── package.json
-├── tsconfig.json
-├── next.config.ts
-├── tailwind.config.ts
-├── postcss.config.mjs
-└── README.md
+ตรวจเวอร์ชัน:
+
+```bash
+node --version
+npm --version
+git --version
 ```
 
----
+## เริ่มใช้งานในเครื่อง
 
-## 🚀 Getting Started
+1. เข้าโฟลเดอร์โปรเจกต์
 
-### Prerequisites
-- Node.js 18.x or higher
-- npm or yarn
+```bash
+cd "C:\Users\Acer\Desktop\Project My Future\trp-powers-plus\trp-powers-plus-web"
+```
 
-### Installation
+2. ติดตั้ง dependencies
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Dparamet/Landing-Page-TRP-PowersPlus.git
-   cd trp-powers-plus-web
-   ```
+```bash
+npm install
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+3. เปิดเว็บสำหรับพัฒนา
 
-3. **Set up environment variables** (if needed)
-   ```bash
-   cp .env.example .env.local
-   ```
-
-### Development
-
-**Run development server**
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-**Build for production**
+4. เปิดเว็บใน browser
+
+```text
+http://localhost:3000
+```
+
+ถ้า port 3000 ถูกใช้อยู่ ให้ใช้:
+
+```bash
+npm run dev -- -p 3001
+```
+
+แล้วเปิด:
+
+```text
+http://localhost:3001
+```
+
+## คำสั่งทั้งหมด
+
+| คำสั่ง | ใช้ทำอะไร |
+| --- | --- |
+| `npm install` | ติดตั้ง dependencies หลัง clone หรือรับโปรเจกต์มาใหม่ |
+| `npm run dev` | เปิดเว็บในโหมดพัฒนา |
+| `npm test` | ตรวจสูตรคำนวณ, โครงสร้างภาษา, และ path รูปภาพ |
+| `npm run lint` | ตรวจคุณภาพโค้ดและ accessibility พื้นฐาน |
+| `npm run build` | build static site สำหรับส่งขึ้น hosting |
+| `npm run start` | ใช้กับ Next server mode แต่โปรเจกต์นี้ตั้งค่า static export เป็นหลัก |
+
+## โครงสร้างโปรเจกต์
+
+```text
+trp-powers-plus-web/
+├── docs/
+│   ├── CONTENT_GUIDE.md       คู่มือแก้ข้อความและรูปภาพสำหรับผู้ดูแลเว็บ
+│   └── HANDOFF_SPEC.md        สเปกการจัดโครงสร้างเพื่อส่งมอบ
+├── public/
+│   └── images/
+│       ├── LogoTRP.webp       โลโก้หลัก
+│       └── portfolio/         ใส่รูปผลงานที่นี่
+├── src/
+│   ├── app/                   Next.js App Router, metadata, global CSS
+│   ├── components/            ส่วนประกอบ UI เช่น Hero, Portfolio, Calculator
+│   ├── content/
+│   │   └── site.ts            ข้อมูลบริษัท ช่องทางติดต่อ และผลงาน
+│   ├── context/               Language และ cookie consent providers
+│   ├── data/                  compatibility export สำหรับไฟล์เก่า
+│   ├── lib/                   logic ใช้ซ้ำ เช่น solar estimator
+│   └── locales/               ข้อความภาษาไทยและอังกฤษ
+├── tests/                     test files
+├── next.config.ts             ตั้งค่า static export และ image mode
+├── package.json               scripts และ dependencies
+└── README.md                  คู่มือหลัก
+```
+
+## แก้ข้อความ รูปภาพ และข้อมูลบริษัท
+
+สำหรับผู้ดูแลที่ไม่เขียนโปรแกรม ให้เริ่มจากคู่มือนี้:
+
+[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
+
+ไฟล์ที่ต้องรู้มี 3 กลุ่ม:
+
+| สิ่งที่จะแก้ | ไฟล์หรือโฟลเดอร์ |
+| --- | --- |
+| ข้อความภาษาไทย | `src/locales/th.json` |
+| ข้อความภาษาอังกฤษ | `src/locales/en.json` |
+| เบอร์โทร อีเมล Line Facebook แผนที่ | `src/content/site.ts` |
+| รายการผลงาน | `src/content/site.ts` |
+| รูปผลงาน | `public/images/portfolio/` |
+| โลโก้ | `public/images/LogoTRP.webp` |
+
+หลังแก้ทุกครั้งให้รัน:
+
+```bash
+npm test
+npm run build
+```
+
+### วิธีเพิ่มรูปผลงานแบบสั้น
+
+1. วางรูปใน `public/images/portfolio/`
+2. ตั้งชื่อไฟล์เป็นภาษาอังกฤษ ไม่มีเว้นวรรค เช่น `factory-solar.webp`
+3. เปิด `src/content/site.ts`
+4. หา project ที่ต้องการแก้
+5. เปลี่ยน `coverImage.src` หรือรูปใน `gallery` เป็น path ของรูปใหม่
+
+ตัวอย่าง:
+
+```ts
+coverImage: {
+  src: '/images/portfolio/factory-solar.webp',
+  alt: {
+    th: 'งานติดตั้งโซลาร์เซลล์โรงงาน',
+    en: 'Factory solar installation project',
+  },
+},
+```
+
+ถ้าพิมพ์ชื่อไฟล์ผิด `npm test` จะฟ้องว่า image file is missing
+
+### วิธีเพิ่มผลงานใหม่แบบสั้น
+
+เปิด `src/content/site.ts` แล้วเพิ่ม object ใหม่ใน `portfolioProjects`
+
+สิ่งที่ต้องกรอก:
+
+- `title`: ชื่อผลงานไทย/อังกฤษ
+- `categoryKey`: ประเภทสำหรับปุ่มกรอง เช่น `residential`, `factory`, `business`, `agriculture`
+- `category`: ประเภทงานไทย/อังกฤษ
+- `description`: คำอธิบายไทย/อังกฤษ
+- `systemType`: ประเภทระบบ เช่น ออนกริด หรือ ไฮบริด
+- `systemSize`: ขนาดงาน เช่น `10 kWp`
+- `monthlyProductionKwh`: ผลิตไฟต่อเดือนโดยประมาณ
+- `monthlySavingsBaht`: ค่าไฟที่ลดได้ต่อเดือนโดยประมาณ
+- `location`: พื้นที่ไทย/อังกฤษ
+- `province`: จังหวัดหรือพื้นที่บริการ
+- `accent`: ใช้ได้แค่ `orange` หรือ `blue`
+- `coverImage`: รูปหลักของผลงาน
+- `gallery`: รูปก่อนติดตั้ง ระหว่างติดตั้ง และหลังติดตั้ง
+
+## ระบบคำนวณโซลาร์เซลล์
+
+ไฟล์หลัก:
+
+- UI: `src/components/SolarCalculator.tsx`
+- สูตรคำนวณ: `src/lib/solarEstimator.ts`
+- Test: `tests/solarEstimator.test.mjs`
+
+ระบบคำนวณตอนนี้ใช้:
+
+- ค่าไฟบ้านแบบขั้นบันได
+- ค่า Ft `0.1623 บาท/หน่วย`
+- VAT 7%
+- ค่าผลิตไฟเฉลี่ยตามสภาพหลังคา `105 / 120 / 135 kWh ต่อ kWp ต่อเดือน`
+- ปัดขนาดติดตั้งเป็นขั้น `0.5 kWp`
+- แยก On-grid และ Hybrid
+
+ก่อนเปลี่ยนค่าไฟหรือสูตร ให้แก้ test ใน `tests/solarEstimator.test.mjs` ให้สะท้อนพฤติกรรมใหม่ แล้วรัน:
+
+```bash
+npm test
+```
+
+## การตรวจงานก่อนส่งมอบ
+
+รันทุกคำสั่งนี้ก่อนส่งงาน:
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
+ผลที่ต้องการ:
+
+- `npm test`: ผ่านทั้งหมด
+- `npm run lint`: ไม่มี error
+- `npm run build`: build สำเร็จและสร้างไฟล์ใน `out/`
+
+ห้ามส่งงานถ้า build ไม่ผ่าน
+
+## การ Build และ Deploy
+
+โปรเจกต์นี้ตั้งค่า static export ใน `next.config.ts`
+
+Build:
+
 ```bash
 npm run build
 ```
 
-**Start production server**
-```bash
-npm run start
+ไฟล์เว็บสำหรับ deploy จะอยู่ใน:
+
+```text
+out/
 ```
 
-**Run linter**
+นำโฟลเดอร์ `out/` ไปใช้กับ static hosting ได้ เช่น GitHub Pages, Netlify, Vercel static output หรือ hosting ที่รองรับไฟล์ HTML/CSS/JS
+
+## แก้ปัญหาที่พบบ่อย
+
+### เปิด dev server ไม่ได้ เพราะ port 3000 ถูกใช้
+
 ```bash
-npm run lint
+npm run dev -- -p 3001
 ```
 
----
+### รูปผลงานไม่ขึ้น
 
-## 📋 Available Scripts
+ตรวจ 3 จุด:
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server (localhost:3000) |
-| `npm run build` | Build optimized production bundle |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint to check code quality |
+1. รูปอยู่ใน `public/images/portfolio/` หรือไม่
+2. ชื่อไฟล์ตรงกับ `coverImage.src` หรือ `gallery[].src` ใน `src/content/site.ts` หรือไม่
+3. path ขึ้นต้นด้วย `/images/portfolio/` หรือไม่
 
----
+จากนั้นรัน:
 
-## 🎨 Key Components
-
-### 1. **Navbar** (`Navbar.tsx`)
-- Sticky navigation with mobile hamburger menu
-- Smooth scrolling to sections
-- CTA button for free estimation
-- Responsive design (mobile/tablet/desktop)
-
-### 2. **Hero Section** (`Hero.tsx`)
-- Full-width background image with overlay
-- Compelling headline with brand colors
-- Trust signals (experience, warranty, etc)
-- Dual CTA buttons
-
-### 3. **Services** (`Services.tsx`)
-- Service showcase cards
-- Icons/visuals for each service
-- Responsive grid layout
-
-### 4. **Portfolio** (`Portfolio.tsx`)
-- Project gallery showcasing completed work
-- Project details and images
-- Filter/category options
-
-### 5. **Solar Calculator** (`SolarCalculator.tsx`)
-- Interactive tool to estimate costs
-- Real-time calculations
-- User-friendly interface
-
-### 6. **Contact Section** (`Contact.tsx`)
-- Clickable contact links (phone, email, social media)
-- Embedded Google Map
-- Support multiple channels
-
-### 7. **FAQ** (`FAQ.tsx`)
-- Accordion-style frequently asked questions
-- 7+ common customer questions
-- Expandable answers with smooth animations
-
-### 8. **Footer** (`Footer.tsx`)
-- Company info and links
-- Quick navigation
-- Services list
-- Contact information
-- Copyright notice with current year
-
----
-
-## 🔍 SEO & Performance Features
-
-✅ **SEO Optimized**
-- Meta tags (title, description, keywords)
-- Open Graph for social sharing
-- Language set to Thai (lang="th")
-- Canonical URLs
-- Schema.org structured data (LocalBusiness)
-- Semantic HTML with proper heading hierarchy
-
-✅ **Performance**
-- Image optimization with Next.js Image component
-- Code splitting and lazy loading
-- CSS optimization with Tailwind CSS
-- Static site generation where possible
-- Responsive design for all devices
-
-✅ **Accessibility**
-- ARIA labels and semantic HTML
-- Keyboard navigation support
-- Color contrast compliance
-- Alt text for all images
-
----
-
-## 📱 Responsive Design
-
-- **Mobile**: 320px and up
-- **Tablet**: 768px and up (md breakpoint)
-- **Desktop**: 1024px and up (lg breakpoint)
-
-All components tested on major browsers and devices.
-
----
-
-## 🔧 Development Guidelines
-
-### Code Style
-- Use TypeScript for type safety
-- Follow React component best practices
-- Use Tailwind CSS utility classes
-- Keep components small and reusable
-- Add comments for complex logic
-
-### Component Structure
-```tsx
-'use client';  // Add if using client-side features
-
-import { useState } from 'react';
-
-export default function ComponentName() {
-  // Component logic
-  
-  return (
-    <section className="py-20 bg-white">
-      {/* Content */}
-    </section>
-  );
-}
+```bash
+npm test
 ```
 
-### Naming Conventions
-- **Components**: PascalCase (e.g., `Navbar.tsx`)
-- **Files**: PascalCase for components, lowercase for utilities
-- **CSS Classes**: kebab-case with Tailwind utilities
-- **Variables/Functions**: camelCase
+### แก้ภาษาแล้ว test fail
 
-### Commit Messages
-- Use descriptive, clear messages
-- Format: `type(scope): description`
-  - Example: `feat(navbar): add mobile menu`
-  - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`
+แปลว่า `src/locales/th.json` และ `src/locales/en.json` มี key ไม่ตรงกัน
 
----
+วิธีแก้:
 
-## 🌳 Git Workflow
+1. ดูข้อความ error จาก `npm test`
+2. เพิ่ม key ที่หายไปในอีกภาษา
+3. อย่าลืม comma และเครื่องหมายคำพูดใน JSON
 
-### Branches
-- `main` - Production ready code
-- `dev` - Development branch
-- `feat/feature-name` - Feature branches
-- `fix/bug-name` - Bug fix branches
+### Build fail หลังรับโปรเจกต์มาใหม่
 
-### Creating a Feature
+ลบ dependencies แล้วติดตั้งใหม่:
+
 ```bash
-# Create feature branch from dev
-git checkout dev
-git pull origin dev
-git checkout -b feat/your-feature-name
-
-# Make changes and commit
-git add .
-git commit -m "feat(component): add awesome feature"
-
-# Push to remote
-git push -u origin feat/your-feature-name
-
-# Create Pull Request on GitHub
-```
-
----
-
-## 🚢 Deployment
-
-### Deploy to Vercel (Recommended)
-1. Push code to GitHub
-2. Connect repo to Vercel dashboard
-3. Configure environment variables
-4. Deploy with one click
-
-### Deploy to Other Platforms
-- Follow Next.js deployment docs: https://nextjs.org/docs/app/building-your-application/deploying
-
----
-
-## 📝 Content Updates
-
-### Update Company Info
-- Edit phone/email in `Contact.tsx` and `Footer.tsx`
-- Update social media links
-- Modify address in map embed
-
-### Update Services
-- Edit `Services.tsx` component
-- Add/remove service cards
-- Update descriptions
-
-### Update Portfolio
-- Add projects to `Portfolio.tsx`
-- Upload images to `public/images/`
-- Update project details and links
-
-### Update FAQ
-- Add/remove questions in `FAQ.tsx`
-- Update answers with latest info
-- Keep questions relevant to customers
-
----
-
-## 🐛 Troubleshooting
-
-### Build fails
-```bash
-# Clear cache and reinstall
-rm -rf node_modules .next
+Remove-Item -Recurse -Force node_modules
 npm install
 npm run build
 ```
 
-### Port 3000 already in use
-```bash
-npm run dev -- -p 3001  # Use different port
-```
+## ข้อควรระวัง
 
-### TypeScript errors
-- Check `tsconfig.json`
-- Run `npm run lint` to identify issues
-- Update types if needed
+- อย่าแก้ไฟล์ใน `.next/` หรือ `out/` เพราะเป็นไฟล์ที่ระบบสร้างใหม่เอง
+- อย่า commit password, token, API key หรือข้อมูลลับ
+- อย่าลบ tests เพื่อให้คำสั่งผ่าน
+- ถ้าจะเปลี่ยนสูตรค่าไฟ ให้แก้ test พร้อมกันเสมอ
 
----
+## ข้อมูลอ้างอิงเพิ่มเติม
 
-## 📞 Support & Contact
-
-**For Development Issues:**
-- Create an issue on GitHub
-- Contact development team
-
-**For Business Inquiries:**
-- Phone: +66 (0) 12-345-6789
-- Email: TRPPowersplus@gmail.com
-- Website: [trppowersplus.com](https://trppowersplus.com)
-
----
-
-## 📜 License
-
-This is a **private repository** for TRP Powers Plus development team only.
-All rights reserved © 2026 TRP Powers Plus
-
----
-
-## 📚 Useful Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
+- [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
+- [docs/HANDOFF_SPEC.md](docs/HANDOFF_SPEC.md)
+- [Next.js Docs](https://nextjs.org/docs)
+- [React Docs](https://react.dev)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
-- [React Documentation](https://react.dev)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs)
 
----
+## สถานะล่าสุด
 
-**Last Updated**: May 2026
-**Maintained by**: Outsource (D paramet)
-
-Contract old Dev : Fackbook:D paramet
-Contract old Dev : Line:Litkungzaza
-
+- Last updated: May 2026
+- Maintained for: TRP Powers Plus
+- Project type: Static Next.js landing page
