@@ -1,5 +1,5 @@
 # TRP Powers Plus - Landing Page
-
+ Demo:[Link](https://landing-page-trp-powers-plus.vercel.app/)
 ## 📋 Overview
 
 **TRP Powers Plus** เป็นเว็บไซต์ Landing Page สำหรับบริษัทรับเหมาติดตั้งระบบไฟฟ้า และโซลาร์เซลล์ (Solar Cell Installation Service)
@@ -354,5 +354,8 @@ All rights reserved © 2026 TRP Powers Plus
 ---
 
 **Last Updated**: May 2026
-**Maintained by**: TRP Powers Plus Development Team
+**Maintained by**: Outsource (D paramet)
+
+Contract old Dev : Fackbook:D paramet
+Contract old Dev : Line:Litkungzaza
 

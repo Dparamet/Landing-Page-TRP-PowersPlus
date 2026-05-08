@@ -4,7 +4,15 @@
     "services": "Services",
     "portfolio": "Portfolio",
     "calculator": "Solar Calculator",
-    "contact": "Contact"
+    "contact": "Contact",
+    "mainNavigation": "Main navigation",
+    "logoLinkLabel": "TRP Powers Plus home",
+    "logoAlt": "TRP Powers Plus electrical and energy specialist",
+    "toggleMenu": "Toggle menu"
+  },
+  "language": {
+    "switchToThai": "Switch to Thai",
+    "switchToEnglish": "Switch to English"
   },
   "hero": {
     "eyebrow": "Complete electrical and energy solutions",
@@ -24,6 +32,7 @@
     "solar": "Solar Cell Installation",
     "electrical": "Electrical Systems",
     "consultation": "Free Consultation",
+    "maintenance": "Maintenance",
     "installation": "Installation & Maintenance",
     "items": [
       {
@@ -89,17 +98,26 @@
   "contact": {
     "title": "Contact Us",
     "description": "Contact us for free consultation",
+    "company": "Company Name",
     "name": "Your Name",
     "email": "Email",
     "message": "Message",
     "phone": "Phone",
+    "open": "Open",
+    "openPage": "Open Page",
+    "copy": "Copy",
+    "copied": "Copied",
     "submit": "Submit",
     "address": "Address",
-    "hours": "Business Hours"
+    "hours": "Business Hours",
+    "pagePreviewTitle": "Company Page",
+    "pagePreviewDescription": "View page details and latest updates from Facebook",
+    "mapTitle": "Office Map"
   },
   "calculator": {
     "title": "Preliminary Solar Sizing Calculator",
-    "subtitle": "Enter monthly electricity usage and daytime usage share to estimate system size, investment, and payback.",
+    "subtitle": "Use bill usage, daytime consumption, and roof conditions to estimate system size, monthly production, investment, and payback for Thailand.",
+    "inputTitle": "Required inputs",
     "monthlyUsage": "Monthly electricity usage",
     "daytimeUsage": "Daytime usage",
     "systemType": "System type",
@@ -114,6 +132,17 @@
     "investment": "Estimated investment",
     "payback": "Estimated payback",
     "years": "years",
+    "month": "month",
+    "roofProfile": "Sun and roof condition",
+    "roof": {
+      "conservative": "Some shade",
+      "standard": "Typical roof",
+      "strong": "Very strong sun"
+    },
+    "decisionSummary": "Decision summary",
+    "saveAbout": "save about",
+    "afterInstallBill": "Estimated bill after install",
+    "billReduction": "about",
     "formulaTitle": "Calculation method",
     "formulaSolar": "System size = monthly kWh × daytime usage share ÷ 120",
     "formulaSavings": "Monthly savings = current bill - bill after usable solar energy is deducted",
@@ -121,7 +150,7 @@
     "onGridDescription": "Best for homes or businesses with strong daytime usage. Energy is produced and consumed immediately to reduce the bill.",
     "hybridDescription": "Best for sites that need backup power or critical loads. Batteries increase flexibility and investment cost.",
     "assumptionsTitle": "Assumptions",
-    "assumptions": "Calculated with residential progressive tariffs, Ft 0.1623 THB/kWh, 7% VAT, and average production of 120 kWh/month per 1 kWp. Actual results depend on roof direction, shade, equipment, and usage behavior.",
+    "assumptionsPrefix": "Calculated with residential progressive tariffs and average production of",
     "disclaimer": "This is a preliminary estimate only. A site survey and real electricity bill are required before issuing a quotation."
   },
   "cookie": {
@@ -140,6 +169,13 @@
   "footer": {
     "copyright": "© 2024 TRP Powers Plus All Rights Reserved",
     "allRightsReserved": "All Rights Reserved",
-    "followUs": "Follow Us"
+    "followUs": "Follow Us",
+    "menu": "Menu",
+    "services": "Services",
+    "cookieSettings": "Cookie Settings",
+    "companySummary": "A professional electrical contractor, solar installer, and renewable energy service provider.",
+    "legal": "All rights reserved | TRP Powers Plus Co., Ltd.",
+    "tagline": "Electrical and solar installation | Free consultation | Complete service",
+    "brandStory": "TRP Powers Plus is an electrical and solar energy specialist providing consultation, site surveys, system design, installation, safety inspection, and after-handover care so homes, buildings, and businesses receive systems matched to real usage with clear documentation and accountable work standards."
   }
 }

@@ -12,6 +12,8 @@ export type PortfolioProject = {
   accent: 'orange' | 'blue';
 };
 
+export { calculatorAssumptions } from '@/lib/solarEstimator';
+
 export const portfolioProjects: PortfolioProject[] = [
   {
     title: { th: 'โรงงานผลิตชิ้นส่วน', en: 'Manufacturing Facility' },
@@ -59,12 +61,3 @@ export const portfolioProjects: PortfolioProject[] = [
   },
 ];
 
-export const calculatorAssumptions = {
-  ftRate: 0.1623,
-  vatRate: 0.07,
-  monthlyYieldPerKwp: 120,
-  onGridCostPerKwp: 45000,
-  hybridCostPerKwp: 65000,
-  lowUsageServiceCharge: 8.19,
-  normalServiceCharge: 24.62,
-};
