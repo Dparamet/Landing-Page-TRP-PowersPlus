@@ -116,7 +116,8 @@
   },
   "calculator": {
     "title": "Preliminary Solar Sizing Calculator",
-    "subtitle": "Enter monthly electricity usage and daytime usage share to estimate system size, investment, and payback.",
+    "subtitle": "Use bill usage, daytime consumption, and roof conditions to estimate system size, monthly production, investment, and payback for Thailand.",
+    "inputTitle": "Required inputs",
     "monthlyUsage": "Monthly electricity usage",
     "daytimeUsage": "Daytime usage",
     "systemType": "System type",
@@ -131,6 +132,17 @@
     "investment": "Estimated investment",
     "payback": "Estimated payback",
     "years": "years",
+    "month": "month",
+    "roofProfile": "Sun and roof condition",
+    "roof": {
+      "conservative": "Some shade",
+      "standard": "Typical roof",
+      "strong": "Very strong sun"
+    },
+    "decisionSummary": "Decision summary",
+    "saveAbout": "save about",
+    "afterInstallBill": "Estimated bill after install",
+    "billReduction": "about",
     "formulaTitle": "Calculation method",
     "formulaSolar": "System size = monthly kWh × daytime usage share ÷ 120",
     "formulaSavings": "Monthly savings = current bill - bill after usable solar energy is deducted",
@@ -138,7 +150,7 @@
     "onGridDescription": "Best for homes or businesses with strong daytime usage. Energy is produced and consumed immediately to reduce the bill.",
     "hybridDescription": "Best for sites that need backup power or critical loads. Batteries increase flexibility and investment cost.",
     "assumptionsTitle": "Assumptions",
-    "assumptions": "Calculated with residential progressive tariffs, Ft 0.1623 THB/kWh, 7% VAT, and average production of 120 kWh/month per 1 kWp. Actual results depend on roof direction, shade, equipment, and usage behavior.",
+    "assumptionsPrefix": "Calculated with residential progressive tariffs and average production of",
     "disclaimer": "This is a preliminary estimate only. A site survey and real electricity bill are required before issuing a quotation."
   },
   "cookie": {
