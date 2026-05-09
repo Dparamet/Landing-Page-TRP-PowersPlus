@@ -83,12 +83,31 @@ html {
   z-index: 1;
 }
 
-.site-background .bg-white {
-  background-color: rgba(255, 255, 255, 0.78);
+.site-background :where(section, footer) {
+  background-color: transparent;
 }
 
-.site-background .bg-\[\#f8fafc\] {
-  background-color: rgba(248, 250, 252, 0.74);
+.site-background :where(
+  .bg-white,
+  .bg-\[\#f8fafc\],
+  .bg-\[\#fff7ed\],
+  .bg-\[\#f4f8ff\],
+  .bg-\[\#eef4ff\]
+) {
+  background-color: rgba(255, 255, 255, 0.68);
+}
+
+.site-background :where(.bg-white\/56, .bg-white\/70, .bg-white\/74, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95) {
+  background-color: rgba(255, 255, 255, 0.62);
+}
+
+.site-background :where(.border-slate-200, .border-orange-100, .border-blue-100, .border-orange-200, .border-orange-200\/70) {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.site-background :where(.border-t, .border-b) {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
 }
 
 .liquid-glass {

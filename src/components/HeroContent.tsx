@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -9,6 +10,18 @@ export default function HeroContent() {
   return (
     <div className="relative z-10 mx-auto w-full max-w-5xl px-4 text-center">
       <div className="liquid-glass mx-auto rounded-[1.75rem] px-5 py-8 sm:px-8 md:px-12 md:py-12">
+        <div className="mx-auto mb-6 flex h-20 w-56 items-center justify-center rounded-2xl bg-white/72 px-5 shadow-sm backdrop-blur md:h-24 md:w-72">
+          <Image
+            src="/images/LogoTRP.webp"
+            alt="TRP Powers Plus"
+            width={288}
+            height={108}
+            priority
+            className="h-full w-full object-contain"
+            sizes="(min-width: 768px) 288px, 224px"
+          />
+        </div>
+
         <p className="mb-4 inline-flex rounded-full border border-orange-200/70 bg-white/70 px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#b85c00] shadow-sm backdrop-blur">
           {t('hero.eyebrow')}
         </p>
