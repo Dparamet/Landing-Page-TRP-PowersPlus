@@ -121,6 +121,7 @@ trp-powers-plus-web/
 | ข้อความภาษาไทย | `src/locales/th.json` |
 | ข้อความภาษาอังกฤษ | `src/locales/en.json` |
 | เบอร์โทร อีเมล Line Facebook แผนที่ | `src/content/site.ts` |
+| รายการบริการและตัวเลือกประเภทงาน | `src/content/site.ts` |
 | รายการผลงาน | `src/content/site.ts` |
 | รูปผลงาน | `public/images/portfolio/` |
 | โลโก้ | `public/images/LogoTRP.webp` |
@@ -161,18 +162,31 @@ coverImage: {
 สิ่งที่ต้องกรอก:
 
 - `title`: ชื่อผลงานไทย/อังกฤษ
-- `categoryKey`: ประเภทสำหรับปุ่มกรอง เช่น `residential`, `factory`, `business`, `agriculture`
+- `categoryKey`: ประเภทสำหรับปุ่มกรอง ต้องตรงกับ `serviceCategories.key`
 - `category`: ประเภทงานไทย/อังกฤษ
 - `description`: คำอธิบายไทย/อังกฤษ
-- `systemType`: ประเภทระบบ เช่น ออนกริด หรือ ไฮบริด
-- `systemSize`: ขนาดงาน เช่น `10 kWp`
-- `monthlyProductionKwh`: ผลิตไฟต่อเดือนโดยประมาณ
-- `monthlySavingsBaht`: ค่าไฟที่ลดได้ต่อเดือนโดยประมาณ
+- `systemType`: ประเภทระบบหรืองาน เช่น ออนกริด, ระบบไฟฟ้าอาคาร, ตู้ควบคุม
+- `metrics`: ข้อมูลตัดสินใจของงานนั้น เช่น ขนาดระบบ, ขอบเขตงาน, โหลดไฟ, ผลประหยัด, ผลลัพธ์
 - `location`: พื้นที่ไทย/อังกฤษ
 - `province`: จังหวัดหรือพื้นที่บริการ
 - `accent`: ใช้ได้แค่ `orange` หรือ `blue`
 - `coverImage`: รูปหลักของผลงาน
 - `gallery`: รูปก่อนติดตั้ง ระหว่างติดตั้ง และหลังติดตั้ง
+
+### วิธีเพิ่มหรือแก้บริการแบบสั้น
+
+เปิด `src/content/site.ts` แล้วแก้รายการใน `serviceCategories`
+
+สิ่งที่ต้องกรอก:
+
+- `key`: รหัสบริการ เช่น `residential`, `building`, `factory`, `solar`, `maintenance`, `controlPanel`
+- `title` และ `shortTitle`: ชื่อบริการเต็มและชื่อสั้น
+- `description`: อธิบายว่ารับงานอะไร
+- `bestFor`: เหมาะกับลูกค้าแบบไหน
+- `includes`: งานที่รับอย่างน้อย 3 รายการ
+- `prepare`: ข้อมูลที่ลูกค้าควรเตรียมอย่างน้อย 3 รายการ
+- `lineMessage`: ข้อความตั้งต้นสำหรับให้ลูกค้าส่งใน LINE
+- `accent`: ใช้ `orange` หรือ `blue`
 
 ## ระบบคำนวณโซลาร์เซลล์
 

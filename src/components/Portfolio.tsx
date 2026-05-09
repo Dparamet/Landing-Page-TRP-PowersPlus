@@ -1,17 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { portfolioProjects, type PortfolioCategory, type PortfolioProject } from '@/content/site';
+import {
+  companyProfile,
+  portfolioProjects,
+  serviceCategories,
+  type PortfolioCategory,
+  type PortfolioProject,
+} from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
 
 const categoryFilters: Array<{ key: 'all' | PortfolioCategory; label: { th: string; en: string } }> = [
   { key: 'all', label: { th: 'ทั้งหมด', en: 'All' } },
-  { key: 'residential', label: { th: 'บ้านพักอาศัย', en: 'Residential' } },
-  { key: 'factory', label: { th: 'โรงงาน', en: 'Factory' } },
-  { key: 'business', label: { th: 'ธุรกิจ', en: 'Business' } },
-  { key: 'agriculture', label: { th: 'เกษตร', en: 'Agriculture' } },
+  ...serviceCategories.map((service) => ({ key: service.key, label: service.shortTitle })),
 ];
 
 export default function Portfolio() {
@@ -34,7 +36,7 @@ export default function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className="section-reveal overflow-hidden bg-[#f8fafc] py-20 text-[#182230]">
+    <section id="portfolio" className="section-reveal overflow-hidden bg-transparent py-20 text-[#182230]">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
@@ -94,7 +96,7 @@ function PortfolioCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const borderClass = selected ? 'border-[#f08a24] bg-white shadow-lg shadow-orange-100' : 'border-slate-200 bg-white';
 
   return (
@@ -123,8 +125,9 @@ function PortfolioCard({
         <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">{project.description[language]}</p>
 
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-          <Metric label={t('portfolio.size')} value={project.systemSize} />
-          <Metric label={t('portfolio.production')} value={`${formatNumber(project.monthlyProductionKwh)} kWh`} />
+          {project.metrics.slice(0, 2).map((metric) => (
+            <Metric key={metric.label.en} label={metric.label[language]} value={metric.value[language]} highlight={metric.highlight} />
+          ))}
         </dl>
       </div>
     </button>
@@ -133,6 +136,8 @@ function PortfolioCard({
 
 function ProjectDetail({ project }: { project: PortfolioProject }) {
   const { t, language } = useLanguage();
+  const relatedService = serviceCategories.find((service) => service.key === project.categoryKey);
+  const lineMessage = relatedService?.lineMessage[language] ?? t('hero.cta');
 
   return (
     <article className="rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -147,20 +152,25 @@ function ProjectDetail({ project }: { project: PortfolioProject }) {
               {project.description[language]}
             </p>
           </div>
-          <Link
-            href="#contact"
+          <a
+            href={companyProfile.lineUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-md shadow-orange-100 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-lg active:translate-y-0"
           >
             {t('portfolio.consultSimilar')}
-          </Link>
+          </a>
         </div>
+        <p className="mt-4 rounded-lg bg-[#fff7ed] px-3 py-2 text-sm font-semibold text-[#7a3b00]">
+          {t('portfolio.linePrompt')} {lineMessage}
+        </p>
       </div>
 
       <div className="grid gap-5 p-5 sm:p-6">
         <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Metric label={t('portfolio.size')} value={project.systemSize} highlight />
-          <Metric label={t('portfolio.production')} value={`${formatNumber(project.monthlyProductionKwh)} kWh`} />
-          <Metric label={t('portfolio.savings')} value={`฿${formatNumber(project.monthlySavingsBaht)}`} highlight />
+          {project.metrics.map((metric) => (
+            <Metric key={metric.label.en} label={metric.label[language]} value={metric.value[language]} highlight={metric.highlight} />
+          ))}
           <Metric label={t('portfolio.location')} value={project.province[language]} />
         </dl>
 
@@ -196,9 +206,4 @@ function Metric({ label, value, highlight = false }: { label: string; value: str
       </dd>
     </div>
   );
-}
-
-function formatNumber(value: number) {
-  if (value === 0) return '-';
-  return new Intl.NumberFormat('th-TH', { maximumFractionDigits: 0 }).format(value);
 }

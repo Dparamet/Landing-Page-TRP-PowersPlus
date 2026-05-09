@@ -27,32 +27,31 @@
     }
   },
   "services": {
+    "eyebrow": "Electrical Contractor Services",
     "title": "Our Services",
-    "description": "Choose the right service for your site, budget, and electricity usage pattern",
+    "description": "Electrical work for homes, buildings, factories, control panels, solar systems, and existing-system inspections, starting from real site information before quotation.",
     "solar": "Solar Cell Installation",
     "electrical": "Electrical Systems",
     "consultation": "Free Consultation",
     "maintenance": "Maintenance",
     "installation": "Installation & Maintenance",
-    "items": [
-      {
-        "title": "On-grid solar systems",
-        "description": "Size the system from daytime electricity use to reduce bills without batteries."
-      },
-      {
-        "title": "Hybrid solar systems",
-        "description": "Add battery storage for sites that need backup power or more nighttime usage."
-      },
-      {
-        "title": "Building electrical systems",
-        "description": "Wiring, control panels, electrical loads, and safety checks before operation."
-      }
-    ]
+    "checkFit": "See what to prepare"
+  },
+  "serviceSelector": {
+    "eyebrow": "Choose Work Type",
+    "title": "Pick the job type and prepare the right details",
+    "description": "Select a work type to see who it fits, what we handle, and what information to prepare before messaging LINE for a faster assessment.",
+    "tabLabel": "Select service type",
+    "bestFor": "Best for",
+    "includes": "Included work",
+    "prepare": "Prepare these details",
+    "linePrompt": "Suggested LINE message",
+    "lineCta": "Message us on LINE"
   },
   "portfolio": {
     "title": "Installation work that makes decisions easier",
     "eyebrow": "Our Work",
-    "description": "Filter by project type and scan system size, monthly production, estimated bill reduction, and before, during, and after images from one editable content file.",
+    "description": "Filter by work type and scan decision details that fit the job, such as scope, loads, controls, savings, or inspection reports.",
     "viewMore": "View Project",
     "previous": "Previous",
     "next": "Next",
@@ -62,7 +61,8 @@
     "savings": "Monthly Savings",
     "location": "Area",
     "filterLabel": "Filter projects by type",
-    "consultSimilar": "Discuss a similar project"
+    "consultSimilar": "Discuss a similar project",
+    "linePrompt": "Suggested message:"
   },
   "process": {
     "eyebrow": "Work Process",

@@ -23,8 +23,7 @@ describe('locale files', () => {
     assert.deepEqual(collectShape(th).sort(), collectShape(en).sort());
   });
 
-  it('keep translated service and FAQ lists aligned by item count', () => {
-    assert.equal(th.services.items.length, en.services.items.length);
+  it('keep translated FAQ lists aligned by item count', () => {
     assert.equal(th.faq.questions.length, en.faq.questions.length);
   });
 });

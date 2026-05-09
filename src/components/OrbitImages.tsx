@@ -117,7 +117,7 @@ function OrbitItem({
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#f08a24]/20 via-transparent to-[#1e4f8f]/30" />
       </div>
-      <p className="text-xl font-black leading-none text-[#fff7ed]">{project.systemSize}</p>
+      <p className="text-xl font-black leading-none text-[#fff7ed]">{project.metrics[0]?.value[language]}</p>
       <h3 className="mt-1 text-sm font-extrabold leading-tight">{project.title[language]}</h3>
       <p className="mt-1 text-xs font-semibold text-white/72">{project.category[language]}</p>
     </motion.article>

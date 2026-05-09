@@ -13,6 +13,21 @@ export const metadata: Metadata = {
     description: "บริการติดตั้งระบบไฟฟ้า โซลาร์เซลล์ ประเมินราคาฟรี รับประกัน 5 ปี",
     type: "website",
     locale: "th_TH",
+    images: [
+      {
+        url: "/images/LogoTRP.webp",
+        width: 1024,
+        height: 1024,
+        alt: "TRP Powers Plus logo",
+      },
+    ],
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
   },
   robots: "index, follow",
   alternates: {
@@ -33,7 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className="scroll-smooth">
-      <body className="bg-white text-gray-900">
+      <body className="bg-[oklch(99%_0.006_78)] text-gray-900">
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

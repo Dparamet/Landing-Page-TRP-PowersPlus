@@ -1,5 +1,5 @@
 export { calculatorAssumptions } from '@/lib/solarEstimator';
-export { companyProfile, portfolioProjects } from '@/content/site';
+export { companyProfile, portfolioProjects, serviceCategories } from '@/content/site';
 export type {
   LocalizedText,
   ManagedImage,
@@ -7,4 +7,7 @@ export type {
   PortfolioProject,
   PortfolioStage,
   PortfolioStageImage,
+  PortfolioMetric,
+  ServiceCategory,
+  ServiceCategoryKey,
 } from '@/content/site';
