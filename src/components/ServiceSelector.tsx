@@ -1,18 +1,20 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { serviceCategories } from '@/content/site';
+import { serviceCategories as fallbackServiceCategories } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
+import { useServiceCategories } from '@/hooks/useServiceCategories';
 
 export default function ServiceSelector() {
   const { t, language } = useLanguage();
   const companyProfile = useCompanyProfile();
+  const serviceCategories = useServiceCategories();
   const [activeKey, setActiveKey] = useState(serviceCategories[0]?.key ?? 'residential');
 
   const activeService = useMemo(() => {
-    return serviceCategories.find((service) => service.key === activeKey) ?? serviceCategories[0];
-  }, [activeKey]);
+    return serviceCategories.find((service) => service.key === activeKey) ?? serviceCategories[0] ?? fallbackServiceCategories[0];
+  }, [activeKey, serviceCategories]);
 
   const lineMessage = activeService.lineMessage[language];
 

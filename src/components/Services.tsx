@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { serviceCategories } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
+import { useServiceCategories } from '@/hooks/useServiceCategories';
 
 export default function Services() {
   const { t, language } = useLanguage();
+  const serviceCategories = useServiceCategories();
 
   return (
     <section id="services" className="section-reveal relative z-0 -mt-16 bg-transparent pb-20 pt-24 md:-mt-20 md:pt-28">

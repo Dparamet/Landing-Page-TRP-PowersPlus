@@ -7,6 +7,7 @@ import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
 import MediaUploadManager from '@/components/admin/MediaUploadManager';
 import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
 import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
+import ServiceManager from '@/components/admin/ServiceManager';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type DashboardState =
@@ -119,20 +120,8 @@ export default function AdminDashboard() {
 
       <PortfolioPostManager />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <AdminModule title="บริการ" body="ชื่อบริการ คำอธิบาย และข้อความสำหรับลูกค้า" />
-      </div>
+      <ServiceManager />
     </section>
-  );
-}
-
-function AdminModule({ title, body }: { title: string; body: string }) {
-  return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5">
-      <h2 className="text-base font-black text-[#12345f]">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{body}</p>
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">กำลังเตรียมระบบแก้ไข</p>
-    </article>
   );
 }
 
