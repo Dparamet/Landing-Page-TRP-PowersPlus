@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: oklch(99% 0.006 78);
   --foreground: #182230;
   --brand-blue: #1e4f8f;
   --brand-blue-dark: #12345f;
@@ -28,12 +28,195 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+h1,
+h2,
+h3,
+p,
+li {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: 0;
+}
+
 html {
   scroll-padding-top: 88px;
 }
 
 ::selection {
   background: rgba(245, 158, 11, 0.24);
+}
+
+.site-background {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 46% 34% at 50% 42%, oklch(99% 0.006 78) 0 58%, transparent 68%),
+    linear-gradient(180deg, oklch(99% 0.006 78) 0%, oklch(97% 0.012 78) 100%);
+}
+
+.site-background::before {
+  content: "";
+  position: fixed;
+  inset: -12vh -10vw;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 32% 24% at 13% 14%, rgba(18, 52, 95, 0.92) 0 52%, transparent 68%),
+    radial-gradient(ellipse 34% 20% at 26% 25%, rgba(30, 79, 143, 0.86) 0 48%, transparent 66%),
+    radial-gradient(ellipse 22% 26% at 7% 42%, rgba(30, 126, 177, 0.68) 0 46%, transparent 66%),
+    radial-gradient(ellipse 24% 18% at 38% 16%, rgba(30, 79, 143, 0.58) 0 42%, transparent 64%),
+    radial-gradient(ellipse 34% 26% at 88% 78%, rgba(240, 138, 36, 0.9) 0 50%, transparent 68%),
+    radial-gradient(ellipse 28% 22% at 70% 86%, rgba(240, 138, 36, 0.74) 0 46%, transparent 66%),
+    radial-gradient(ellipse 24% 18% at 82% 58%, rgba(184, 92, 0, 0.46) 0 42%, transparent 64%);
+  filter: blur(18px);
+  opacity: 0.96;
+}
+
+.site-background::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 54% 34% at 50% 43%, rgba(255, 253, 248, 0.96) 0 55%, transparent 70%),
+    radial-gradient(ellipse 18% 12% at 36% 34%, rgba(255, 253, 248, 0.84) 0 50%, transparent 68%),
+    radial-gradient(ellipse 18% 13% at 64% 58%, rgba(255, 253, 248, 0.82) 0 50%, transparent 70%),
+    linear-gradient(90deg, rgba(255, 253, 248, 0.36), transparent 32%, transparent 68%, rgba(255, 253, 248, 0.34));
+  filter: blur(10px);
+}
+
+.site-background > * {
+  position: relative;
+  z-index: 1;
+}
+
+.site-background :where(section, footer) {
+  background-color: transparent;
+}
+
+.site-background :where(
+  .bg-white,
+  .bg-\[\#f8fafc\],
+  .bg-\[\#fff7ed\],
+  .bg-\[\#f4f8ff\],
+  .bg-\[\#eef4ff\]
+) {
+  background-color: rgba(255, 255, 255, 0.68);
+}
+
+.site-background :where(.bg-white\/56, .bg-white\/70, .bg-white\/74, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95) {
+  background-color: rgba(255, 255, 255, 0.62);
+}
+
+.site-background :where(.border-slate-200, .border-orange-100, .border-blue-100, .border-orange-200, .border-orange-200\/70) {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.site-background :where(.border-t, .border-b) {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.site-background :where(section h2) {
+  -webkit-text-stroke: 0.25px rgba(255, 255, 255, 0.58);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.78),
+    0 12px 30px rgba(18, 52, 95, 0.12);
+}
+
+.site-background :where(section h3) {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.site-background :where(section p, section li) {
+  overflow-wrap: break-word;
+}
+
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2.75rem 4rem 3rem 3.5rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.42)),
+    rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.34),
+    0 28px 86px rgba(18, 52, 95, 0.28),
+    0 10px 32px rgba(184, 92, 0, 0.12);
+  backdrop-filter: blur(30px) saturate(142%);
+  -webkit-backdrop-filter: blur(30px) saturate(142%);
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.7), transparent 32%),
+    radial-gradient(ellipse at 82% 18%, rgba(255, 255, 255, 0.52), transparent 30%);
+}
+
+.liquid-glass > * {
+  position: relative;
+}
+
+.display-stroke {
+  -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.68);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 34px rgba(18, 52, 95, 0.16);
+}
+
+.readable-heading {
+  color: var(--brand-blue-dark);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.86),
+    0 14px 38px rgba(18, 52, 95, 0.18);
+}
+
+.readable-copy {
+  color: #334155;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.glass-text-panel {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 12px 34px rgba(18, 52, 95, 0.08);
+  backdrop-filter: blur(18px) saturate(128%);
+  -webkit-backdrop-filter: blur(18px) saturate(128%);
+}
+
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .site-background::before,
+  .site-background::after {
+    position: absolute;
+    filter: blur(6px);
+  }
+
+  .liquid-glass,
+  .glass-text-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .section-reveal,
+  .reveal-item {
+    animation: none;
+  }
 }
 
 :focus-visible {

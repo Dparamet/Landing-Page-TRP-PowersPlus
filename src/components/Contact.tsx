@@ -3,10 +3,11 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import { companyProfile } from '@/content/site';
+import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function Contact() {
   const { t } = useLanguage();
+  const companyProfile = useCompanyProfile();
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
   const contactLinks = [
@@ -116,7 +117,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section-reveal bg-[#f8fafc] py-20">
+    <section id="contact" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
         <h2 className="mb-4 text-center text-4xl font-black text-[#12345f] md:text-5xl">{t('contact.title')}</h2>
         <p className="mx-auto mb-12 max-w-2xl text-center text-lg text-slate-600">

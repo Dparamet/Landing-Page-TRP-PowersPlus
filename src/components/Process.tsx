@@ -11,7 +11,7 @@ export default function Process() {
   const steps = translations.process.steps;
 
   return (
-    <section id="process" className="section-reveal bg-white py-20">
+    <section id="process" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
           <div>

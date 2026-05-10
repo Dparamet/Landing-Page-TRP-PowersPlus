@@ -22,7 +22,7 @@ Make the TRP Powers Plus website easier to hand off to another developer or a no
 ## Project Structure
 - `src/app/`: Next.js app shell, page layout, metadata, global CSS.
 - `src/components/`: UI sections and interactive React components.
-- `src/content/`: editable business content such as contact channels and portfolio items.
+- `src/content/`: editable business content such as contact channels, service categories, service-selector guidance, and portfolio items.
 - `src/locales/`: Thai and English website text.
 - `src/lib/`: shared logic such as the solar estimator and cookie storage.
 - `tests/`: regression tests for content shape and calculation logic.
@@ -44,7 +44,7 @@ React components should read content from `src/content/` and translations from `
 
 ## Testing Strategy
 - Unit tests live in `tests/*.test.mjs`.
-- Content tests should catch missing image files, mismatched translation keys, invalid contact URLs, and incomplete portfolio decision data.
+- Content tests should catch missing image files, mismatched translation keys, invalid contact URLs, incomplete service categories, and incomplete portfolio decision data.
 - Calculator tests should lock Thailand-specific tariff assumptions and solar sizing behavior.
 - Run `npm test`, `npm run lint`, and `npm run build` before handoff.
 
@@ -57,7 +57,8 @@ React components should read content from `src/content/` and translations from `
 - README contains complete install, run, test, build, and handoff instructions.
 - Non-programmers have a Thai guide for editing text and replacing images.
 - Portfolio image paths are defined in one content file and validated by tests.
-- Portfolio items include category filters, system size, monthly production, estimated savings, province, and before/during/after gallery images.
+- Service categories define customer fit, included work, preparation guidance, and LINE lead messages.
+- Portfolio items include category filters, flexible decision metrics, province, and before/during/after gallery images.
 - Contact information is defined once and reused in contact/footer sections.
 - `npm test`, `npm run lint`, and `npm run build` pass.
 

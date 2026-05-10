@@ -1,0 +1,146 @@
+insert into public.site_settings (
+  id,
+  name,
+  phone_display,
+  phone_href,
+  email,
+  line_id,
+  line_url,
+  facebook_display,
+  facebook_url,
+  address,
+  google_maps_search_url,
+  google_maps_embed_url
+)
+values (
+  true,
+  'TRP Powers Plus',
+  '+66 (0) 12-345-6789',
+  '+66012345678',
+  'TRPPowersplus@gmail.com',
+  '@TRPPowersplus',
+  'https://line.me/ti/p/@TRPPowersplus',
+  'TRP Powers Plus',
+  'https://facebook.com/TRPPowersplus',
+  '123 Solar Street, Green Energy District Bangkok 10500, Thailand',
+  'https://maps.google.com/?q=123+Solar+Street,+Green+Energy+District,+Bangkok+10500,+Thailand',
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.451493193648!2d100.53169!3d13.7563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d6b7a63b63%3A0x1234567890!2s123%20Solar%20Street%20Green%20Energy%20District%20Bangkok!5e0!3m2!1sen!2sth!4v1234567890123'
+)
+on conflict (id) do update set
+  name = excluded.name,
+  phone_display = excluded.phone_display,
+  phone_href = excluded.phone_href,
+  email = excluded.email,
+  line_id = excluded.line_id,
+  line_url = excluded.line_url,
+  facebook_display = excluded.facebook_display,
+  facebook_url = excluded.facebook_url,
+  address = excluded.address,
+  google_maps_search_url = excluded.google_maps_search_url,
+  google_maps_embed_url = excluded.google_maps_embed_url,
+  updated_at = now();
+
+insert into public.services (
+  id,
+  title,
+  short_title,
+  description,
+  best_for,
+  includes,
+  prepare,
+  line_message,
+  accent,
+  sort_order,
+  published
+)
+values
+  (
+    'residential',
+    '{"th":"ระบบไฟฟ้าบ้านพักอาศัย","en":"Residential electrical systems"}',
+    '{"th":"บ้านพักอาศัย","en":"Residential"}',
+    '{"th":"เดินระบบไฟ แยกวงจร เพิ่มโหลด และปรับปรุงความปลอดภัยสำหรับบ้านใหม่หรือบ้านที่ใช้งานมานาน","en":"Wiring, circuit separation, load upgrades, and safety improvements for new or existing homes."}',
+    '{"th":"เจ้าของบ้าน บ้านรีโนเวต บ้านสร้างใหม่ และบ้านที่ต้องเพิ่มโหลดไฟฟ้า","en":"Home owners, renovations, new houses, and homes that need load upgrades."}',
+    '[{"th":"เดินสายและแยกวงจรไฟฟ้า","en":"Wiring and circuit separation"},{"th":"ตู้ไฟย่อยและอุปกรณ์ป้องกัน","en":"Distribution boards and protection devices"},{"th":"ตรวจจุดเสี่ยงก่อนใช้งานจริง","en":"Risk checks before operation"}]',
+    '[{"th":"รูปตู้ไฟหรือพื้นที่ติดตั้ง","en":"Photos of the panel or installation area"},{"th":"ขนาดมิเตอร์หรือบิลไฟล่าสุด","en":"Meter size or latest electricity bill"},{"th":"รายการอุปกรณ์ไฟฟ้าที่ต้องใช้","en":"List of electrical equipment to support"}]',
+    '{"th":"สนใจประเมินงานระบบไฟฟ้าบ้านพักอาศัย","en":"I would like to assess a residential electrical project."}',
+    'blue',
+    10,
+    true
+  ),
+  (
+    'building',
+    '{"th":"ระบบไฟฟ้าอาคารและสำนักงาน","en":"Building and office electrical systems"}',
+    '{"th":"อาคารสำนักงาน","en":"Building"}',
+    '{"th":"ออกแบบและปรับปรุงระบบไฟฟ้าอาคาร ตู้ MDB/DB โหลดไฟ แสงสว่าง และเอกสารส่งมอบ","en":"Design and upgrade building electrical systems, MDB/DB panels, loads, lighting, and handover documentation."}',
+    '{"th":"อาคารสำนักงาน ร้านค้า โชว์รูม คลินิก และพื้นที่เชิงพาณิชย์","en":"Offices, shops, showrooms, clinics, and commercial spaces."}',
+    '[{"th":"ตู้ MDB/DB และโหลดไฟฟ้า","en":"MDB/DB panels and electrical loads"},{"th":"ระบบแสงสว่างและเต้ารับ","en":"Lighting and outlet systems"},{"th":"จัดระเบียบวงจรและป้ายกำกับ","en":"Circuit organization and labeling"}]',
+    '[{"th":"แบบพื้นที่หรือจำนวนชั้น","en":"Floor plan or number of floors"},{"th":"รายการโหลดไฟฟ้าหลัก","en":"Main electrical load list"},{"th":"รูปตู้ไฟเดิมถ้ามี","en":"Photos of existing panels if available"}]',
+    '{"th":"สนใจประเมินงานระบบไฟฟ้าอาคาร","en":"I would like to assess a building electrical project."}',
+    'blue',
+    20,
+    true
+  ),
+  (
+    'factory',
+    '{"th":"ระบบไฟฟ้าโรงงานและคลังสินค้า","en":"Factory and warehouse electrical systems"}',
+    '{"th":"โรงงาน","en":"Factory"}',
+    '{"th":"วางระบบจ่ายไฟ โหลดเครื่องจักร ตู้ควบคุม และตรวจสอบความปลอดภัยเพื่อลดความเสี่ยงหน้างาน","en":"Power distribution, machine loads, control panels, and safety checks to reduce site risk."}',
+    '{"th":"โรงงาน คลังสินค้า ไลน์ผลิต และธุรกิจที่มีโหลดไฟฟ้าสูง","en":"Factories, warehouses, production lines, and high-load businesses."}',
+    '[{"th":"เมนไฟและการกระจายโหลด","en":"Main power and load distribution"},{"th":"ตู้ควบคุมและวงจรเครื่องจักร","en":"Control panels and machine circuits"},{"th":"ตรวจโหลดและจุดเสี่ยงความร้อน","en":"Load and heat-risk checks"}]',
+    '[{"th":"รายการเครื่องจักรหรือโหลดหลัก","en":"Machine or main load list"},{"th":"รูปตู้ไฟและพื้นที่ทำงาน","en":"Photos of panels and work areas"},{"th":"ปัญหาที่พบ เช่น ไฟตก เบรกเกอร์ตัด หรือโหลดเกิน","en":"Observed issues such as voltage drop, breaker trips, or overloads"}]',
+    '{"th":"สนใจประเมินงานระบบไฟฟ้าโรงงาน","en":"I would like to assess a factory electrical project."}',
+    'blue',
+    30,
+    true
+  ),
+  (
+    'solar',
+    '{"th":"ระบบโซลาร์เซลล์ออนกริดและไฮบริด","en":"On-grid and hybrid solar systems"}',
+    '{"th":"โซลาร์เซลล์","en":"Solar"}',
+    '{"th":"คำนวณขนาดระบบจากค่าไฟจริง ออกแบบติดตั้ง และประเมินผลประหยัดสำหรับบ้าน อาคาร และธุรกิจ","en":"Size systems from real bills, design installation, and estimate savings for homes, buildings, and businesses."}',
+    '{"th":"ลูกค้าที่มีค่าไฟสูง ใช้ไฟกลางวันมาก หรือต้องการสำรองไฟบางส่วน","en":"Customers with high bills, daytime usage, or partial backup needs."}',
+    '[{"th":"ออนกริดและไฮบริด","en":"On-grid and hybrid systems"},{"th":"ประเมินขนาดระบบและจุดคุ้มทุน","en":"System sizing and payback estimate"},{"th":"ตรวจพื้นที่ติดตั้งและทิศทางหลังคา","en":"Installation area and roof direction checks"}]',
+    '[{"th":"บิลไฟย้อนหลังหรือหน่วยไฟต่อเดือน","en":"Past bills or monthly electricity units"},{"th":"รูปหลังคาหรือพื้นที่ติดตั้ง","en":"Roof or installation area photos"},{"th":"ช่วงเวลาที่ใช้ไฟมากที่สุด","en":"Main electricity usage period"}]',
+    '{"th":"สนใจประเมินระบบโซลาร์เซลล์","en":"I would like to assess a solar installation."}',
+    'orange',
+    40,
+    true
+  ),
+  (
+    'maintenance',
+    '{"th":"ตรวจสอบและบำรุงรักษาระบบไฟฟ้า","en":"Electrical inspection and maintenance"}',
+    '{"th":"ตรวจสอบระบบ","en":"Inspection"}',
+    '{"th":"ตรวจตู้ไฟ จุดต่อสาย ความร้อน โหลดเกิน และสภาพอุปกรณ์ พร้อมสรุปแนวทางแก้ไข","en":"Inspect panels, wiring points, heat, overloads, and equipment condition with practical recommendations."}',
+    '{"th":"อาคารหรือโรงงานที่ต้องการลดความเสี่ยงและวางแผนซ่อมบำรุง","en":"Buildings or factories that need risk reduction and maintenance planning."}',
+    '[{"th":"ตรวจตู้ไฟและจุดต่อสาย","en":"Panel and connection checks"},{"th":"ตรวจความร้อนและโหลดใช้งาน","en":"Heat and operating load checks"},{"th":"รายงานปัญหาและลำดับความเร่งด่วน","en":"Issue report and priority guidance"}]',
+    '[{"th":"รูปตู้ไฟหรือจุดที่กังวล","en":"Photos of panels or concern points"},{"th":"อาการที่พบ เช่น กลิ่นไหม้ ความร้อน หรือไฟตก","en":"Symptoms such as smell, heat, or voltage drops"},{"th":"ช่วงเวลาที่สะดวกให้เข้าตรวจ","en":"Preferred inspection time"}]',
+    '{"th":"สนใจนัดตรวจสอบและบำรุงรักษาระบบไฟฟ้า","en":"I would like to schedule electrical inspection and maintenance."}',
+    'orange',
+    50,
+    true
+  ),
+  (
+    'controlPanel',
+    '{"th":"ตู้ควบคุมและระบบควบคุมไฟฟ้า","en":"Control panels and electrical controls"}',
+    '{"th":"ตู้ควบคุม","en":"Control Panel"}',
+    '{"th":"ออกแบบ ประกอบ และปรับปรุงตู้ควบคุมสำหรับปั๊ม มอเตอร์ เครื่องจักร และระบบ automation เบื้องต้น","en":"Design, assemble, and upgrade control panels for pumps, motors, machines, and basic automation."}',
+    '{"th":"งานควบคุมปั๊ม มอเตอร์ เครื่องจักร หรือระบบที่ต้องสั่งงานเป็นลำดับ","en":"Pump, motor, machine, or sequenced control applications."}',
+    '[{"th":"ตู้ควบคุมปั๊มและมอเตอร์","en":"Pump and motor control panels"},{"th":"อุปกรณ์ป้องกันและสั่งงาน","en":"Protection and command devices"},{"th":"ปรับปรุงตู้เดิมให้อ่านง่ายและซ่อมง่าย","en":"Existing panel upgrades for easier operation and maintenance"}]',
+    '[{"th":"รูปตู้ควบคุมเดิมหรือเครื่องจักร","en":"Photos of existing panels or machines"},{"th":"ลำดับการทำงานที่ต้องการ","en":"Required operating sequence"},{"th":"แรงดันไฟและขนาดมอเตอร์ถ้ามี","en":"Voltage and motor size if known"}]',
+    '{"th":"สนใจประเมินงานตู้ควบคุมไฟฟ้า","en":"I would like to assess a control panel project."}',
+    'blue',
+    60,
+    true
+  )
+on conflict (id) do update set
+  title = excluded.title,
+  short_title = excluded.short_title,
+  description = excluded.description,
+  best_for = excluded.best_for,
+  includes = excluded.includes,
+  prepare = excluded.prepare,
+  line_message = excluded.line_message,
+  accent = excluded.accent,
+  sort_order = excluded.sort_order,
+  published = excluded.published,
+  updated_at = now();

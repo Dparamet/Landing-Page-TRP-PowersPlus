@@ -14,7 +14,7 @@ export default function FAQ() {
   const faqs = translations.faq.questions;
 
   return (
-    <section id="faq" className="section-reveal bg-[#f8fafc] py-20">
+    <section id="faq" className="section-reveal bg-transparent py-20">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="mb-4 text-4xl font-black text-[#12345f] md:text-5xl">

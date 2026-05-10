@@ -28,7 +28,7 @@ export default function SolarCalculator() {
   const reductionLabel = `${result.billReductionPercent.toFixed(0)}%`;
 
   return (
-    <section id="calculator" className="section-reveal bg-white py-20">
+    <section id="calculator" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mx-auto mb-10 max-w-3xl text-center reveal-item">
           <span className="inline-flex rounded-full bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
