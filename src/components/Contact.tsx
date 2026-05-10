@@ -3,10 +3,11 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import { companyProfile } from '@/content/site';
+import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function Contact() {
   const { t } = useLanguage();
+  const companyProfile = useCompanyProfile();
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
   const contactLinks = [

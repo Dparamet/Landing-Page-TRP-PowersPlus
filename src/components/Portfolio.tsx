@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import {
-  companyProfile,
   portfolioProjects,
   serviceCategories,
   type PortfolioCategory,
   type PortfolioProject,
 } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
+import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 const categoryFilters: Array<{ key: 'all' | PortfolioCategory; label: { th: string; en: string } }> = [
   { key: 'all', label: { th: 'ทั้งหมด', en: 'All' } },
@@ -136,6 +136,7 @@ function PortfolioCard({
 
 function ProjectDetail({ project }: { project: PortfolioProject }) {
   const { t, language } = useLanguage();
+  const companyProfile = useCompanyProfile();
   const relatedService = serviceCategories.find((service) => service.key === project.categoryKey);
   const lineMessage = relatedService?.lineMessage[language] ?? t('hero.cta');
 

@@ -1,11 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { companyProfile, serviceCategories } from '@/content/site';
+import { serviceCategories } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
+import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function ServiceSelector() {
   const { t, language } = useLanguage();
+  const companyProfile = useCompanyProfile();
   const [activeKey, setActiveKey] = useState(serviceCategories[0]?.key ?? 'residential');
 
   const activeService = useMemo(() => {

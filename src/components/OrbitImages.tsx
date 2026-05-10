@@ -22,17 +22,33 @@ type OrbitImagesProps = {
 export default function OrbitImages({ orbitProgress, galleryProgress }: OrbitImagesProps) {
   const { language } = useLanguage();
   const [viewportWidth, setViewportWidth] = useState(1280);
+  const [canAnimate, setCanAnimate] = useState(false);
   const autoProgress = useMotionValue(0);
   const mixedProgress = useMotionValue(0);
 
   useEffect(() => {
-    const syncWidth = () => setViewportWidth(window.innerWidth);
-    syncWidth();
-    window.addEventListener('resize', syncWidth);
-    return () => window.removeEventListener('resize', syncWidth);
+    const syncViewport = () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const width = window.innerWidth;
+
+      setViewportWidth(width);
+      setCanAnimate(width >= 768 && !prefersReducedMotion && document.visibilityState === 'visible');
+    };
+
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+    document.addEventListener('visibilitychange', syncViewport);
+    return () => {
+      window.removeEventListener('resize', syncViewport);
+      document.removeEventListener('visibilitychange', syncViewport);
+    };
   }, []);
 
   useAnimationFrame((_, delta) => {
+    if (!canAnimate) {
+      return;
+    }
+
     const gallery = galleryProgress.get();
     const autoplay = autoProgress.get() + delta * 0.000035;
     autoProgress.set(autoplay);
@@ -104,7 +120,7 @@ function OrbitItem({
 
   return (
     <motion.article
-      className="absolute left-1/2 top-1/2 w-[clamp(132px,17vw,220px)] rounded-lg border border-white/25 bg-white/16 p-3 text-white shadow-2xl shadow-slate-950/25 backdrop-blur will-change-transform"
+      className="absolute left-1/2 top-1/2 w-[clamp(132px,17vw,220px)] rounded-lg border border-white/25 bg-white/16 p-3 text-white shadow-2xl shadow-slate-950/25 backdrop-blur md:will-change-transform"
       style={{ x, y, scale, opacity, zIndex, translateX: '-50%', translateY: '-50%' }}
     >
       <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-md border border-white/20 bg-[#12345f]/60">

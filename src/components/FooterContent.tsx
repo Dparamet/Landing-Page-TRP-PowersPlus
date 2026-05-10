@@ -4,11 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCookieConsent } from '@/context/CookieConsentContext';
-import { companyProfile } from '@/content/site';
+import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function FooterContent() {
   const { t } = useLanguage();
   const { openSettings } = useCookieConsent();
+  const companyProfile = useCompanyProfile();
 
   return (
     <>

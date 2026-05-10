@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -9,32 +8,20 @@ export default function HeroContent() {
 
   return (
     <div className="relative z-10 mx-auto w-full max-w-5xl px-4 text-center">
-      <div className="liquid-glass mx-auto rounded-[1.75rem] px-5 py-8 sm:px-8 md:px-12 md:py-12">
-        <div className="mx-auto mb-6 flex h-20 w-56 items-center justify-center rounded-2xl bg-white/72 px-5 shadow-sm backdrop-blur md:h-24 md:w-72">
-          <Image
-            src="/images/LogoTRP.webp"
-            alt="TRP Powers Plus"
-            width={288}
-            height={108}
-            priority
-            className="h-full w-full object-contain"
-            sizes="(min-width: 768px) 288px, 224px"
-          />
-        </div>
-
-        <p className="mb-4 inline-flex rounded-full border border-orange-200/70 bg-white/70 px-4 py-2 text-sm font-bold uppercase tracking-wider text-[#b85c00] shadow-sm backdrop-blur">
+      <div className="liquid-glass mx-auto px-5 py-8 shadow-[0_34px_90px_rgba(18,52,95,0.24)] sm:px-8 md:px-12 md:py-12">
+        <p className="mb-5 inline-flex rounded-full border border-white/70 bg-white/76 px-4 py-2 text-sm font-black uppercase tracking-wide text-[#8a4300] shadow-[0_10px_30px_rgba(184,92,0,0.12)] drop-shadow-[0_1px_8px_rgba(255,255,255,0.88)]">
           {t('hero.eyebrow')}
         </p>
 
-        <h1 className="mb-6 text-5xl font-black leading-tight text-[#182230] md:text-7xl">
+        <h1 className="display-stroke mx-auto mb-6 max-w-4xl text-5xl font-black leading-[1.08] text-slate-950 drop-shadow-[0_2px_12px_rgba(255,255,255,0.9)] md:text-7xl">
           {t('hero.title')}
         </h1>
 
-        <p className="mx-auto mb-6 max-w-3xl text-xl font-bold text-[#12345f] md:text-2xl">
+        <p className="glass-text-panel mx-auto mb-5 max-w-3xl rounded-2xl px-4 py-3 text-xl font-black leading-snug text-[#0f2f55] drop-shadow-[0_1px_10px_rgba(255,255,255,0.86)] md:text-2xl">
           {t('hero.subtitle')}
         </p>
 
-        <p className="mx-auto mb-10 max-w-3xl text-base leading-relaxed text-slate-700 md:text-lg">
+        <p className="glass-text-panel mx-auto mb-10 max-w-3xl rounded-2xl px-5 py-4 text-base font-semibold leading-8 text-slate-900 drop-shadow-[0_1px_10px_rgba(255,255,255,0.88)] md:text-lg md:leading-8">
           {t('hero.description')}
         </p>
 
@@ -47,25 +34,25 @@ export default function HeroContent() {
           </Link>
           <Link 
             href="#portfolio" 
-            className="w-full rounded-lg border-2 border-blue-100 bg-white/74 px-8 py-4 text-lg font-bold text-[#12345f] shadow-sm backdrop-blur transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-[#f08a24] hover:bg-white/90 hover:text-[#b85c00] md:w-auto"
+            className="w-full rounded-lg bg-white/78 px-8 py-4 text-lg font-black text-[#0f2f55] shadow-sm transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-white/92 hover:text-[#8a4300] md:w-auto"
           >
             {t('nav.portfolio')}
           </Link>
         </div>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-3 text-sm text-slate-700 md:grid-cols-3 md:text-base">
-        <div className="liquid-glass flex items-center justify-center gap-2 rounded-lg px-4 py-3">
+      <div className="mt-8 grid grid-cols-1 gap-3 text-sm font-black text-slate-950 md:grid-cols-3 md:text-base">
+        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.engineers')}</span>
+          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.engineers')}</span>
         </div>
-        <div className="liquid-glass flex items-center justify-center gap-2 rounded-lg px-4 py-3">
+        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.warranty')}</span>
+          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.warranty')}</span>
         </div>
-        <div className="liquid-glass flex items-center justify-center gap-2 rounded-lg px-4 py-3">
+        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.survey')}</span>
+          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.survey')}</span>
         </div>
       </div>
     </div>
