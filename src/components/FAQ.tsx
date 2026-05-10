@@ -2,16 +2,12 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import th from '@/locales/th.json';
-import en from '@/locales/en.json';
+import { useFaqItems } from '@/hooks/useFaqItems';
 
 export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { t, language } = useLanguage();
-
-  // Get FAQ data from translations
-  const translations = language === 'th' ? th : en;
-  const faqs = translations.faq.questions;
+  const faqs = useFaqItems();
 
   return (
     <section id="faq" className="section-reveal bg-transparent py-20">
@@ -36,7 +32,7 @@ export default function FAQ() {
                 className="flex w-full items-center justify-between gap-4 bg-white px-6 py-4 text-left transition-colors hover:bg-[#fff7ed]"
                 aria-expanded={activeIndex === index}
               >
-                <h3 className="text-lg font-bold text-[#182230]">{faq.question}</h3>
+                <h3 className="text-lg font-bold text-[#182230]">{faq.question[language]}</h3>
                 <span
                   className={`text-2xl font-bold text-[#f08a24] transition-transform duration-300 ${
                     activeIndex === index ? 'rotate-45' : ''
@@ -48,7 +44,7 @@ export default function FAQ() {
 
               {activeIndex === index && (
                 <div className="border-t border-slate-200 bg-white px-6 py-4">
-                  <p className="leading-relaxed text-slate-700">{faq.answer}</p>
+                  <p className="leading-relaxed text-slate-700">{faq.answer[language]}</p>
                 </div>
               )}
             </div>

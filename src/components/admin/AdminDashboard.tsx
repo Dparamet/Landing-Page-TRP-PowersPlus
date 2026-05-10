@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
+import FaqManager from '@/components/admin/FaqManager';
 import MediaUploadManager from '@/components/admin/MediaUploadManager';
 import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
 import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
+import ProcessStepManager from '@/components/admin/ProcessStepManager';
 import ServiceManager from '@/components/admin/ServiceManager';
+import SiteTextManager from '@/components/admin/SiteTextManager';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type DashboardState =
@@ -114,6 +117,8 @@ export default function AdminDashboard() {
 
       <CompanySettingsForm />
 
+      <SiteTextManager />
+
       <MediaUploadManager />
 
       <PortfolioImageManager />
@@ -121,6 +126,10 @@ export default function AdminDashboard() {
       <PortfolioPostManager />
 
       <ServiceManager />
+
+      <FaqManager />
+
+      <ProcessStepManager />
     </section>
   );
 }

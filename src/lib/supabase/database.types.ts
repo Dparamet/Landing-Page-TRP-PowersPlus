@@ -21,6 +21,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      faq_items: {
+        Row: {
+          answer: Json;
+          created_at: string | null;
+          id: string;
+          published: boolean;
+          question: Json;
+          sort_order: number;
+          updated_at: string | null;
+        };
+        Insert: {
+          answer: Json;
+          created_at?: string | null;
+          id?: string;
+          published?: boolean;
+          question: Json;
+          sort_order?: number;
+          updated_at?: string | null;
+        };
+        Update: {
+          answer?: Json;
+          created_at?: string | null;
+          id?: string;
+          published?: boolean;
+          question?: Json;
+          sort_order?: number;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       media_assets: {
         Row: {
           alt_en: string;
@@ -173,6 +203,36 @@ export type Database = {
           },
         ];
       };
+      process_steps: {
+        Row: {
+          created_at: string | null;
+          description: Json;
+          id: string;
+          published: boolean;
+          sort_order: number;
+          title: Json;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          description: Json;
+          id?: string;
+          published?: boolean;
+          sort_order?: number;
+          title: Json;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          description?: Json;
+          id?: string;
+          published?: boolean;
+          sort_order?: number;
+          title?: Json;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       services: {
         Row: {
           accent: 'orange' | 'blue';
@@ -269,6 +329,27 @@ export type Database = {
           phone_display?: string;
           phone_href?: string;
           updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      site_texts: {
+        Row: {
+          created_at: string | null;
+          key: string;
+          updated_at: string | null;
+          value: Json;
+        };
+        Insert: {
+          created_at?: string | null;
+          key: string;
+          updated_at?: string | null;
+          value: Json;
+        };
+        Update: {
+          created_at?: string | null;
+          key?: string;
+          updated_at?: string | null;
+          value?: Json;
         };
         Relationships: [];
       };

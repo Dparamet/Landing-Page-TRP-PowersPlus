@@ -8,6 +8,9 @@ Run these files in order when creating or updating a Supabase database.
 4. `202605100004_media_storage_bucket.sql`
 5. `202605100005_portfolio_image_overrides.sql`
 6. `202605100006_portfolio_posts_soft_delete.sql`
+7. `202605100007_faq_items.sql`
+8. `202605100008_database_hardening.sql`
+9. `202605100009_site_texts_and_process_steps.sql`
 
 Rules:
 
@@ -15,3 +18,4 @@ Rules:
 - Do not edit an old migration after it has been applied to a shared database.
 - Commit migrations with the application code that depends on them.
 - Keep `.env.local`, service role keys, and real secrets out of git.
+- In Supabase SQL Editor, open each `.sql` file and paste the SQL contents. Do not paste only the file path.

@@ -1,0 +1,230 @@
+'use client';
+
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+
+import {
+  createBlankSiteTextForm,
+  mapSiteTextFormToUpsert,
+  mapSiteTextToForm,
+  validateSiteTextForm,
+  type SiteTextFormValues,
+} from '@/lib/admin/siteTexts';
+import { mapSiteTextRows, type SiteText, type SiteTextRow } from '@/lib/siteTexts';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+
+type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
+
+const inputClass =
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
+
+export default function SiteTextManager() {
+  const [items, setItems] = useState<SiteText[]>([]);
+  const [values, setValues] = useState<SiteTextFormValues>(createBlankSiteTextForm());
+  const [status, setStatus] = useState<SaveStatus>('loading');
+  const [message, setMessage] = useState('');
+  const [query, setQuery] = useState('');
+
+  const filteredItems = useMemo(() => {
+    const keyword = query.trim().toLowerCase();
+    if (!keyword) return items;
+    return items.filter((item) => item.key.toLowerCase().includes(keyword) || item.value.th.toLowerCase().includes(keyword));
+  }, [items, query]);
+
+  useEffect(() => {
+    void loadSiteTexts();
+  }, []);
+
+  async function loadSiteTexts() {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    const { data, error } = await supabase.from('site_texts').select('*').order('key', { ascending: true });
+
+    if (error) {
+      setStatus('error');
+      setMessage('โหลดข้อความเว็บไม่สำเร็จ ให้รัน migration 202605100009_site_texts_and_process_steps.sql ก่อน');
+      return;
+    }
+
+    const mapped = mapSiteTextRows((data as SiteTextRow[] | null) ?? []);
+    const nextItems = Object.entries(mapped)
+      .map(([key, value]) => ({ key, value }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+
+    setItems(nextItems);
+    setValues(nextItems[0] ? mapSiteTextToForm(nextItems[0]) : createBlankSiteTextForm());
+    setStatus('idle');
+    setMessage('');
+  }
+
+  function updateField<K extends keyof SiteTextFormValues>(field: K, value: SiteTextFormValues[K]) {
+    setValues((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const validation = validateSiteTextForm(values);
+
+    if (!validation.ok) {
+      setStatus('error');
+      setMessage(validation.message);
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.from('site_texts').upsert(mapSiteTextFormToUpsert(validation.value), { onConflict: 'key' });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`บันทึกข้อความไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('บันทึกข้อความแล้ว รีเฟรชหน้าเว็บเพื่อดูผลล่าสุด');
+    await loadSiteTexts();
+  }
+
+  async function deleteText() {
+    if (!values.key) return;
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    const { error } = await supabase.from('site_texts').delete().eq('key', values.key);
+
+    if (error) {
+      setStatus('error');
+      setMessage(`ลบข้อความไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('ลบข้อความแล้ว ระบบจะ fallback ไปใช้ไฟล์ภาษาเดิม');
+    await loadSiteTexts();
+  }
+
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-lg font-black text-[#12345f]">ข้อความหน้าเว็บ</h2>
+          <p className="mt-1 text-sm text-slate-600">แก้ข้อความหลักของหน้าเว็บ เช่น Hero, Section title, Footer และ CTA</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setValues(createBlankSiteTextForm());
+            setMessage('');
+          }}
+          className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]"
+        >
+          เพิ่ม key ใหม่
+        </button>
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="ค้นหา key หรือข้อความ"
+            className={inputClass}
+          />
+          <div className="mt-3 grid max-h-[520px] gap-2 overflow-y-auto pr-1">
+            {filteredItems.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => {
+                  setValues(mapSiteTextToForm(item));
+                  setMessage('');
+                }}
+                className={`rounded-lg border p-3 text-left transition ${
+                  values.key === item.key ? 'border-[#12345f] bg-[#12345f] text-white' : 'border-slate-200 bg-slate-50 text-[#12345f]'
+                }`}
+              >
+                <span className="block text-xs font-black uppercase tracking-wide">{item.key}</span>
+                <span className={`mt-1 block text-sm ${values.key === item.key ? 'text-blue-100' : 'text-slate-600'}`}>{item.value.th}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
+          <Field label="Key" value={values.key} onChange={(value) => updateField('key', value)} />
+          <Textarea label="ข้อความ ภาษาไทย" value={values.textTh} onChange={(value) => updateField('textTh', value)} />
+          <Textarea label="ข้อความ ภาษาอังกฤษ" value={values.textEn} onChange={(value) => updateField('textEn', value)} />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="submit"
+              disabled={status === 'saving' || status === 'loading'}
+              className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
+            </button>
+            <button
+              type="button"
+              onClick={() => void deleteText()}
+              disabled={!values.key || status === 'saving'}
+              className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              ลบ key นี้
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {message ? (
+        <p
+          role={status === 'error' ? 'alert' : 'status'}
+          className={`mt-4 rounded-lg border px-4 py-3 text-sm ${
+            status === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          }`}
+        >
+          {message}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label className="block text-sm font-semibold text-slate-800">
+      {label}
+      <input value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2`} />
+    </label>
+  );
+}
+
+function Textarea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label className="block text-sm font-semibold text-slate-800">
+      {label}
+      <textarea value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2 min-h-28 resize-y`} />
+    </label>
+  );
+}

@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import th from '@/locales/th.json';
-import en from '@/locales/en.json';
+import { useProcessSteps } from '@/hooks/useProcessSteps';
 
 export default function Process() {
   const { t, language } = useLanguage();
-  const translations = language === 'th' ? th : en;
-  const steps = translations.process.steps;
+  const steps = useProcessSteps();
 
   return (
     <section id="process" className="section-reveal bg-transparent py-20">
@@ -28,14 +26,14 @@ export default function Process() {
         <ol className="grid gap-3 md:grid-cols-5">
           {steps.map((step, index) => (
             <li
-              key={step.title}
+              key={step.id}
               className="reveal-item rounded-lg border border-slate-200 bg-[#f8fafc] p-4 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-[#f08a24] hover:bg-white hover:shadow-lg hover:shadow-slate-100"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#12345f] text-sm font-black text-white">
                 {index + 1}
               </span>
-              <h3 className="mt-4 text-base font-black text-[#182230]">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
+              <h3 className="mt-4 text-base font-black text-[#182230]">{step.title[language]}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description[language]}</p>
             </li>
           ))}
         </ol>

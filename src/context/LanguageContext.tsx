@@ -1,8 +1,10 @@
 'use client';
 
-import { createContext, useContext, useEffect, useSyncExternalStore, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useSyncExternalStore, ReactNode } from 'react';
 import th from '@/locales/th.json';
 import en from '@/locales/en.json';
+import { mapSiteTextRows, type LocalizedText, type SiteTextRow } from '@/lib/siteTexts';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type Language = 'th' | 'en';
 const LANGUAGE_KEY = 'language';
@@ -37,10 +39,38 @@ function subscribeToLanguageChanges(listener: () => void) {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const language = useSyncExternalStore<Language>(subscribeToLanguageChanges, readLanguage, () => 'th');
+  const [siteTextOverrides, setSiteTextOverrides] = useState<Record<string, LocalizedText>>({});
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      return;
+    }
+
+    const client = supabase;
+
+    async function loadSiteTexts() {
+      const { data, error } = await client.from('site_texts').select('*');
+
+      if (!isMounted || error) {
+        return;
+      }
+
+      setSiteTextOverrides(mapSiteTextRows((data as SiteTextRow[] | null) ?? []));
+    }
+
+    void loadSiteTexts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const setLanguage = (lang: Language) => {
     localStorage.setItem(LANGUAGE_KEY, lang);
@@ -48,6 +78,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   const t = (key: string): string => {
+    const override = siteTextOverrides[key]?.[language];
+
+    if (override) {
+      return override;
+    }
+
     const translations = language === 'th' ? th : en;
     const keys = key.split('.');
     let value: unknown = translations;
