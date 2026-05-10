@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
+import MediaUploadManager from '@/components/admin/MediaUploadManager';
+import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
+import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type DashboardState =
@@ -110,9 +113,14 @@ export default function AdminDashboard() {
 
       <CompanySettingsForm />
 
+      <MediaUploadManager />
+
+      <PortfolioImageManager />
+
+      <PortfolioPostManager />
+
       <div className="grid gap-4 md:grid-cols-2">
         <AdminModule title="บริการ" body="ชื่อบริการ คำอธิบาย และข้อความสำหรับลูกค้า" />
-        <AdminModule title="ผลงานและรูปภาพ" body="โปรเจกต์ รูปหน้าปก แกลเลอรี และ metrics" />
       </div>
     </section>
   );

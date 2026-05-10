@@ -66,11 +66,13 @@ export type Database = {
           category_key: string;
           cover_image_id: string | null;
           created_at: string | null;
+          deleted_at: string | null;
           description: Json;
           gallery: Json;
           id: string;
           location: Json;
           metrics: Json;
+          purge_after: string | null;
           published: boolean;
           slug: string;
           sort_order: number;
@@ -83,11 +85,13 @@ export type Database = {
           category_key: string;
           cover_image_id?: string | null;
           created_at?: string | null;
+          deleted_at?: string | null;
           description: Json;
           gallery?: Json;
           id?: string;
           location: Json;
           metrics?: Json;
+          purge_after?: string | null;
           published?: boolean;
           slug: string;
           sort_order?: number;
@@ -100,11 +104,13 @@ export type Database = {
           category_key?: string;
           cover_image_id?: string | null;
           created_at?: string | null;
+          deleted_at?: string | null;
           description?: Json;
           gallery?: Json;
           id?: string;
           location?: Json;
           metrics?: Json;
+          purge_after?: string | null;
           published?: boolean;
           slug?: string;
           sort_order?: number;
@@ -123,6 +129,44 @@ export type Database = {
           {
             foreignKeyName: 'portfolio_projects_cover_image_id_fkey';
             columns: ['cover_image_id'];
+            isOneToOne: false;
+            referencedRelation: 'media_assets';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      portfolio_image_overrides: {
+        Row: {
+          alt_th: string;
+          created_at: string | null;
+          image_slot: 'cover' | 'before' | 'during' | 'after';
+          image_url: string;
+          media_asset_id: string | null;
+          project_key: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          alt_th?: string;
+          created_at?: string | null;
+          image_slot: 'cover' | 'before' | 'during' | 'after';
+          image_url: string;
+          media_asset_id?: string | null;
+          project_key: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          alt_th?: string;
+          created_at?: string | null;
+          image_slot?: 'cover' | 'before' | 'during' | 'after';
+          image_url?: string;
+          media_asset_id?: string | null;
+          project_key?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'portfolio_image_overrides_media_asset_id_fkey';
+            columns: ['media_asset_id'];
             isOneToOne: false;
             referencedRelation: 'media_assets';
             referencedColumns: ['id'];
@@ -230,7 +274,20 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      soft_delete_portfolio_project: {
+        Args: { project_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      restore_portfolio_project: {
+        Args: { project_id: string };
+        Returns: undefined;
+      };
+      delete_expired_portfolio_projects: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

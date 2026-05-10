@@ -5,6 +5,9 @@ Run these files in order when creating or updating a Supabase database.
 1. `202605100001_init_cms.sql`
 2. `202605100002_fix_admin_policies.sql`
 3. `202605100003_seed_initial_content.sql`
+4. `202605100004_media_storage_bucket.sql`
+5. `202605100005_portfolio_image_overrides.sql`
+6. `202605100006_portfolio_posts_soft_delete.sql`
 
 Rules:
 

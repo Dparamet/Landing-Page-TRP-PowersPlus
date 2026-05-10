@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import {
-  portfolioProjects,
   serviceCategories,
   type PortfolioCategory,
   type PortfolioProject,
 } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
+import { usePortfolioProjects } from '@/hooks/usePortfolioProjects';
 
 const categoryFilters: Array<{ key: 'all' | PortfolioCategory; label: { th: string; en: string } }> = [
   { key: 'all', label: { th: 'ทั้งหมด', en: 'All' } },
@@ -18,16 +18,17 @@ const categoryFilters: Array<{ key: 'all' | PortfolioCategory; label: { th: stri
 
 export default function Portfolio() {
   const { t, language } = useLanguage();
+  const portfolioProjects = usePortfolioProjects();
   const [activeCategory, setActiveCategory] = useState<'all' | PortfolioCategory>('all');
   const [selectedTitle, setSelectedTitle] = useState(portfolioProjects[0]?.title.en ?? '');
 
   const visibleProjects = useMemo(() => {
     return portfolioProjects.filter((project) => activeCategory === 'all' || project.categoryKey === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, portfolioProjects]);
 
   const selectedProject = useMemo(() => {
     return visibleProjects.find((project) => project.title.en === selectedTitle) ?? visibleProjects[0] ?? portfolioProjects[0];
-  }, [selectedTitle, visibleProjects]);
+  }, [portfolioProjects, selectedTitle, visibleProjects]);
 
   const selectCategory = (category: 'all' | PortfolioCategory) => {
     setActiveCategory(category);
