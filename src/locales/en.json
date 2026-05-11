@@ -27,38 +27,70 @@
     }
   },
   "services": {
+    "eyebrow": "Electrical Contractor Services",
     "title": "Our Services",
-    "description": "Choose the right service for your site, budget, and electricity usage pattern",
+    "description": "Electrical work for homes, buildings, factories, control panels, solar systems, and existing-system inspections, starting from real site information before quotation.",
     "solar": "Solar Cell Installation",
     "electrical": "Electrical Systems",
     "consultation": "Free Consultation",
     "maintenance": "Maintenance",
     "installation": "Installation & Maintenance",
-    "items": [
-      {
-        "title": "On-grid solar systems",
-        "description": "Size the system from daytime electricity use to reduce bills without batteries."
-      },
-      {
-        "title": "Hybrid solar systems",
-        "description": "Add battery storage for sites that need backup power or more nighttime usage."
-      },
-      {
-        "title": "Building electrical systems",
-        "description": "Wiring, control panels, electrical loads, and safety checks before operation."
-      }
-    ]
+    "checkFit": "See what to prepare"
+  },
+  "serviceSelector": {
+    "eyebrow": "Choose Work Type",
+    "title": "Pick the job type and prepare the right details",
+    "description": "Select a work type to see who it fits, what we handle, and what information to prepare before messaging LINE for a faster assessment.",
+    "tabLabel": "Select service type",
+    "bestFor": "Best for",
+    "includes": "Included work",
+    "prepare": "Prepare these details",
+    "linePrompt": "Suggested LINE message",
+    "lineCta": "Message us on LINE"
   },
   "portfolio": {
-    "title": "Our Portfolio",
+    "title": "Installation work that makes decisions easier",
     "eyebrow": "Our Work",
-    "description": "Sample electrical and solar projects in an easy-to-scan carousel. Business owners can add new projects from the central content file.",
+    "description": "Filter by work type and scan decision details that fit the job, such as scope, loads, controls, savings, or inspection reports.",
     "viewMore": "View Project",
     "previous": "Previous",
     "next": "Next",
     "slide": "Slide",
-    "size": "Project Size",
-    "location": "Area"
+    "size": "System Size",
+    "production": "Monthly Production",
+    "savings": "Monthly Savings",
+    "location": "Area",
+    "filterLabel": "Filter projects by type",
+    "consultSimilar": "Discuss a similar project",
+    "linePrompt": "Suggested message:"
+  },
+  "process": {
+    "eyebrow": "Work Process",
+    "title": "A clear path from survey to handover",
+    "description": "Reduce guesswork with a short, verifiable process before making a real installation decision.",
+    "note": "Every project should start from electricity bills, installation area, and real usage behavior so the system size and budget stay close to the actual site.",
+    "steps": [
+      {
+        "title": "Collect data",
+        "description": "Review units, electricity cost, usage pattern, and the customer's goal."
+      },
+      {
+        "title": "Survey site",
+        "description": "Check installation area, roof direction, electrical load, and site constraints."
+      },
+      {
+        "title": "Design system",
+        "description": "Match system size, equipment, and installation approach to the budget."
+      },
+      {
+        "title": "Quote clearly",
+        "description": "Summarize scope, timeline, cost, and expected savings."
+      },
+      {
+        "title": "Install and hand over",
+        "description": "Install, test, explain operation, and provide required documents."
+      }
+    ]
   },
   "faq": {
     "title": "Frequently Asked Questions",
@@ -110,13 +142,14 @@
     "submit": "Submit",
     "address": "Address",
     "hours": "Business Hours",
-    "pagePreviewTitle": "Company Page",
-    "pagePreviewDescription": "View page details and latest updates from Facebook",
-    "mapTitle": "Office Map"
+    "mapTitle": "Office Map",
+    "mapAddress": "Pinned Location",
+    "openInMaps": "Open in Google Maps"
   },
   "calculator": {
     "title": "Preliminary Solar Sizing Calculator",
-    "subtitle": "Enter monthly electricity usage and daytime usage share to estimate system size, investment, and payback.",
+    "subtitle": "Use bill usage, daytime consumption, and roof conditions to estimate system size, monthly production, investment, and payback for Thailand.",
+    "inputTitle": "Required inputs",
     "monthlyUsage": "Monthly electricity usage",
     "daytimeUsage": "Daytime usage",
     "systemType": "System type",
@@ -131,6 +164,17 @@
     "investment": "Estimated investment",
     "payback": "Estimated payback",
     "years": "years",
+    "month": "month",
+    "roofProfile": "Sun and roof condition",
+    "roof": {
+      "conservative": "Some shade",
+      "standard": "Typical roof",
+      "strong": "Very strong sun"
+    },
+    "decisionSummary": "Decision summary",
+    "saveAbout": "save about",
+    "afterInstallBill": "Estimated bill after install",
+    "billReduction": "about",
     "formulaTitle": "Calculation method",
     "formulaSolar": "System size = monthly kWh × daytime usage share ÷ 120",
     "formulaSavings": "Monthly savings = current bill - bill after usable solar energy is deducted",
@@ -138,7 +182,7 @@
     "onGridDescription": "Best for homes or businesses with strong daytime usage. Energy is produced and consumed immediately to reduce the bill.",
     "hybridDescription": "Best for sites that need backup power or critical loads. Batteries increase flexibility and investment cost.",
     "assumptionsTitle": "Assumptions",
-    "assumptions": "Calculated with residential progressive tariffs, Ft 0.1623 THB/kWh, 7% VAT, and average production of 120 kWh/month per 1 kWp. Actual results depend on roof direction, shade, equipment, and usage behavior.",
+    "assumptionsPrefix": "Calculated with residential progressive tariffs and average production of",
     "disclaimer": "This is a preliminary estimate only. A site survey and real electricity bill are required before issuing a quotation."
   },
   "cookie": {

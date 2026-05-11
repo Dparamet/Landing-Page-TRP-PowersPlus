@@ -1,107 +1,46 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { calculatorAssumptions } from '@/data/siteContent';
 import { useLanguage } from '@/context/LanguageContext';
+import {
+  estimateSolarSystem,
+  formatEstimateNumber,
+  getMonthlyYield,
+  type RoofProfile,
+  type SystemType,
+} from '@/lib/solarEstimator';
 
-type SystemType = 'onGrid' | 'hybrid';
-
-const {
-  ftRate,
-  vatRate,
-  monthlyYieldPerKwp,
-  onGridCostPerKwp,
-  hybridCostPerKwp,
-  lowUsageServiceCharge,
-  normalServiceCharge,
-} = calculatorAssumptions;
-
-function calculateResidentialBill(units: number) {
-  const tiers =
-    units <= 150
-      ? [
-          { limit: 15, rate: 2.3488 },
-          { limit: 10, rate: 2.9882 },
-          { limit: 10, rate: 3.2405 },
-          { limit: 65, rate: 3.6237 },
-          { limit: 50, rate: 3.7171 },
-          { limit: 250, rate: 4.2218 },
-          { limit: Number.POSITIVE_INFINITY, rate: 4.4217 },
-        ]
-      : [
-          { limit: 150, rate: 3.2484 },
-          { limit: 250, rate: 4.2218 },
-          { limit: Number.POSITIVE_INFINITY, rate: 4.4217 },
-        ];
-
-  let remaining = Math.max(0, units);
-  let energyCharge = 0;
-
-  for (const tier of tiers) {
-    const tierUnits = Math.min(remaining, tier.limit);
-    energyCharge += tierUnits * tier.rate;
-    remaining -= tierUnits;
-    if (remaining <= 0) break;
-  }
-
-  const serviceCharge = units <= 150 ? lowUsageServiceCharge : normalServiceCharge;
-  const beforeVat = energyCharge + units * ftRate + serviceCharge;
-
-  return beforeVat * (1 + vatRate);
-}
-
-function formatNumber(value: number, locale: 'th' | 'en', maximumFractionDigits = 0) {
-  return new Intl.NumberFormat(locale === 'th' ? 'th-TH' : 'en-US', { maximumFractionDigits }).format(value);
-}
+const roofProfiles: RoofProfile[] = ['conservative', 'standard', 'strong'];
 
 export default function SolarCalculator() {
   const { t, language } = useLanguage();
   const [monthlyUnits, setMonthlyUnits] = useState(600);
   const [daytimePercent, setDaytimePercent] = useState(65);
   const [systemType, setSystemType] = useState<SystemType>('onGrid');
+  const [roofProfile, setRoofProfile] = useState<RoofProfile>('standard');
 
   const result = useMemo(() => {
-    const daytimeUnits = monthlyUnits * (daytimePercent / 100);
-    const recommendedSize = Math.max(1, Math.ceil((daytimeUnits / monthlyYieldPerKwp) * 10) / 10);
-    const monthlyProduction = recommendedSize * monthlyYieldPerKwp;
-    const usableSolar = Math.min(daytimeUnits, monthlyProduction);
-    const baselineBill = calculateResidentialBill(monthlyUnits);
-    const newBill = calculateResidentialBill(Math.max(0, monthlyUnits - usableSolar));
-    const monthlySavings = Math.max(0, baselineBill - newBill);
-    const costPerKwp = systemType === 'onGrid' ? onGridCostPerKwp : hybridCostPerKwp;
-    const investment = recommendedSize * costPerKwp;
-    const paybackYears = monthlySavings > 0 ? investment / (monthlySavings * 12) : 0;
-
-    return {
-      daytimeUnits,
-      recommendedSize,
-      monthlyProduction,
-      usableSolar,
-      baselineBill,
-      newBill,
-      monthlySavings,
-      investment,
-      paybackYears,
-      costPerKwp,
-    };
-  }, [daytimePercent, monthlyUnits, systemType]);
+    return estimateSolarSystem({ monthlyUnits, daytimePercent, systemType, roofProfile });
+  }, [daytimePercent, monthlyUnits, roofProfile, systemType]);
 
   const activeDescription =
     systemType === 'onGrid' ? t('calculator.onGridDescription') : t('calculator.hybridDescription');
+  const reductionLabel = `${result.billReductionPercent.toFixed(0)}%`;
 
   return (
-    <section id="calculator" className="section-reveal bg-white py-20">
+    <section id="calculator" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mx-auto mb-10 max-w-3xl text-center">
+        <div className="reveal-item mx-auto mb-10 max-w-3xl rounded-2xl bg-white px-5 py-6 text-center shadow-sm sm:px-8">
           <span className="inline-flex rounded-full bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
             {t('nav.calculator')}
           </span>
-          <h2 className="mt-5 text-3xl font-black text-[#12345f] md:text-4xl">{t('calculator.title')}</h2>
-          <p className="mt-4 text-lg leading-relaxed text-slate-600">{t('calculator.subtitle')}</p>
+          <h2 className="mt-5 text-3xl font-black text-[#111827] md:text-4xl">{t('calculator.title')}</h2>
+          <p className="mt-4 text-lg leading-relaxed text-slate-800">{t('calculator.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.88fr_1.12fr]">
           <div className="reveal-item rounded-lg border border-slate-200 bg-[#f8fafc] p-6 shadow-sm">
+            <p className="mb-4 text-sm font-bold text-[#12345f]">{t('calculator.inputTitle')}</p>
             <div className="grid grid-cols-2 gap-3">
               {(['onGrid', 'hybrid'] as SystemType[]).map((type) => (
                 <button
@@ -112,7 +51,7 @@ export default function SolarCalculator() {
                   className={`rounded-lg border px-4 py-4 text-left font-bold transition ${
                     systemType === type
                       ? 'border-[#12345f] bg-[#12345f] text-white shadow-lg shadow-slate-100'
-                      : 'border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-[#f08a24] hover:text-[#b85c00]'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-[#f08a24] hover:text-[#b85c00]'
                   }`}
                 >
                   {t(`calculator.${type}`)}
@@ -124,10 +63,10 @@ export default function SolarCalculator() {
               {activeDescription}
             </p>
 
-            <div className="mt-8 space-y-8">
-                <RangeInput
+            <div className="mt-8 space-y-7">
+              <RangeInput
                 label={t('calculator.monthlyUsage')}
-                value={`${formatNumber(monthlyUnits, language)} kWh`}
+                value={`${formatEstimateNumber(monthlyUnits, language)} kWh`}
                 min={100}
                 max={3000}
                 step={50}
@@ -145,25 +84,48 @@ export default function SolarCalculator() {
               />
             </div>
 
-            <div className="mt-8 rounded-lg border border-slate-200 bg-white p-5 text-slate-700">
-              <p className="font-bold text-[#12345f]">{t('calculator.formulaTitle')}</p>
-              <ul className="mt-3 space-y-2 text-sm leading-relaxed">
-                <li>{t('calculator.formulaSolar')}</li>
-                <li>{t('calculator.formulaSavings')}</li>
-                <li>{t('calculator.formulaPayback')}</li>
-              </ul>
+            <div className="mt-8">
+              <p className="mb-3 text-sm font-bold text-[#12345f]">{t('calculator.roofProfile')}</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {roofProfiles.map((profile) => (
+                  <button
+                    key={profile}
+                    type="button"
+                    onClick={() => setRoofProfile(profile)}
+                    aria-pressed={roofProfile === profile}
+                    className={`rounded-lg border px-3 py-3 text-left text-sm font-bold transition ${
+                      roofProfile === profile
+                        ? 'border-[#b85c00] bg-[#fff7ed] text-[#b85c00]'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-[#f08a24]'
+                    }`}
+                  >
+                    <span className="block">{t(`calculator.roof.${profile}`)}</span>
+                    <span className="mt-1 block text-xs font-semibold text-slate-500">
+                      {getMonthlyYield(profile)} kWh/kWp
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="reveal-item rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-5 rounded-lg border border-orange-100 bg-[#fff7ed] p-5">
+              <p className="text-sm font-bold text-[#b85c00]">{t('calculator.decisionSummary')}</p>
+              <p className="mt-2 text-2xl font-black text-[#12345f]">
+                {result.recommendedSize.toFixed(1)} kWp · {t('calculator.saveAbout')} ฿{formatEstimateNumber(result.monthlySavings, language)} / {t('calculator.month')}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-700">
+                {t('calculator.afterInstallBill')} ฿{formatEstimateNumber(result.newBill, language)} ({t('calculator.billReduction')} {reductionLabel})
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Result label={t('calculator.recommendedSize')} value={`${result.recommendedSize.toFixed(1)} kWp`} highlight />
-              <Result label={t('calculator.investment')} value={`฿${formatNumber(result.investment, language)}`} highlight />
-              <Result label={t('calculator.monthlyProduction')} value={`${formatNumber(result.monthlyProduction, language)} kWh`} />
-              <Result label={t('calculator.usableSolar')} value={`${formatNumber(result.usableSolar, language)} kWh`} />
-              <Result label={t('calculator.baselineBill')} value={`฿${formatNumber(result.baselineBill, language)}`} />
-              <Result label={t('calculator.newBill')} value={`฿${formatNumber(result.newBill, language)}`} />
-              <Result label={t('calculator.monthlySavings')} value={`฿${formatNumber(result.monthlySavings, language)}`} highlight />
+              <Result label={t('calculator.monthlyProduction')} value={`${formatEstimateNumber(result.monthlyProduction, language)} kWh`} />
+              <Result label={t('calculator.usableSolar')} value={`${formatEstimateNumber(result.usableSolar, language)} kWh`} />
+              <Result label={t('calculator.monthlySavings')} value={`฿${formatEstimateNumber(result.monthlySavings, language)}`} highlight />
+              <Result label={t('calculator.investment')} value={`฿${formatEstimateNumber(result.investment, language)}`} />
               <Result
                 label={t('calculator.payback')}
                 value={`${result.paybackYears.toFixed(1)} ${t('calculator.years')}`}
@@ -173,7 +135,9 @@ export default function SolarCalculator() {
 
             <div className="mt-6 rounded-lg border border-orange-100 bg-[#fff7ed] p-5 text-sm leading-relaxed text-slate-700">
               <p className="font-bold text-[#182230]">{t('calculator.assumptionsTitle')}</p>
-              <p className="mt-2">{t('calculator.assumptions')}</p>
+              <p className="mt-2">
+                {t('calculator.assumptionsPrefix')} {result.monthlyYieldPerKwp} kWh/kWp/{t('calculator.month')} · Ft 0.1623 · VAT 7%
+              </p>
               <p className="mt-2 font-semibold text-[#b85c00]">{t('calculator.disclaimer')}</p>
             </div>
           </div>
@@ -222,7 +186,7 @@ function RangeInput({
 function Result({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div
-      className={`rounded-lg border p-4 transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`rounded-lg border p-4 transition-colors duration-200 ${
         highlight ? 'border-orange-200 bg-[#fff7ed]' : 'border-slate-200 bg-[#f8fafc]'
       }`}
     >

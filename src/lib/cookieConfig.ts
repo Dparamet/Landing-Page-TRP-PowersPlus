@@ -38,7 +38,7 @@ export const COOKIE_CATEGORIES: Record<CookieCategoryId, CookieCategory> = {
     descEn: 'Track your activity to show relevant ads',
     descTh: 'ติดตามกิจกรรมของคุณเพื่อแสดงโฆษณาที่เกี่ยวข้อง',
     required: false,
-    examples: ['Facebook Pixel', 'advertising', 'retargeting'],
+    examples: ['advertising', 'retargeting'],
   },
   preferences: {
     id: 'preferences',
@@ -54,12 +54,12 @@ export const COOKIE_CATEGORIES: Record<CookieCategoryId, CookieCategory> = {
 // Customizable Color Theme - Orange & Blue Brand Colors
 export const COOKIE_COLORS = {
   // Banner/Modal backgrounds - Orange to Blue gradient feel
-  bgPrimary: 'bg-gradient-to-br from-orange-50 to-blue-50',
-  bgSecondary: 'bg-white/80',
-  bgTertiary: 'bg-orange-50/50',
+  bgPrimary: 'bg-white',
+  bgSecondary: 'bg-[#f8fafc]',
+  bgTertiary: 'bg-[#fff7ed]',
 
   // Borders
-  borderPrimary: 'border-orange-200',
+  borderPrimary: 'border-slate-200',
   borderHover: 'border-orange-400',
 
   // Text colors
@@ -69,9 +69,9 @@ export const COOKIE_COLORS = {
 
   // Buttons
   btnPrimaryBg: 'bg-[#b85c00]',
-  btnPrimaryBgHover: 'hover:bg-[#8a4300]',
+  btnPrimaryBgHover: 'hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-md active:translate-y-0',
   btnSecondaryBg: 'bg-blue-50',
-  btnSecondaryBgHover: 'hover:bg-blue-100',
+  btnSecondaryBgHover: 'hover:-translate-y-0.5 hover:bg-blue-100 active:translate-y-0',
   btnTertiaryBg: 'bg-transparent',
 
   // Status colors
@@ -82,7 +82,7 @@ export const COOKIE_COLORS = {
 
   // Accent colors
   badgeBg: 'bg-orange-100',
-  badgeBorder: 'border-orange-300',
+  badgeBorder: 'border-orange-200',
   badgeText: 'text-orange-700',
 };
 
