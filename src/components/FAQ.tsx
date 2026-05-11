@@ -12,11 +12,11 @@ export default function FAQ() {
   return (
     <section id="faq" className="section-reveal bg-transparent py-20">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="mb-4 text-4xl font-black text-[#12345f] md:text-5xl">
+        <div className="mb-16 rounded-2xl bg-white px-5 py-6 text-center shadow-sm sm:px-8">
+          <h2 className="mb-4 text-4xl font-black text-[#111827] md:text-5xl">
             {t('faq.title')}
           </h2>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-800">
             {t('faq.subtitle')}
           </p>
         </div>
@@ -52,12 +52,12 @@ export default function FAQ() {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="mb-6 text-slate-600">
+          <p className="mb-6 rounded-2xl bg-white px-5 py-4 text-slate-800 shadow-sm">
             {t('faq.cta')}
           </p>
           <a
             href="#contact"
-            className="inline-block rounded-lg bg-[#b85c00] px-8 py-4 font-black text-white transition hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-lg"
+            className="inline-block rounded-lg bg-[#b85c00] px-8 py-4 font-black text-white transition-colors duration-200 hover:bg-[#8a4300]"
           >
             {t('contact.title')}
           </a>

@@ -1,5 +1,6 @@
 import type { Database } from '@/lib/supabase/database.types';
 import type { FaqItem } from '@/lib/faqs';
+import { fillEnglish } from './autoTranslate.js';
 
 export type FaqInsert = Database['public']['Tables']['faq_items']['Insert'];
 export type FaqUpdate = Database['public']['Tables']['faq_items']['Update'];
@@ -66,11 +67,11 @@ export function mapFaqFormToInsert(values: FaqFormValues): FaqInsert {
   return {
     question: {
       th: values.questionTh,
-      en: values.questionEn || values.questionTh,
+      en: fillEnglish(values.questionTh, values.questionEn),
     },
     answer: {
       th: values.answerTh,
-      en: values.answerEn || values.answerTh,
+      en: fillEnglish(values.answerTh, values.answerEn),
     },
     sort_order: values.sortOrder,
     published: values.published,

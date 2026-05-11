@@ -20,10 +20,27 @@ describe('services admin helpers', () => {
   });
 
   it('maps form values to a Supabase update shape', () => {
-    const update = mapServiceFormToUpsert({ ...mapServiceToForm(serviceCategories[0]), titleTh: 'แก้ไขบริการ' }, serviceCategories[0]);
+    const update = mapServiceFormToUpsert(
+      {
+        ...mapServiceToForm(serviceCategories[0]),
+        titleTh: 'แก้ไขบริการ',
+        includes: [{ th: 'งานใหม่', en: 'New work' }],
+        prepare: [{ th: 'เอกสารใหม่', en: 'New document' }],
+      },
+      serviceCategories[0],
+    );
 
     assert.equal(update.id, 'residential');
     assert.deepEqual(update.title, { th: 'แก้ไขบริการ', en: serviceCategories[0].title.en });
+    assert.deepEqual(update.includes, [{ th: 'งานใหม่', en: 'New work' }]);
+    assert.deepEqual(update.prepare, [{ th: 'เอกสารใหม่', en: 'New document' }]);
+  });
+
+  it('does not send soft-delete columns when saving services', () => {
+    const update = mapServiceFormToUpsert(mapServiceToForm(serviceCategories[0]), serviceCategories[0]);
+
+    assert.equal('deleted_at' in update, false);
+    assert.equal('purge_after' in update, false);
   });
 
   it('applies database rows over static services and filters unpublished rows', () => {
@@ -40,6 +57,8 @@ describe('services admin helpers', () => {
         accent: 'blue',
         sort_order: 10,
         published: true,
+        deleted_at: null,
+        purge_after: null,
         created_at: null,
         updated_at: null,
       },
@@ -55,6 +74,8 @@ describe('services admin helpers', () => {
         accent: 'blue',
         sort_order: 20,
         published: false,
+        deleted_at: null,
+        purge_after: null,
         created_at: null,
         updated_at: null,
       },

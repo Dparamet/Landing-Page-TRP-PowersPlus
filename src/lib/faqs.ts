@@ -13,6 +13,8 @@ export type FaqItem = {
   answer: LocalizedText;
   sortOrder: number;
   published: boolean;
+  deletedAt: string | null;
+  purgeAfter: string | null;
 };
 
 export type TranslationFaq = {
@@ -44,6 +46,8 @@ export function buildDefaultFaqItems(thFaqs: TranslationFaq[], enFaqs: Translati
     },
     sortOrder: (index + 1) * 10,
     published: true,
+    deletedAt: null,
+    purgeAfter: null,
   }));
 }
 
@@ -53,7 +57,7 @@ export function mapFaqRows(rows: FaqRow[], fallback: FaqItem[], includeUnpublish
   }
 
   return rows
-    .filter((row) => includeUnpublished || row.published)
+    .filter((row) => includeUnpublished || (row.published && !row.deleted_at))
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((row, index) => {
       const fallbackItem = fallback[index] ?? fallback[0] ?? {
@@ -67,6 +71,8 @@ export function mapFaqRows(rows: FaqRow[], fallback: FaqItem[], includeUnpublish
         answer: asLocalizedText(row.answer, fallbackItem.answer),
         sortOrder: row.sort_order,
         published: row.published,
+        deletedAt: row.deleted_at,
+        purgeAfter: row.purge_after,
       };
     });
 }

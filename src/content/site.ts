@@ -8,13 +8,7 @@ export type ManagedImage = {
   alt: LocalizedText;
 };
 
-export type ServiceCategoryKey =
-  | 'residential'
-  | 'building'
-  | 'factory'
-  | 'solar'
-  | 'maintenance'
-  | 'controlPanel';
+export type ServiceCategoryKey = string;
 
 export type ServiceCategory = {
   key: ServiceCategoryKey;

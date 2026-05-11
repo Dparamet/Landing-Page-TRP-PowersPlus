@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { serviceCategories as staticServiceCategories, type ServiceCategory } from '@/content/site';
-import { applyServiceRows, type ServiceRow } from '@/lib/admin/services';
+import { serviceCategories as staticServiceCategories } from '@/content/site';
+import { applyServiceRows, type ServiceCategory, type ServiceRow } from '@/lib/admin/services';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';

@@ -2,14 +2,18 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 
-import { serviceCategories } from '@/content/site';
+import { serviceCategories as fallbackServiceCategories } from '@/content/site';
+import { useServiceCategories } from '@/hooks/useServiceCategories';
 import {
   defaultPortfolioPostFormValues,
   mapPortfolioPostFormToInsert,
+  mapPortfolioPostFormToUpdate,
+  mapPortfolioProjectRowToForm,
   validatePortfolioPost,
   type PortfolioPostFormValues,
   type PortfolioProjectRow,
 } from '@/lib/admin/portfolioPosts';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
@@ -18,6 +22,7 @@ const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
 
 export default function PortfolioPostManager() {
+  const serviceCategories = useServiceCategories();
   const [values, setValues] = useState<PortfolioPostFormValues>(defaultPortfolioPostFormValues);
   const [posts, setPosts] = useState<PortfolioProjectRow[]>([]);
   const [status, setStatus] = useState<SaveStatus>('loading');
@@ -53,6 +58,7 @@ export default function PortfolioPostManager() {
 
     setPosts((data as PortfolioProjectRow[] | null) ?? []);
     setStatus('idle');
+    requestPreviewRefresh();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -77,18 +83,22 @@ export default function PortfolioPostManager() {
     setStatus('saving');
     setMessage('');
 
-    const { error } = await supabase.from('portfolio_projects').insert(mapPortfolioPostFormToInsert(validation.value));
+    const saveQuery = validation.value.id
+      ? supabase.from('portfolio_projects').update(mapPortfolioPostFormToUpdate(validation.value)).eq('id', validation.value.id)
+      : supabase.from('portfolio_projects').insert(mapPortfolioPostFormToInsert(validation.value));
+    const { error } = await saveQuery;
 
     if (error) {
       setStatus('error');
-      setMessage(`สร้างโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(`บันทึกโพสต์ไม่สำเร็จ: ${error.message}`);
       return;
     }
 
     setValues(defaultPortfolioPostFormValues);
     setStatus('saved');
-    setMessage('สร้างโพสต์ผลงานแล้ว');
+    setMessage(validation.value.id ? 'บันทึกโพสต์ผลงานแล้ว' : 'สร้างโพสต์ผลงานแล้ว');
     await loadPosts();
+    requestPreviewRefresh();
   }
 
   async function softDeletePost(postId: string) {
@@ -112,6 +122,7 @@ export default function PortfolioPostManager() {
     setMessage('ย้ายโพสต์ไปถังพักแล้ว สามารถกู้คืนได้ภายใน 30 วัน');
     setStatus('saved');
     await loadPosts();
+    requestPreviewRefresh();
   }
 
   async function restorePost(postId: string) {
@@ -134,6 +145,30 @@ export default function PortfolioPostManager() {
     setMessage('กู้คืนโพสต์แล้ว');
     setStatus('saved');
     await loadPosts();
+    requestPreviewRefresh();
+  }
+
+  async function hardDeletePost(postId: string) {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      return;
+    }
+
+    const { error } = await supabase.rpc('hard_delete_portfolio_project', {
+      project_id: postId,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`ลบถาวรโพสต์ไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setMessage('ลบถาวรโพสต์แล้ว');
+    setStatus('saved');
+    await loadPosts();
+    requestPreviewRefresh();
   }
 
   const isBusy = status === 'loading' || status === 'saving';
@@ -143,7 +178,7 @@ export default function PortfolioPostManager() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">โพสต์ผลงาน</h2>
-          <p className="mt-1 text-sm text-slate-600">สร้างโพสต์ใหม่ ลบแบบพักไว้ 30 วัน และกู้คืนได้ก่อนครบกำหนด</p>
+          <p className="mt-1 text-sm text-slate-600">สร้าง แก้ไข ซ่อน ลบแบบพักไว้ 30 วัน และกู้คืนโพสต์ผลงาน</p>
         </div>
         <button
           type="button"
@@ -164,7 +199,7 @@ export default function PortfolioPostManager() {
             onChange={(event) => updateField('categoryKey', event.target.value as PortfolioPostFormValues['categoryKey'])}
             className={`${inputClass} mt-2`}
           >
-            {serviceCategories.map((service) => (
+            {(serviceCategories.length > 0 ? serviceCategories : fallbackServiceCategories).map((service) => (
               <option key={service.key} value={service.key}>
                 {service.shortTitle.th}
               </option>
@@ -188,6 +223,10 @@ export default function PortfolioPostManager() {
         <Field label="พื้นที่ ภาษาอังกฤษ" value={values.locationEn} onChange={(value) => updateField('locationEn', value)} />
         <Field label="Metric หลัก ภาษาไทย" value={values.metricValueTh} onChange={(value) => updateField('metricValueTh', value)} />
         <Field label="Metric หลัก ภาษาอังกฤษ" value={values.metricValueEn} onChange={(value) => updateField('metricValueEn', value)} />
+        <label className="block text-sm font-semibold text-slate-800">
+          ลำดับ
+          <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
+        </label>
         <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
         <Textarea label="คำอธิบาย ภาษาอังกฤษ" value={values.descriptionEn} onChange={(value) => updateField('descriptionEn', value)} />
         <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
@@ -204,8 +243,20 @@ export default function PortfolioPostManager() {
           disabled={isBusy}
           className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {status === 'saving' ? 'กำลังสร้างโพสต์...' : 'สร้างโพสต์'}
+          {status === 'saving' ? 'กำลังบันทึกโพสต์...' : values.id ? 'บันทึกโพสต์' : 'สร้างโพสต์'}
         </button>
+        {values.id ? (
+          <button
+            type="button"
+            onClick={() => {
+              setValues(defaultPortfolioPostFormValues);
+              setMessage('');
+            }}
+            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
+          >
+            เริ่มโพสต์ใหม่
+          </button>
+        ) : null}
       </form>
 
       {message ? (
@@ -236,21 +287,42 @@ export default function PortfolioPostManager() {
                   </p>
                 </div>
                 {isDeleted ? (
-                  <button
-                    type="button"
-                    onClick={() => void restorePost(post.id)}
-                    className="rounded-lg border border-emerald-300 px-3 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
-                  >
-                    กู้คืน
-                  </button>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => void restorePost(post.id)}
+                      className="rounded-lg border border-emerald-300 px-3 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
+                    >
+                      กู้คืน
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void hardDeletePost(post.id)}
+                      className="rounded-lg border border-red-500 bg-red-50 px-3 py-2 text-sm font-bold text-red-800 transition hover:bg-red-100"
+                    >
+                      ลบถาวร
+                    </button>
+                  </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => void softDeletePost(post.id)}
-                    className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50"
-                  >
-                    ลบแบบพักไว้ 30 วัน
-                  </button>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setValues(mapPortfolioProjectRowToForm(post));
+                        setMessage('');
+                      }}
+                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
+                    >
+                      แก้ไข
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void softDeletePost(post.id)}
+                      className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50"
+                    >
+                      ลบแบบพักไว้ 30 วัน
+                    </button>
+                  </div>
                 )}
               </article>
             );

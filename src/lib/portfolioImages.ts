@@ -20,6 +20,10 @@ export function applyPortfolioImageOverrides(
   const overrideMap = new Map<string, PortfolioImageOverride>();
 
   for (const override of overrides) {
+    if (override.deleted_at) {
+      continue;
+    }
+
     overrideMap.set(`${override.project_key}:${override.image_slot}`, override);
   }
 

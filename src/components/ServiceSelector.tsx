@@ -47,7 +47,7 @@ export default function ServiceSelector() {
                   aria-selected={selected}
                   aria-controls="selected-service-panel"
                   onClick={() => setActiveKey(service.key)}
-                  className={`rounded-lg border p-4 text-left transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 ${
+                  className={`rounded-lg border p-4 text-left transition-colors duration-200 ${
                     selected
                       ? 'border-[#12345f] bg-[#12345f] text-white shadow-lg shadow-slate-200'
                       : 'border-slate-200 bg-white text-[#12345f] hover:border-[#f08a24] hover:bg-[#fff7ed]'
@@ -90,7 +90,7 @@ export default function ServiceSelector() {
                 href={companyProfile.lineUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-md shadow-orange-100 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-lg active:translate-y-0"
+                className="inline-flex items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#8a4300]"
               >
                 {t('serviceSelector.lineCta')}
               </a>

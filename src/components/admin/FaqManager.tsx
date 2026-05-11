@@ -10,6 +10,7 @@ import {
   validateFaqForm,
   type FaqFormValues,
 } from '@/lib/admin/faqs';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { buildDefaultFaqItems, mapFaqRows, type FaqItem, type FaqRow } from '@/lib/faqs';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import en from '@/locales/en.json';
@@ -54,6 +55,7 @@ export default function FaqManager() {
     setValues(nextItems[0] ? mapFaqItemToForm(nextItems[0]) : createBlankFaqForm(10));
     setStatus('idle');
     setMessage('');
+    requestPreviewRefresh();
   }
 
   function updateField<K extends keyof FaqFormValues>(field: K, value: FaqFormValues[K]) {
@@ -107,9 +109,10 @@ export default function FaqManager() {
     setStatus('saved');
     setMessage('บันทึก FAQ แล้ว');
     await loadFaqs();
+    requestPreviewRefresh();
   }
 
-  async function deleteFaq() {
+  async function softDeleteFaq() {
     if (!values.id) return;
 
     const supabase = getSupabaseBrowserClient();
@@ -123,7 +126,10 @@ export default function FaqManager() {
     setStatus('saving');
     setMessage('');
 
-    const { error } = await supabase.from('faq_items').delete().eq('id', values.id);
+    const { error } = await supabase.rpc('soft_delete_faq_item', {
+      item_id: values.id,
+      retention_days: 30,
+    });
 
     if (error) {
       setStatus('error');
@@ -132,8 +138,69 @@ export default function FaqManager() {
     }
 
     setStatus('saved');
-    setMessage('ลบ FAQ แล้ว');
+    setMessage('ย้าย FAQ ไปถังพักแล้ว สามารถกู้คืนได้ภายใน 30 วัน');
     await loadFaqs();
+    requestPreviewRefresh();
+  }
+
+  async function restoreFaq() {
+    if (!values.id) return;
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.rpc('restore_faq_item', {
+      item_id: values.id,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`กู้คืน FAQ ไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('กู้คืน FAQ แล้ว');
+    await loadFaqs();
+    requestPreviewRefresh();
+  }
+
+  async function hardDeleteFaq() {
+    if (!values.id) return;
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.rpc('hard_delete_faq_item', {
+      item_id: values.id,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`ลบถาวร FAQ ไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('ลบถาวร FAQ แล้ว');
+    await loadFaqs();
+    requestPreviewRefresh();
   }
 
   return (
@@ -144,11 +211,12 @@ export default function FaqManager() {
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข และซ่อนคำถามในหน้า FAQ</p>
         </div>
         <button
-          type="button"
-          onClick={startNewFaq}
+          type="submit"
+          form="faq-manager-form"
+          disabled={status === 'saving' || status === 'loading'}
           className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]"
         >
-          เพิ่มคำถาม
+          {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึก FAQ' : 'สร้าง FAQ'}
         </button>
       </div>
 
@@ -170,14 +238,14 @@ export default function FaqManager() {
               >
                 <span className="block text-sm font-bold">{item.question.th}</span>
                 <span className={`mt-1 block text-xs ${values.id === item.id ? 'text-blue-100' : 'text-slate-500'}`}>
-                  ลำดับ {item.sortOrder} · {item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
+                  ลำดับ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
                 </span>
               </button>
             ))
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
+        <form id="faq-manager-form" onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
           <Field label="คำถาม ภาษาไทย" value={values.questionTh} onChange={(value) => updateField('questionTh', value)} />
           <Field label="คำถาม ภาษาอังกฤษ" value={values.questionEn} onChange={(value) => updateField('questionEn', value)} />
           <Textarea label="คำตอบ ภาษาไทย" value={values.answerTh} onChange={(value) => updateField('answerTh', value)} />
@@ -203,20 +271,39 @@ export default function FaqManager() {
           </label>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
             <button
-              type="submit"
-              disabled={status === 'saving' || status === 'loading'}
+              type="button"
+              onClick={startNewFaq}
+              disabled={status === 'saving'}
               className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึก FAQ' : 'สร้าง FAQ'}
+              เพิ่มคำถาม
             </button>
             <button
               type="button"
-              onClick={() => void deleteFaq()}
+              onClick={() => void softDeleteFaq()}
               disabled={!values.id || status === 'saving'}
               className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              ลบ FAQ
+              ลบแบบพักไว้ 30 วัน
             </button>
+            <button
+              type="button"
+              onClick={() => void restoreFaq()}
+              disabled={!values.id || status === 'saving'}
+              className="rounded-lg border border-emerald-200 px-4 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              กู้คืน FAQ
+            </button>
+            {items.find((item) => item.id === values.id)?.deletedAt ? (
+              <button
+                type="button"
+                onClick={() => void hardDeleteFaq()}
+                disabled={!values.id || status === 'saving'}
+                className="rounded-lg border border-red-500 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-800 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                ลบถาวร
+              </button>
+            ) : null}
           </div>
         </form>
       </div>

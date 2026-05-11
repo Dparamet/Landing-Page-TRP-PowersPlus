@@ -1,5 +1,6 @@
 import type { Database } from '@/lib/supabase/database.types';
 import type { ProcessStep } from '@/lib/processSteps';
+import { fillEnglish } from './autoTranslate.js';
 
 export type ProcessStepInsert = Database['public']['Tables']['process_steps']['Insert'];
 export type ProcessStepUpdate = Database['public']['Tables']['process_steps']['Update'];
@@ -66,11 +67,11 @@ export function mapProcessStepFormToInsert(values: ProcessStepFormValues): Proce
   return {
     title: {
       th: values.titleTh,
-      en: values.titleEn || values.titleTh,
+      en: fillEnglish(values.titleTh, values.titleEn),
     },
     description: {
       th: values.descriptionTh,
-      en: values.descriptionEn || values.descriptionTh,
+      en: fillEnglish(values.descriptionTh, values.descriptionEn),
     },
     sort_order: values.sortOrder,
     published: values.published,

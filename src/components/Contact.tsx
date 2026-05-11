@@ -3,65 +3,14 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useContactItems } from '@/hooks/useContactItems';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function Contact() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const companyProfile = useCompanyProfile();
+  const contactItems = useContactItems(companyProfile);
   const [copiedType, setCopiedType] = useState<string | null>(null);
-
-  const contactLinks = [
-    {
-      type: 'company',
-      icon: 'company',
-      label: t('contact.company'),
-      value: companyProfile.name,
-      copyValue: companyProfile.name,
-    },
-    {
-      type: 'phone',
-      icon: 'phone',
-      label: t('contact.phone'),
-      value: companyProfile.phoneDisplay,
-      copyValue: companyProfile.phoneHref,
-      href: `tel:${companyProfile.phoneHref}`,
-    },
-    {
-      type: 'line',
-      icon: 'line',
-      label: 'Line',
-      value: companyProfile.lineId,
-      copyValue: companyProfile.lineId,
-      href: companyProfile.lineUrl,
-      external: true,
-    },
-    {
-      type: 'facebook',
-      icon: 'facebook',
-      label: 'Facebook',
-      value: companyProfile.facebookDisplay,
-      copyValue: companyProfile.facebookUrl,
-      href: companyProfile.facebookUrl,
-      external: true,
-    },
-    {
-      type: 'email',
-      icon: 'email',
-      label: t('contact.email'),
-      value: companyProfile.email,
-      copyValue: companyProfile.email,
-      href: `mailto:${companyProfile.email}`,
-    },
-    {
-      type: 'address',
-      icon: 'address',
-      label: t('contact.address'),
-      value: companyProfile.address,
-      copyValue: companyProfile.address,
-      href: companyProfile.googleMapsSearchUrl,
-      external: true,
-    },
-  ];
 
   const copyContact = async (type: string, value: string) => {
     try {
@@ -131,16 +80,16 @@ export default function Contact() {
               <p className="mt-1 text-sm text-slate-600">{t('contact.description')}</p>
             </div>
             <div className="grid divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-1 lg:divide-x-0 lg:divide-y">
-              {contactLinks.map((contact, index) => (
-                <div key={index} className="group flex min-h-20 items-center gap-3 p-3 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#f4f8ff]">
+              {contactItems.map((contact) => (
+                <div key={contact.id} className="group flex min-h-20 items-center gap-3 p-3 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#f4f8ff]">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#f4f8ff] text-center transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:bg-white">
                     {renderIcon(contact.icon)}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <span className="block text-xs font-bold text-[#182230]">{contact.label}</span>
+                    <span className="block text-xs font-bold text-[#182230]">{contact.label[language]}</span>
                     <span className="mt-0.5 block truncate text-sm font-semibold text-[#b85c00]">
-                      {contact.value}
+                      {contact.value[language]}
                     </span>
                   </div>
 
@@ -151,7 +100,7 @@ export default function Contact() {
                         target={contact.external ? '_blank' : undefined}
                         rel={contact.external ? 'noopener noreferrer' : undefined}
                         className="rounded-md bg-[#12345f] px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-[#1e4f8f] hover:shadow-md active:translate-y-0"
-                        aria-label={`${t('contact.open')} ${contact.label}`}
+                        aria-label={`${t('contact.open')} ${contact.label[language]}`}
                       >
                         {t('contact.open')}
                       </a>
@@ -161,7 +110,7 @@ export default function Contact() {
                         type="button"
                         onClick={() => copyContact(contact.type, contact.copyValue)}
                         className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-[#12345f] transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-[#f08a24] hover:bg-[#fff7ed] hover:text-[#b85c00] active:translate-y-0"
-                        aria-label={`${t('contact.copy')} ${contact.label}`}
+                        aria-label={`${t('contact.copy')} ${contact.label[language]}`}
                       >
                         {copiedType === contact.type ? t('contact.copied') : t('contact.copy')}
                       </button>

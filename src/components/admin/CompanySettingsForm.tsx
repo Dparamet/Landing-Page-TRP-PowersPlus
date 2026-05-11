@@ -10,6 +10,7 @@ import {
   type CompanySettingsFormValues,
   type SiteSettingsRow,
 } from '@/lib/admin/companySettings';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
@@ -49,6 +50,7 @@ export default function CompanySettingsForm() {
       setValues(mapSiteSettingsRowToForm(data as SiteSettingsRow | null));
       setStatus('idle');
       setMessage('');
+      requestPreviewRefresh();
     }
 
     void loadSettings();
@@ -107,6 +109,7 @@ export default function CompanySettingsForm() {
     setValues(validation.value);
     setStatus('saved');
     setMessage('บันทึกข้อมูลบริษัทแล้ว');
+    requestPreviewRefresh();
   }
 
   const isBusy = status === 'loading' || status === 'saving';

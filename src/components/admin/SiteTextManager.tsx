@@ -2,14 +2,9 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
-import {
-  createBlankSiteTextForm,
-  mapSiteTextFormToUpsert,
-  mapSiteTextToForm,
-  validateSiteTextForm,
-  type SiteTextFormValues,
-} from '@/lib/admin/siteTexts';
-import { mapSiteTextRows, type SiteText, type SiteTextRow } from '@/lib/siteTexts';
+import { createBlankSiteTextForm, mapSiteTextFormToUpsert, mapSiteTextToForm, validateSiteTextForm, type SiteTextFormValues } from '@/lib/admin/siteTexts';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
+import { mapSiteTextRowList, type SiteText, type SiteTextRow } from '@/lib/siteTexts';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
@@ -51,15 +46,13 @@ export default function SiteTextManager() {
       return;
     }
 
-    const mapped = mapSiteTextRows((data as SiteTextRow[] | null) ?? []);
-    const nextItems = Object.entries(mapped)
-      .map(([key, value]) => ({ key, value }))
-      .sort((a, b) => a.key.localeCompare(b.key));
+    const nextItems = mapSiteTextRowList((data as SiteTextRow[] | null) ?? [], true).sort((a, b) => a.key.localeCompare(b.key));
 
     setItems(nextItems);
     setValues(nextItems[0] ? mapSiteTextToForm(nextItems[0]) : createBlankSiteTextForm());
     setStatus('idle');
     setMessage('');
+    requestPreviewRefresh();
   }
 
   function updateField<K extends keyof SiteTextFormValues>(field: K, value: SiteTextFormValues[K]) {
@@ -99,31 +92,7 @@ export default function SiteTextManager() {
     setStatus('saved');
     setMessage('บันทึกข้อความแล้ว รีเฟรชหน้าเว็บเพื่อดูผลล่าสุด');
     await loadSiteTexts();
-  }
-
-  async function deleteText() {
-    if (!values.key) return;
-
-    const supabase = getSupabaseBrowserClient();
-
-    if (!supabase) {
-      setStatus('error');
-      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
-      return;
-    }
-
-    setStatus('saving');
-    const { error } = await supabase.from('site_texts').delete().eq('key', values.key);
-
-    if (error) {
-      setStatus('error');
-      setMessage(`ลบข้อความไม่สำเร็จ: ${error.message}`);
-      return;
-    }
-
-    setStatus('saved');
-    setMessage('ลบข้อความแล้ว ระบบจะ fallback ไปใช้ไฟล์ภาษาเดิม');
-    await loadSiteTexts();
+    requestPreviewRefresh();
   }
 
   return (
@@ -134,14 +103,12 @@ export default function SiteTextManager() {
           <p className="mt-1 text-sm text-slate-600">แก้ข้อความหลักของหน้าเว็บ เช่น Hero, Section title, Footer และ CTA</p>
         </div>
         <button
-          type="button"
-          onClick={() => {
-            setValues(createBlankSiteTextForm());
-            setMessage('');
-          }}
-          className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]"
+          type="submit"
+          form="site-text-manager-form"
+          disabled={status === 'saving' || status === 'loading'}
+          className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          เพิ่ม key ใหม่
+          {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
         </button>
       </div>
 
@@ -173,27 +140,10 @@ export default function SiteTextManager() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
-          <Field label="Key" value={values.key} onChange={(value) => updateField('key', value)} />
+        <form id="site-text-manager-form" onSubmit={handleSubmit} className="grid gap-4" noValidate>
+          <Field label="Key" value={values.key} onChange={(value) => updateField('key', value)} readOnly />
           <Textarea label="ข้อความ ภาษาไทย" value={values.textTh} onChange={(value) => updateField('textTh', value)} />
           <Textarea label="ข้อความ ภาษาอังกฤษ" value={values.textEn} onChange={(value) => updateField('textEn', value)} />
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              type="submit"
-              disabled={status === 'saving' || status === 'loading'}
-              className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
-            </button>
-            <button
-              type="button"
-              onClick={() => void deleteText()}
-              disabled={!values.key || status === 'saving'}
-              className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              ลบ key นี้
-            </button>
-          </div>
         </form>
       </div>
 
@@ -211,11 +161,11 @@ export default function SiteTextManager() {
   );
 }
 
-function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+function Field({ label, value, onChange, readOnly = false }: { label: string; value: string; onChange: (value: string) => void; readOnly?: boolean }) {
   return (
     <label className="block text-sm font-semibold text-slate-800">
       {label}
-      <input value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2`} />
+      <input value={value} readOnly={readOnly} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2 ${readOnly ? 'bg-slate-100 text-slate-500' : ''}`} />
     </label>
   );
 }

@@ -25,8 +25,10 @@ export type Database = {
         Row: {
           answer: Json;
           created_at: string | null;
+          deleted_at: string | null;
           id: string;
           published: boolean;
+          purge_after: string | null;
           question: Json;
           sort_order: number;
           updated_at: string | null;
@@ -34,8 +36,10 @@ export type Database = {
         Insert: {
           answer: Json;
           created_at?: string | null;
+          deleted_at?: string | null;
           id?: string;
           published?: boolean;
+          purge_after?: string | null;
           question: Json;
           sort_order?: number;
           updated_at?: string | null;
@@ -43,8 +47,10 @@ export type Database = {
         Update: {
           answer?: Json;
           created_at?: string | null;
+          deleted_at?: string | null;
           id?: string;
           published?: boolean;
+          purge_after?: string | null;
           question?: Json;
           sort_order?: number;
           updated_at?: string | null;
@@ -87,6 +93,57 @@ export type Database = {
           public_url?: string;
           size_bytes?: number | null;
           updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      contact_items: {
+        Row: {
+          copy_value: string | null;
+          created_at: string | null;
+          deleted_at: string | null;
+          external: boolean;
+          href: string | null;
+          icon: string;
+          id: string;
+          label: Json;
+          published: boolean;
+          purge_after: string | null;
+          sort_order: number;
+          type: string;
+          updated_at: string | null;
+          value: Json;
+        };
+        Insert: {
+          copy_value?: string | null;
+          created_at?: string | null;
+          deleted_at?: string | null;
+          external?: boolean;
+          href?: string | null;
+          icon?: string;
+          id?: string;
+          label: Json;
+          published?: boolean;
+          purge_after?: string | null;
+          sort_order?: number;
+          type: string;
+          updated_at?: string | null;
+          value: Json;
+        };
+        Update: {
+          copy_value?: string | null;
+          created_at?: string | null;
+          deleted_at?: string | null;
+          external?: boolean;
+          href?: string | null;
+          icon?: string;
+          id?: string;
+          label?: Json;
+          published?: boolean;
+          purge_after?: string | null;
+          sort_order?: number;
+          type?: string;
+          updated_at?: string | null;
+          value?: Json;
         };
         Relationships: [];
       };
@@ -169,28 +226,34 @@ export type Database = {
         Row: {
           alt_th: string;
           created_at: string | null;
+          deleted_at: string | null;
           image_slot: 'cover' | 'before' | 'during' | 'after';
           image_url: string;
           media_asset_id: string | null;
           project_key: string;
+          purge_after: string | null;
           updated_at: string | null;
         };
         Insert: {
           alt_th?: string;
           created_at?: string | null;
+          deleted_at?: string | null;
           image_slot: 'cover' | 'before' | 'during' | 'after';
           image_url: string;
           media_asset_id?: string | null;
           project_key: string;
+          purge_after?: string | null;
           updated_at?: string | null;
         };
         Update: {
           alt_th?: string;
           created_at?: string | null;
+          deleted_at?: string | null;
           image_slot?: 'cover' | 'before' | 'during' | 'after';
           image_url?: string;
           media_asset_id?: string | null;
           project_key?: string;
+          purge_after?: string | null;
           updated_at?: string | null;
         };
         Relationships: [
@@ -206,27 +269,33 @@ export type Database = {
       process_steps: {
         Row: {
           created_at: string | null;
+          deleted_at: string | null;
           description: Json;
           id: string;
           published: boolean;
+          purge_after: string | null;
           sort_order: number;
           title: Json;
           updated_at: string | null;
         };
         Insert: {
           created_at?: string | null;
+          deleted_at?: string | null;
           description: Json;
           id?: string;
           published?: boolean;
+          purge_after?: string | null;
           sort_order?: number;
           title: Json;
           updated_at?: string | null;
         };
         Update: {
           created_at?: string | null;
+          deleted_at?: string | null;
           description?: Json;
           id?: string;
           published?: boolean;
+          purge_after?: string | null;
           sort_order?: number;
           title?: Json;
           updated_at?: string | null;
@@ -238,12 +307,14 @@ export type Database = {
           accent: 'orange' | 'blue';
           best_for: Json;
           created_at: string | null;
+          deleted_at: string | null;
           description: Json;
           id: string;
           includes: Json;
           line_message: Json;
           prepare: Json;
           published: boolean;
+          purge_after: string | null;
           short_title: Json;
           sort_order: number;
           title: Json;
@@ -253,12 +324,14 @@ export type Database = {
           accent?: 'orange' | 'blue';
           best_for: Json;
           created_at?: string | null;
+          deleted_at?: string | null;
           description: Json;
           id: string;
           includes?: Json;
           line_message: Json;
           prepare?: Json;
           published?: boolean;
+          purge_after?: string | null;
           short_title: Json;
           sort_order?: number;
           title: Json;
@@ -268,12 +341,14 @@ export type Database = {
           accent?: 'orange' | 'blue';
           best_for?: Json;
           created_at?: string | null;
+          deleted_at?: string | null;
           description?: Json;
           id?: string;
           includes?: Json;
           line_message?: Json;
           prepare?: Json;
           published?: boolean;
+          purge_after?: string | null;
           short_title?: Json;
           sort_order?: number;
           title?: Json;
@@ -335,19 +410,25 @@ export type Database = {
       site_texts: {
         Row: {
           created_at: string | null;
+          deleted_at: string | null;
           key: string;
+          purge_after: string | null;
           updated_at: string | null;
           value: Json;
         };
         Insert: {
           created_at?: string | null;
+          deleted_at?: string | null;
           key: string;
+          purge_after?: string | null;
           updated_at?: string | null;
           value: Json;
         };
         Update: {
           created_at?: string | null;
+          deleted_at?: string | null;
           key?: string;
+          purge_after?: string | null;
           updated_at?: string | null;
           value?: Json;
         };
@@ -362,6 +443,82 @@ export type Database = {
       };
       restore_portfolio_project: {
         Args: { project_id: string };
+        Returns: undefined;
+      };
+      soft_delete_faq_item: {
+        Args: { item_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      hard_delete_faq_item: {
+        Args: { item_id: string };
+        Returns: undefined;
+      };
+      restore_faq_item: {
+        Args: { item_id: string };
+        Returns: undefined;
+      };
+      soft_delete_process_step: {
+        Args: { step_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      hard_delete_process_step: {
+        Args: { step_id: string };
+        Returns: undefined;
+      };
+      restore_process_step: {
+        Args: { step_id: string };
+        Returns: undefined;
+      };
+      soft_delete_site_text: {
+        Args: { text_key: string; retention_days?: number };
+        Returns: undefined;
+      };
+      hard_delete_site_text: {
+        Args: { text_key: string };
+        Returns: undefined;
+      };
+      restore_site_text: {
+        Args: { text_key: string };
+        Returns: undefined;
+      };
+      soft_delete_portfolio_image_override: {
+        Args: { override_project_key: string; override_image_slot: string; retention_days?: number };
+        Returns: undefined;
+      };
+      hard_delete_portfolio_image_override: {
+        Args: { override_project_key: string; override_image_slot: string };
+        Returns: undefined;
+      };
+      restore_portfolio_image_override: {
+        Args: { override_project_key: string; override_image_slot: string };
+        Returns: undefined;
+      };
+      hard_delete_portfolio_project: {
+        Args: { project_id: string };
+        Returns: undefined;
+      };
+      soft_delete_service: {
+        Args: { service_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      restore_service: {
+        Args: { service_id: string };
+        Returns: undefined;
+      };
+      hard_delete_service: {
+        Args: { service_id: string };
+        Returns: undefined;
+      };
+      soft_delete_contact_item: {
+        Args: { item_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      restore_contact_item: {
+        Args: { item_id: string };
+        Returns: undefined;
+      };
+      hard_delete_contact_item: {
+        Args: { item_id: string };
         Returns: undefined;
       };
       delete_expired_portfolio_projects: {

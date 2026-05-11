@@ -12,6 +12,7 @@ import {
   scaleImageSize,
   validateMediaFile,
 } from '@/lib/admin/mediaUpload';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -78,6 +79,7 @@ export default function MediaUploadManager() {
       .limit(6);
 
     setAssets((data as MediaAsset[] | null) ?? []);
+    requestPreviewRefresh();
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -181,6 +183,7 @@ export default function MediaUploadManager() {
     setAltTh('');
     setAltEn('');
     await loadAssets();
+    requestPreviewRefresh();
   }
 
   const isBusy = status === 'compressing' || status === 'uploading';

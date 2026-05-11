@@ -1,5 +1,6 @@
 import type { Database } from '@/lib/supabase/database.types';
 import type { SiteText } from '@/lib/siteTexts';
+import { fillEnglish } from './autoTranslate.js';
 
 export type SiteTextInsert = Database['public']['Tables']['site_texts']['Insert'];
 export type SiteTextUpdate = Database['public']['Tables']['site_texts']['Update'];
@@ -53,7 +54,7 @@ export function mapSiteTextFormToUpsert(values: SiteTextFormValues): SiteTextIns
     key: values.key,
     value: {
       th: values.textTh,
-      en: values.textEn || values.textTh,
+      en: fillEnglish(values.textTh, values.textEn),
     },
     updated_at: new Date().toISOString(),
   };

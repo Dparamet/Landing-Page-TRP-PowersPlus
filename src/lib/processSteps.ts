@@ -13,6 +13,8 @@ export type ProcessStep = {
   description: LocalizedText;
   sortOrder: number;
   published: boolean;
+  deletedAt: string | null;
+  purgeAfter: string | null;
 };
 
 export type TranslationProcessStep = {
@@ -33,6 +35,8 @@ export function buildDefaultProcessSteps(thSteps: TranslationProcessStep[], enSt
     },
     sortOrder: (index + 1) * 10,
     published: true,
+    deletedAt: null,
+    purgeAfter: null,
   }));
 }
 
@@ -53,7 +57,7 @@ export function mapProcessStepRows(rows: ProcessStepRow[], fallback: ProcessStep
   }
 
   return rows
-    .filter((row) => includeUnpublished || row.published)
+    .filter((row) => includeUnpublished || (row.published && !row.deleted_at))
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((row, index) => {
       const fallbackStep = fallback[index] ?? fallback[0] ?? {
@@ -67,6 +71,8 @@ export function mapProcessStepRows(rows: ProcessStepRow[], fallback: ProcessStep
         description: text(row.description, fallbackStep.description),
         sortOrder: row.sort_order,
         published: row.published,
+        deletedAt: row.deleted_at,
+        purgeAfter: row.purge_after,
       };
     });
 }

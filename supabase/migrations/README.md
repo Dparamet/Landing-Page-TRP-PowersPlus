@@ -11,6 +11,8 @@ Run these files in order when creating or updating a Supabase database.
 7. `202605100007_faq_items.sql`
 8. `202605100008_database_hardening.sql`
 9. `202605100009_site_texts_and_process_steps.sql`
+10. `202605100010_soft_delete_content_tables.sql`
+11. `202605100011_contact_items.sql`
 
 Rules:
 

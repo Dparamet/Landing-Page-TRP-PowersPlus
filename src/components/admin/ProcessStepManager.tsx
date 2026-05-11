@@ -10,6 +10,7 @@ import {
   validateProcessStepForm,
   type ProcessStepFormValues,
 } from '@/lib/admin/processSteps';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { buildDefaultProcessSteps, mapProcessStepRows, type ProcessStep, type ProcessStepRow } from '@/lib/processSteps';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import en from '@/locales/en.json';
@@ -54,6 +55,7 @@ export default function ProcessStepManager() {
     setValues(nextItems[0] ? mapProcessStepToForm(nextItems[0]) : createBlankProcessStepForm(10));
     setStatus('idle');
     setMessage('');
+    requestPreviewRefresh();
   }
 
   function updateField<K extends keyof ProcessStepFormValues>(field: K, value: ProcessStepFormValues[K]) {
@@ -102,9 +104,10 @@ export default function ProcessStepManager() {
     setStatus('saved');
     setMessage('บันทึกขั้นตอนทำงานแล้ว');
     await loadSteps();
+    requestPreviewRefresh();
   }
 
-  async function deleteStep() {
+  async function softDeleteStep() {
     if (!values.id) return;
 
     const supabase = getSupabaseBrowserClient();
@@ -116,7 +119,10 @@ export default function ProcessStepManager() {
     }
 
     setStatus('saving');
-    const { error } = await supabase.from('process_steps').delete().eq('id', values.id);
+    const { error } = await supabase.rpc('soft_delete_process_step', {
+      step_id: values.id,
+      retention_days: 30,
+    });
 
     if (error) {
       setStatus('error');
@@ -125,8 +131,65 @@ export default function ProcessStepManager() {
     }
 
     setStatus('saved');
-    setMessage('ลบขั้นตอนแล้ว');
+    setMessage('ย้ายขั้นตอนไปถังพักแล้ว สามารถกู้คืนได้ภายใน 30 วัน');
     await loadSteps();
+    requestPreviewRefresh();
+  }
+
+  async function restoreStep() {
+    if (!values.id) return;
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    const { error } = await supabase.rpc('restore_process_step', {
+      step_id: values.id,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`กู้คืนขั้นตอนไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('กู้คืนขั้นตอนแล้ว');
+    await loadSteps();
+    requestPreviewRefresh();
+  }
+
+  async function hardDeleteStep() {
+    if (!values.id) return;
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    const { error } = await supabase.rpc('hard_delete_process_step', {
+      step_id: values.id,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(`ลบถาวรขั้นตอนไม่สำเร็จ: ${error.message}`);
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('ลบถาวรขั้นตอนแล้ว');
+    await loadSteps();
+    requestPreviewRefresh();
   }
 
   return (
@@ -136,8 +199,8 @@ export default function ProcessStepManager() {
           <h2 className="text-lg font-black text-[#12345f]">ขั้นตอนทำงาน</h2>
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข ลบ และซ่อนขั้นตอนใน section กระบวนการทำงาน</p>
         </div>
-        <button type="button" onClick={startNewStep} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]">
-          เพิ่มขั้นตอน
+        <button type="submit" form="process-step-manager-form" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+          {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึกขั้นตอน' : 'สร้างขั้นตอน'}
         </button>
       </div>
 
@@ -157,13 +220,13 @@ export default function ProcessStepManager() {
             >
               <span className="block text-sm font-bold">{item.title.th}</span>
               <span className={`mt-1 block text-xs ${values.id === item.id ? 'text-blue-100' : 'text-slate-500'}`}>
-                ลำดับ {item.sortOrder} · {item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
+                ลำดับ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
               </span>
             </button>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
+        <form id="process-step-manager-form" onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
           <Field label="หัวข้อ ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />
           <Field label="หัวข้อ ภาษาอังกฤษ" value={values.titleEn} onChange={(value) => updateField('titleEn', value)} />
           <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
@@ -177,12 +240,20 @@ export default function ProcessStepManager() {
             แสดงบนหน้าเว็บ
           </label>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
-            <button type="submit" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
-              {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึกขั้นตอน' : 'สร้างขั้นตอน'}
+            <button type="button" onClick={startNewStep} disabled={status === 'saving'} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+              เพิ่มขั้นตอน
             </button>
-            <button type="button" onClick={() => void deleteStep()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
-              ลบขั้นตอน
+            <button type="button" onClick={() => void softDeleteStep()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
+              ลบแบบพักไว้ 30 วัน
             </button>
+            <button type="button" onClick={() => void restoreStep()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-emerald-200 px-4 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60">
+              กู้คืน
+            </button>
+            {items.find((item) => item.id === values.id)?.deletedAt ? (
+              <button type="button" onClick={() => void hardDeleteStep()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-red-500 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-800 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60">
+                ลบถาวร
+              </button>
+            ) : null}
           </div>
         </form>
       </div>

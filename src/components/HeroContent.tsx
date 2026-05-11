@@ -7,21 +7,24 @@ export default function HeroContent() {
   const { t } = useLanguage();
 
   return (
-    <div className="relative z-10 mx-auto w-full max-w-5xl px-4 text-center">
-      <div className="liquid-glass mx-auto px-5 py-8 shadow-[0_34px_90px_rgba(18,52,95,0.24)] sm:px-8 md:px-12 md:py-12">
-        <p className="mb-5 inline-flex rounded-full border border-white/70 bg-white/76 px-4 py-2 text-sm font-black uppercase tracking-wide text-[#8a4300] shadow-[0_10px_30px_rgba(184,92,0,0.12)] drop-shadow-[0_1px_8px_rgba(255,255,255,0.88)]">
+    <div className="relative z-10 mx-auto w-full max-w-6xl px-4 text-center sm:px-6">
+      <div className="pointer-events-none absolute left-2 top-4 h-24 w-48 rounded-t-full border border-white/60 bg-white/35" />
+      <div className="pointer-events-none absolute bottom-12 right-4 hidden h-20 w-40 rounded-b-full border border-white/60 bg-white/30 md:block" />
+
+      <div className="relative mx-auto">
+        <p className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black uppercase tracking-wide text-[#111827] shadow-sm">
           {t('hero.eyebrow')}
         </p>
 
-        <h1 className="display-stroke mx-auto mb-6 max-w-4xl text-5xl font-black leading-[1.08] text-slate-950 drop-shadow-[0_2px_12px_rgba(255,255,255,0.9)] md:text-7xl">
+        <h1 className="mx-auto mb-5 max-w-4xl text-4xl font-black leading-[1.08] text-[#111827] sm:text-5xl md:mb-6 md:text-7xl">
           {t('hero.title')}
         </h1>
 
-        <p className="glass-text-panel mx-auto mb-5 max-w-3xl rounded-2xl px-4 py-3 text-xl font-black leading-snug text-[#0f2f55] drop-shadow-[0_1px_10px_rgba(255,255,255,0.86)] md:text-2xl">
+        <p className="mx-auto mb-5 max-w-3xl text-lg font-black leading-snug text-[#111827] md:text-2xl">
           {t('hero.subtitle')}
         </p>
 
-        <p className="glass-text-panel mx-auto mb-10 max-w-3xl rounded-2xl px-5 py-4 text-base font-semibold leading-8 text-slate-900 drop-shadow-[0_1px_10px_rgba(255,255,255,0.88)] md:text-lg md:leading-8">
+        <p className="mx-auto mb-8 max-w-3xl text-sm font-semibold leading-7 text-[#111827] sm:text-base md:mb-10 md:text-lg md:leading-8">
           {t('hero.description')}
         </p>
 
@@ -41,18 +44,18 @@ export default function HeroContent() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-3 text-sm font-black text-slate-950 md:grid-cols-3 md:text-base">
-        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
+      <div className="mt-6 grid grid-cols-1 gap-3 text-sm font-black text-[#111827] sm:grid-cols-3 md:mt-8 md:text-base">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.engineers')}</span>
+          <span>{t('hero.trust.engineers')}</span>
         </div>
-        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.warranty')}</span>
+          <span>{t('hero.trust.warranty')}</span>
         </div>
-        <div className="liquid-glass flex items-center justify-center gap-2 px-4 py-3 drop-shadow-[0_10px_28px_rgba(18,52,95,0.12)]">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
-          <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">{t('hero.trust.survey')}</span>
+          <span>{t('hero.trust.survey')}</span>
         </div>
       </div>
     </div>

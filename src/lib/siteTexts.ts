@@ -10,6 +10,8 @@ export type LocalizedText = {
 export type SiteText = {
   key: string;
   value: LocalizedText;
+  deletedAt: string | null;
+  purgeAfter: string | null;
 };
 
 export function asLocalizedText(value: Json, fallback: LocalizedText): LocalizedText {
@@ -23,14 +25,27 @@ export function asLocalizedText(value: Json, fallback: LocalizedText): Localized
   };
 }
 
-export function mapSiteTextRows(rows: SiteTextRow[]): Record<string, LocalizedText> {
+export function mapSiteTextRows(rows: SiteTextRow[], includeDeleted = false): Record<string, LocalizedText> {
   return Object.fromEntries(
-    rows.map((row) => [
-      row.key,
-      asLocalizedText(row.value, {
-        th: '',
-        en: '',
-      }),
-    ]),
+    rows
+      .filter((row) => includeDeleted || !row.deleted_at)
+      .map((row) => [
+        row.key,
+        asLocalizedText(row.value, {
+          th: '',
+          en: '',
+        }),
+      ]),
   );
+}
+
+export function mapSiteTextRowList(rows: SiteTextRow[], includeDeleted = false): SiteText[] {
+  return rows
+    .filter((row) => includeDeleted || !row.deleted_at)
+    .map((row) => ({
+      key: row.key,
+      value: asLocalizedText(row.value, { th: '', en: '' }),
+      deletedAt: row.deleted_at,
+      purgeAfter: row.purge_after,
+    }));
 }

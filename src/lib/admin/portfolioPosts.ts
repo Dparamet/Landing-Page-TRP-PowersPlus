@@ -1,11 +1,13 @@
 import type { Database, Json } from '../supabase/database.types';
+import type { ServiceCategory } from './services';
+import { fillEnglish } from './autoTranslate.js';
 
 type LocalizedText = {
   th: string;
   en: string;
 };
 
-type ServiceCategoryKey = 'residential' | 'building' | 'factory' | 'solar' | 'maintenance' | 'controlPanel';
+type ServiceCategoryKey = string;
 
 type PortfolioMetric = {
   label: LocalizedText;
@@ -37,7 +39,7 @@ export type PortfolioProjectView = {
   gallery: PortfolioStageImage[];
 };
 
-const categoryLabels: Record<ServiceCategoryKey, LocalizedText> = {
+const categoryLabels: Record<string, LocalizedText> = {
   residential: { th: 'บ้านพักอาศัย', en: 'Residential' },
   building: { th: 'อาคารสำนักงาน', en: 'Building' },
   factory: { th: 'โรงงาน', en: 'Factory' },
@@ -50,6 +52,7 @@ export type PortfolioProjectRow = Database['public']['Tables']['portfolio_projec
 export type PortfolioProjectInsert = Database['public']['Tables']['portfolio_projects']['Insert'];
 
 export type PortfolioPostFormValues = {
+  id: string;
   titleTh: string;
   titleEn: string;
   categoryKey: ServiceCategoryKey;
@@ -64,6 +67,7 @@ export type PortfolioPostFormValues = {
   metricValueTh: string;
   metricValueEn: string;
   accent: 'orange' | 'blue';
+  sortOrder: number;
   published: boolean;
 };
 
@@ -72,6 +76,7 @@ export type PortfolioPostValidationResult =
   | { ok: false; message: string };
 
 export const defaultPortfolioPostFormValues: PortfolioPostFormValues = {
+  id: '',
   titleTh: '',
   titleEn: '',
   categoryKey: 'solar',
@@ -86,11 +91,12 @@ export const defaultPortfolioPostFormValues: PortfolioPostFormValues = {
   metricValueTh: '',
   metricValueEn: '',
   accent: 'orange',
+  sortOrder: 0,
   published: true,
 };
 
 function localized(th: string, en: string): LocalizedText {
-  return { th: th.trim(), en: en.trim() || th.trim() };
+  return { th: th.trim(), en: fillEnglish(th, en) };
 }
 
 function slugify(value: string): string {
@@ -160,6 +166,7 @@ function defaultGallery(): PortfolioStageImage[] {
 export function validatePortfolioPost(values: PortfolioPostFormValues): PortfolioPostValidationResult {
   const trimmed: PortfolioPostFormValues = {
     ...values,
+    id: values.id.trim(),
     titleTh: values.titleTh.trim(),
     titleEn: values.titleEn.trim(),
     descriptionTh: values.descriptionTh.trim(),
@@ -174,8 +181,8 @@ export function validatePortfolioPost(values: PortfolioPostFormValues): Portfoli
     metricValueEn: values.metricValueEn.trim(),
   };
 
-  if (!trimmed.titleTh || !trimmed.titleEn) {
-    return { ok: false, message: 'กรุณากรอกชื่อผลงานทั้งไทยและอังกฤษ' };
+  if (!trimmed.titleTh) {
+    return { ok: false, message: 'กรุณากรอกชื่อผลงานภาษาไทย' };
   }
 
   if (!trimmed.descriptionTh || !trimmed.systemTypeTh || !trimmed.locationTh) {
@@ -208,7 +215,52 @@ export function mapPortfolioPostFormToInsert(values: PortfolioPostFormValues): P
     accent: values.accent,
     published: values.published,
     gallery: [],
-    sort_order: Date.now(),
+    sort_order: values.sortOrder || Date.now(),
+  };
+}
+
+export function mapPortfolioPostFormToUpdate(values: PortfolioPostFormValues): Database['public']['Tables']['portfolio_projects']['Update'] {
+  const insert = mapPortfolioPostFormToInsert(values);
+
+  return {
+    category_key: insert.category_key,
+    title: insert.title,
+    description: insert.description,
+    system_type: insert.system_type,
+    metrics: insert.metrics,
+    location: insert.location,
+    accent: insert.accent,
+    published: insert.published,
+    sort_order: insert.sort_order,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+export function mapPortfolioProjectRowToForm(row: PortfolioProjectRow): PortfolioPostFormValues {
+  const title = asLocalizedText(row.title, { th: row.slug, en: row.slug });
+  const description = asLocalizedText(row.description, { th: '', en: '' });
+  const systemType = asLocalizedText(row.system_type, { th: '', en: '' });
+  const location = asLocalizedText(row.location, { th: '', en: '' });
+  const [metric] = asPortfolioMetrics(row.metrics);
+
+  return {
+    id: row.id,
+    titleTh: title.th,
+    titleEn: title.en,
+    categoryKey: row.category_key,
+    descriptionTh: description.th,
+    descriptionEn: description.en,
+    systemTypeTh: systemType.th,
+    systemTypeEn: systemType.en,
+    locationTh: location.th,
+    locationEn: location.en,
+    metricLabelTh: metric?.label.th ?? 'ขอบเขตงาน',
+    metricLabelEn: metric?.label.en ?? 'Scope',
+    metricValueTh: metric?.value.th ?? '',
+    metricValueEn: metric?.value.en ?? '',
+    accent: row.accent,
+    sortOrder: row.sort_order,
+    published: row.published,
   };
 }
 
@@ -236,4 +288,16 @@ export function mapPortfolioProjectRowToProject(row: PortfolioProjectRow): Portf
     },
     gallery: defaultGallery(),
   };
+}
+
+export function applyPortfolioServiceLabels(
+  projects: PortfolioProjectView[],
+  services: Pick<ServiceCategory, 'key' | 'shortTitle'>[],
+): PortfolioProjectView[] {
+  const serviceByKey = new Map(services.map((service) => [service.key, service.shortTitle]));
+
+  return projects.map((project) => ({
+    ...project,
+    category: serviceByKey.get(project.categoryKey) ?? project.category,
+  }));
 }

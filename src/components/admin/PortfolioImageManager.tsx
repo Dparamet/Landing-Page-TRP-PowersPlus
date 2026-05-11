@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { portfolioProjects } from '@/content/site';
 import { formatBytes } from '@/lib/admin/mediaUpload';
+import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { portfolioProjectKey, type PortfolioImageSlot } from '@/lib/portfolioImages';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
@@ -68,6 +69,7 @@ export default function PortfolioImageManager() {
     setOverrides((overrideRows as PortfolioImageOverride[] | null) ?? []);
     setAssetId((current) => current || nextAssets[0]?.id || '');
     setStatus('idle');
+    requestPreviewRefresh();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -111,21 +113,53 @@ export default function PortfolioImageManager() {
     setStatus('saved');
     setMessage('บันทึกรูปผลงานแล้ว');
     await loadData();
+    requestPreviewRefresh();
   }
 
-  async function clearOverride(override: PortfolioImageOverride) {
+  async function softDeleteOverride(override: PortfolioImageOverride) {
     const supabase = getSupabaseBrowserClient();
 
     if (!supabase) {
       return;
     }
 
-    await supabase
-      .from('portfolio_image_overrides')
-      .delete()
-      .eq('project_key', override.project_key)
-      .eq('image_slot', override.image_slot);
+    await supabase.rpc('soft_delete_portfolio_image_override', {
+      override_project_key: override.project_key,
+      override_image_slot: override.image_slot,
+      retention_days: 30,
+    });
     await loadData();
+    requestPreviewRefresh();
+  }
+
+  async function restoreOverride(override: PortfolioImageOverride) {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      return;
+    }
+
+    await supabase.rpc('restore_portfolio_image_override', {
+      override_project_key: override.project_key,
+      override_image_slot: override.image_slot,
+    });
+    await loadData();
+    requestPreviewRefresh();
+  }
+
+  async function hardDeleteOverride(override: PortfolioImageOverride) {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      return;
+    }
+
+    await supabase.rpc('hard_delete_portfolio_image_override', {
+      override_project_key: override.project_key,
+      override_image_slot: override.image_slot,
+    });
+    await loadData();
+    requestPreviewRefresh();
   }
 
   const isBusy = status === 'loading' || status === 'saving';
@@ -235,13 +269,35 @@ export default function PortfolioImageManager() {
                 <p className="mt-2 truncate text-xs font-bold text-slate-700">
                   {override.project_key} · {slotLabel(override.image_slot)}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => void clearOverride(override)}
-                  className="mt-2 text-xs font-bold text-red-600 transition hover:text-red-700"
-                >
-                  ลบการตั้งค่านี้
-                </button>
+                <p className="mt-1 text-xs text-slate-500">
+                  {override.deleted_at ? `ถังพัก ลบจริงหลัง ${override.purge_after ?? '-'}` : 'ใช้งานอยู่'}
+                </p>
+                {override.deleted_at ? (
+                  <div className="mt-2 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => void restoreOverride(override)}
+                      className="text-xs font-bold text-emerald-700 transition hover:text-emerald-800"
+                    >
+                      กู้คืน
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void hardDeleteOverride(override)}
+                      className="text-xs font-bold text-red-700 transition hover:text-red-800"
+                    >
+                      ลบถาวร
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => void softDeleteOverride(override)}
+                    className="mt-2 text-xs font-bold text-red-600 transition hover:text-red-700"
+                  >
+                    ลบแบบพักไว้ 30 วัน
+                  </button>
+                )}
               </article>
             ))}
           </div>
