@@ -28,14 +28,14 @@ export default function SolarCalculator() {
   const reductionLabel = `${result.billReductionPercent.toFixed(0)}%`;
 
   return (
-    <section id="calculator" className="section-reveal bg-white py-20">
+    <section id="calculator" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mx-auto mb-10 max-w-3xl text-center reveal-item">
+        <div className="reveal-item mx-auto mb-10 max-w-3xl rounded-2xl bg-white px-5 py-6 text-center shadow-sm sm:px-8">
           <span className="inline-flex rounded-full bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
             {t('nav.calculator')}
           </span>
-          <h2 className="mt-5 text-3xl font-black text-[#12345f] md:text-4xl">{t('calculator.title')}</h2>
-          <p className="mt-4 text-lg leading-relaxed text-slate-600">{t('calculator.subtitle')}</p>
+          <h2 className="mt-5 text-3xl font-black text-[#111827] md:text-4xl">{t('calculator.title')}</h2>
+          <p className="mt-4 text-lg leading-relaxed text-slate-800">{t('calculator.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.88fr_1.12fr]">
@@ -51,7 +51,7 @@ export default function SolarCalculator() {
                   className={`rounded-lg border px-4 py-4 text-left font-bold transition ${
                     systemType === type
                       ? 'border-[#12345f] bg-[#12345f] text-white shadow-lg shadow-slate-100'
-                      : 'border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-[#f08a24] hover:text-[#b85c00]'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-[#f08a24] hover:text-[#b85c00]'
                   }`}
                 >
                   {t(`calculator.${type}`)}
@@ -186,7 +186,7 @@ function RangeInput({
 function Result({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div
-      className={`rounded-lg border p-4 transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`rounded-lg border p-4 transition-colors duration-200 ${
         highlight ? 'border-orange-200 bg-[#fff7ed]' : 'border-slate-200 bg-[#f8fafc]'
       }`}
     >

@@ -22,17 +22,33 @@ type OrbitImagesProps = {
 export default function OrbitImages({ orbitProgress, galleryProgress }: OrbitImagesProps) {
   const { language } = useLanguage();
   const [viewportWidth, setViewportWidth] = useState(1280);
+  const [canAnimate, setCanAnimate] = useState(false);
   const autoProgress = useMotionValue(0);
   const mixedProgress = useMotionValue(0);
 
   useEffect(() => {
-    const syncWidth = () => setViewportWidth(window.innerWidth);
-    syncWidth();
-    window.addEventListener('resize', syncWidth);
-    return () => window.removeEventListener('resize', syncWidth);
+    const syncViewport = () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const width = window.innerWidth;
+
+      setViewportWidth(width);
+      setCanAnimate(width >= 768 && !prefersReducedMotion && document.visibilityState === 'visible');
+    };
+
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+    document.addEventListener('visibilitychange', syncViewport);
+    return () => {
+      window.removeEventListener('resize', syncViewport);
+      document.removeEventListener('visibilitychange', syncViewport);
+    };
   }, []);
 
   useAnimationFrame((_, delta) => {
+    if (!canAnimate) {
+      return;
+    }
+
     const gallery = galleryProgress.get();
     const autoplay = autoProgress.get() + delta * 0.000035;
     autoProgress.set(autoplay);
@@ -104,20 +120,20 @@ function OrbitItem({
 
   return (
     <motion.article
-      className="absolute left-1/2 top-1/2 w-[clamp(132px,17vw,220px)] rounded-lg border border-white/25 bg-white/16 p-3 text-white shadow-2xl shadow-slate-950/25 backdrop-blur will-change-transform"
+      className="absolute left-1/2 top-1/2 w-[clamp(132px,17vw,220px)] rounded-lg border border-white/25 bg-white/16 p-3 text-white shadow-2xl shadow-slate-950/25 backdrop-blur md:will-change-transform"
       style={{ x, y, scale, opacity, zIndex, translateX: '-50%', translateY: '-50%' }}
     >
       <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-md border border-white/20 bg-[#12345f]/60">
         <Image
-          src="/images/LogoTRP.webp"
-          alt="TRP Powers Plus"
+          src={project.coverImage.src}
+          alt={project.coverImage.alt[language]}
           fill
           sizes="220px"
           className="object-contain p-5"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#f08a24]/20 via-transparent to-[#1e4f8f]/30" />
       </div>
-      <p className="font-serif text-xl italic leading-none text-[#fff7ed]">{project.size}</p>
+      <p className="text-xl font-black leading-none text-[#fff7ed]">{project.metrics[0]?.value[language]}</p>
       <h3 className="mt-1 text-sm font-extrabold leading-tight">{project.title[language]}</h3>
       <p className="mt-1 text-xs font-semibold text-white/72">{project.category[language]}</p>
     </motion.article>

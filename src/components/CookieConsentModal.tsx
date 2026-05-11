@@ -42,18 +42,16 @@ function CookieConsentDialog({
   const categories: CookieCategoryId[] = ['necessary', 'analytics', 'marketing', 'preferences'];
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-4 sm:items-center sm:p-6 animate-in fade-in duration-300">
-      <div className={`w-full max-w-2xl rounded-2xl ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-2xl border-2 ${COOKIE_COLORS.borderPrimary}`}>
-        {/* Header */}
-        <div className={`border-b-2 ${COOKIE_COLORS.borderPrimary} p-6 sm:p-8 bg-gradient-to-r from-orange-50 to-blue-50`}>
-          <h2 className="text-2xl font-bold text-orange-600">{t('cookie.settingsTitle')}</h2>
+    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/35 p-3 sm:items-center sm:p-6">
+      <div className={`w-full max-w-xl overflow-hidden rounded-lg ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-2xl shadow-slate-950/15 border ${COOKIE_COLORS.borderPrimary}`}>
+        <div className={`border-b ${COOKIE_COLORS.borderPrimary} bg-[#f8fafc] p-5 sm:p-6`}>
+          <h2 className="text-xl font-black text-[#12345f]">{t('cookie.settingsTitle')}</h2>
           <p className={`mt-2 text-sm ${COOKIE_COLORS.textSecondary}`}>
             {t('cookie.settingsDescription')}
           </p>
         </div>
 
-        {/* Content */}
-        <div className={`space-y-4 p-6 sm:p-8 max-h-[60vh] overflow-y-auto`}>
+        <div className="max-h-[58vh] space-y-3 overflow-y-auto p-4 sm:p-5">
           {categories.map((categoryId) => {
             const category = COOKIE_CATEGORIES[categoryId];
             const isEnabled = settings[categoryId];
@@ -61,7 +59,7 @@ function CookieConsentDialog({
             return (
               <label
                 key={categoryId}
-                className={`flex cursor-pointer items-start justify-between gap-4 rounded-xl border ${COOKIE_COLORS.borderPrimary} ${COOKIE_COLORS.bgSecondary} p-4 transition ${
+                className={`flex cursor-pointer items-start justify-between gap-4 rounded-lg border ${COOKIE_COLORS.borderPrimary} ${COOKIE_COLORS.bgSecondary} p-4 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   !category.required ? 'hover:border-orange-400' : ''
                 }`}
               >
@@ -69,7 +67,7 @@ function CookieConsentDialog({
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">{language === 'th' ? category.nameTh : category.nameEn}</p>
                     {category.required && (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
                         {t('cookie.required')}
                       </span>
                     )}
@@ -77,7 +75,7 @@ function CookieConsentDialog({
                   <p className={`mt-1 text-sm ${COOKIE_COLORS.textTertiary}`}>
                     {language === 'th' ? category.descTh : category.descEn}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 hidden flex-wrap gap-2 sm:flex">
                     {category.examples.map((ex, i) => (
                       <code key={i} className={`text-xs px-2 py-1 rounded ${COOKIE_COLORS.bgTertiary}`}>
                         {ex}
@@ -89,7 +87,7 @@ function CookieConsentDialog({
                 {/* Toggle Switch */}
                 <div className="flex-shrink-0 pt-1">
                   {category.required ? (
-                    <span className={`inline-flex items-center justify-center w-12 h-7 rounded-full ${COOKIE_COLORS.enabledBg} ${COOKIE_COLORS.enabledText} text-xs font-semibold`}>
+                    <span className={`inline-flex h-7 w-12 items-center justify-center rounded-full ${COOKIE_COLORS.enabledBg} ${COOKIE_COLORS.enabledText} text-xs font-bold`}>
                       ON
                     </span>
                   ) : (
@@ -118,19 +116,18 @@ function CookieConsentDialog({
           })}
         </div>
 
-        {/* Footer */}
-        <div className={`border-t ${COOKIE_COLORS.borderPrimary} flex flex-col gap-3 p-6 sm:p-8 sm:flex-row sm:justify-end`}>
+        <div className={`border-t ${COOKIE_COLORS.borderPrimary} flex flex-col gap-2 p-4 sm:flex-row sm:justify-end sm:p-5`}>
           <button
             type="button"
             onClick={closeSettings}
-            className={`rounded-lg border ${COOKIE_COLORS.borderPrimary} px-6 py-2.5 font-semibold transition ${COOKIE_COLORS.btnSecondaryBgHover}`}
+            className={`rounded-md border ${COOKIE_COLORS.borderPrimary} px-5 py-2.5 text-sm font-bold transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnSecondaryBgHover}`}
           >
             {t('cookie.cancel')}
           </button>
           <button
             type="button"
             onClick={() => saveSettings(settings)}
-            className={`rounded-lg ${COOKIE_COLORS.btnPrimaryBg} px-6 py-2.5 font-semibold text-white transition ${COOKIE_COLORS.btnPrimaryBgHover}`}
+            className={`rounded-md ${COOKIE_COLORS.btnPrimaryBg} px-5 py-2.5 text-sm font-bold text-white transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnPrimaryBgHover}`}
           >
             {t('cookie.save')}
           </button>

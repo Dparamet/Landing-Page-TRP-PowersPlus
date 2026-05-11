@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #172554;
   --foreground: #182230;
   --brand-blue: #1e4f8f;
   --brand-blue-dark: #12345f;
@@ -28,12 +28,229 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+h1,
+h2,
+h3,
+p,
+li {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: 0;
+}
+
 html {
   scroll-padding-top: 88px;
 }
 
 ::selection {
   background: rgba(245, 158, 11, 0.24);
+}
+
+.site-background {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.site-background > nav {
+  border-bottom-color: rgba(226, 232, 240, 0.92);
+  background-color: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.site-background > nav :where(a, button, div) {
+  color: #182230;
+}
+
+.site-background > nav :where(a:hover, button:hover) {
+  color: #b85c00;
+}
+
+.site-background > nav button[aria-label] span {
+  background-color: #182230;
+}
+
+.site-background::before {
+  content: none;
+}
+
+.site-background::after {
+  content: none;
+}
+
+.site-background > * {
+  position: relative;
+  z-index: 1;
+}
+
+.site-background :where(section, footer) {
+  background-color: #f8fafc;
+  color: #182230;
+}
+
+.site-background > :where(section, footer):nth-of-type(odd) {
+  background-color: #f8fafc;
+  color: #182230;
+}
+
+.site-background > :where(section, footer):nth-of-type(even) {
+  background-color: #12345f;
+  color: #eef4ff;
+}
+
+.site-background :where(
+  .bg-white,
+  .bg-\[\#f8fafc\],
+  .bg-\[\#fff7ed\],
+  .bg-\[\#f4f8ff\],
+  .bg-\[\#eef4ff\]
+) {
+  background-color: #fffdf8;
+  color: #182230;
+}
+
+.site-background :where(.bg-white\/56, .bg-white\/70, .bg-white\/74, .bg-white\/80, .bg-white\/85, .bg-white\/90, .bg-white\/95) {
+  background-color: #fffdf8;
+  color: #182230;
+}
+
+.site-background :where(
+  .bg-white,
+  .bg-white\/56,
+  .bg-white\/70,
+  .bg-white\/74,
+  .bg-white\/78,
+  .bg-white\/80,
+  .bg-white\/85,
+  .bg-white\/86,
+  .bg-white\/90,
+  .bg-white\/92,
+  .bg-white\/95,
+  .bg-\[\#f8fafc\],
+  .bg-\[\#fff7ed\],
+  .bg-\[\#f4f8ff\],
+  .bg-\[\#eef4ff\]
+) :where(h1, h2, h3, h4, p, li, span, dt, dd, label) {
+  color: #182230;
+}
+
+.site-background :where(
+  .bg-\[\#12345f\],
+  .bg-\[\#1e4f8f\],
+  .bg-\[\#b85c00\],
+  .bg-\[\#8a4300\]
+) {
+  background-color: #f08a24;
+  color: #fffdf8;
+}
+
+.site-background :where(
+  .bg-\[\#12345f\],
+  .bg-\[\#1e4f8f\],
+  .bg-\[\#b85c00\],
+  .bg-\[\#8a4300\]
+) :where(h1, h2, h3, h4, p, li, span, dt, dd, label) {
+  color: #fffdf8;
+}
+
+.site-background :where(.border-slate-200, .border-orange-100, .border-blue-100, .border-orange-200, .border-orange-200\/70) {
+  border-color: rgba(203, 213, 225, 0.9);
+}
+
+.site-background :where(.border-t, .border-b) {
+  border-top-color: rgba(203, 213, 225, 0.86);
+  border-bottom-color: rgba(203, 213, 225, 0.86);
+}
+
+.site-background > :where(section, footer):nth-of-type(even) :where(.border-slate-200, .border-orange-100, .border-blue-100, .border-orange-200, .border-orange-200\/70) {
+  border-color: rgba(255, 255, 255, 0.86);
+}
+
+.site-background > :where(section, footer):nth-of-type(even) :where(.border-t, .border-b) {
+  border-top-color: rgba(255, 255, 255, 0.86);
+  border-bottom-color: rgba(255, 255, 255, 0.86);
+}
+
+.site-background :where(section h2) {
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+.site-background :where(section h3) {
+  text-shadow: none;
+}
+
+.site-background :where(section p, section li) {
+  overflow-wrap: break-word;
+}
+
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2.75rem 4rem 3rem 3.5rem;
+  background: #fffdf8;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.liquid-glass::before {
+  content: none;
+}
+
+.liquid-glass > * {
+  position: relative;
+}
+
+.display-stroke {
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+.readable-heading {
+  color: inherit;
+  text-shadow: none;
+}
+
+.readable-copy {
+  color: inherit;
+  text-shadow: none;
+}
+
+.glass-text-panel {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: #fffdf8;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .site-background::before,
+  .site-background::after {
+    position: absolute;
+    filter: blur(6px);
+  }
+
+  .liquid-glass,
+  .glass-text-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .section-reveal,
+  .reveal-item {
+    animation: none;
+  }
 }
 
 :focus-visible {
@@ -43,13 +260,7 @@ html {
 
 .section-reveal,
 .reveal-item {
-  animation: reveal-up 0.72s ease both;
-  animation-timeline: view();
-  animation-range: entry 0% cover 26%;
-}
-
-.reveal-item {
-  animation-duration: 0.58s;
+  animation: none;
 }
 
 .reveal-delay-1 {
@@ -72,15 +283,15 @@ html {
 }
 
 .portfolio-slide {
-  will-change: transform, opacity;
+  will-change: auto;
 }
 
 .portfolio-slide-next {
-  animation: portfolio-slide-next 0.58s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: none;
 }
 
 .portfolio-slide-previous {
-  animation: portfolio-slide-previous 0.58s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: none;
 }
 
 @keyframes portfolio-slide-next {
