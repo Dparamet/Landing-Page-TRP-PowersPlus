@@ -306,6 +306,17 @@ npm run build
 
 ## สถานะล่าสุด
 
-- Last updated: May 2026
+- Last updated: May 12, 2026
 - Maintained for: TRP Powers Plus
 - Project type: Static Next.js landing page
+- Current branch: `main` (13 commits ahead of origin/main)
+- Development branch: `dev` (synced with main)
+
+### ความเปลี่ยนแปลงล่าสุด (May 2026)
+
+- ✅ เพิ่ม SolarCalculator component สำหรับคำนวณต้นทุนโซลาร์เซลล์
+- ✅ ปรับปรุง localization (Thai/English)
+- ✅ ปรับปรุง Navbar และ Hero component
+- ✅ เพิ่ม Language Switcher
+- ✅ เพิ่ม Cookie Consent Modal
+- ✅ ปรับปรุง Footer และ Content components
