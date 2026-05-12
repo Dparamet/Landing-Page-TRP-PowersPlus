@@ -120,7 +120,7 @@ export default function AdminLoginForm() {
       <button
         type="submit"
         disabled={state.isSubmitting}
-        className="w-full rounded-lg bg-[#12345f] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-lg bg-[#0f2a5f] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#061a3d] focus:outline-none focus:ring-2 focus:ring-[#0f2a5f]/30 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {state.isSubmitting ? 'กำลังตรวจสอบ...' : 'เข้าสู่ระบบ Admin'}
       </button>

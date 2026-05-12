@@ -115,7 +115,7 @@ export default function CompanySettingsForm() {
   const isBusy = status === 'loading' || status === 'saving';
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-5" noValidate>
+    <form onSubmit={handleSubmit} className="rounded-lg border border-[#f08a24] bg-white p-5" noValidate>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">ข้อมูลบริษัท</h2>

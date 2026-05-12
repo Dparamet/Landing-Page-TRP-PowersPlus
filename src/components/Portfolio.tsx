@@ -54,7 +54,7 @@ export default function Portfolio() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
-            <span className="inline-flex rounded-full border border-orange-100 bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
+            <span className="inline-flex rounded-full border border-[#f08a24] bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#d66d0c]">
               {t('portfolio.eyebrow')}
             </span>
             <h2 className="mt-5 max-w-2xl text-3xl font-black leading-tight text-current sm:text-4xl md:text-5xl">
@@ -73,8 +73,8 @@ export default function Portfolio() {
               aria-pressed={activeCategory === filter.key}
               className={`shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition-colors duration-200 ${
                 activeCategory === filter.key
-                  ? 'border-[#12345f] bg-[#12345f] text-white shadow-md shadow-slate-200'
-                  : 'border-slate-200 bg-white text-[#12345f] hover:border-[#f08a24] hover:bg-[#fff7ed] hover:text-[#b85c00]'
+                  ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-md shadow-blue-200'
+                  : 'border-[#f08a24] bg-white text-[#0f2a5f] hover:border-[#d66d0c] hover:bg-[#fff7ed] hover:text-[#d66d0c]'
               }`}
             >
               {filter.label[language]}
@@ -112,7 +112,7 @@ function PortfolioCard({
   onSelect: () => void;
 }) {
   const { language } = useLanguage();
-  const borderClass = selected ? 'border-[#f08a24] bg-white shadow-lg shadow-orange-100' : 'border-slate-200 bg-white';
+  const borderClass = selected ? 'border-[#f08a24] bg-white shadow-lg shadow-orange-200' : 'border-[#f08a24] bg-white';
 
   return (
     <button
@@ -129,8 +129,8 @@ function PortfolioCard({
           sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#12345f]/80 via-transparent to-transparent" />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-black text-[#12345f]">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f2a5f]/80 via-transparent to-transparent" />
+        <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-black text-[#0f2a5f]">
           {project.category[language]}
         </span>
       </div>
@@ -164,12 +164,12 @@ function ProjectDetail({
   const lineMessage = relatedService?.lineMessage[language] ?? t('hero.cta');
 
   return (
-    <article className="self-start rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 p-5 sm:p-6">
+    <article className="self-start rounded-lg border border-[#f08a24] bg-white shadow-sm">
+      <div className="border-b border-[#f08a24] p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm font-black text-[#b85c00]">{project.systemType[language]}</p>
-            <h3 className="mt-2 text-2xl font-black leading-tight text-[#12345f] md:text-3xl">
+            <p className="text-sm font-black text-[#f08a24]">{project.systemType[language]}</p>
+            <h3 className="mt-2 text-2xl font-black leading-tight text-[#0f2a5f] md:text-3xl">
               {project.title[language]}
             </h3>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base">
@@ -180,12 +180,12 @@ function ProjectDetail({
             href={companyProfile.lineUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#8a4300]"
+            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#f08a24] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#d66d0c]"
           >
             {t('portfolio.consultSimilar')}
           </a>
         </div>
-        <p className="mt-4 rounded-lg bg-[#fff7ed] px-3 py-2 text-sm font-semibold text-[#7a3b00]">
+        <p className="mt-4 rounded-lg bg-[#fff7ed] px-3 py-2 text-sm font-semibold text-[#d66d0c]">
           {t('portfolio.linePrompt')} {lineMessage}
         </p>
       </div>
@@ -200,7 +200,7 @@ function ProjectDetail({
 
         <div className="grid gap-3 sm:grid-cols-3">
           {project.gallery.map((image) => (
-            <figure key={image.stage} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <figure key={image.stage} className="overflow-hidden rounded-lg border border-[#f08a24] bg-white">
               <button
                 type="button"
                 onClick={() => onOpenImage({ src: image.src, alt: image.alt[language], label: image.label[language] })}
@@ -217,7 +217,7 @@ function ProjectDetail({
                 />
                 </div>
               </button>
-              <figcaption className="border-t border-slate-200 bg-white px-3 py-2 text-sm font-bold text-[#12345f]">
+              <figcaption className="border-t border-[#f08a24] bg-white px-3 py-2 text-sm font-bold text-[#0f2a5f]">
                 {image.label[language]}
               </figcaption>
             </figure>
@@ -233,12 +233,12 @@ function PortfolioLightbox({ image, onClose }: { image: LightboxImage; onClose: 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/82 p-4" role="dialog" aria-modal="true" aria-label={image.label}>
       <button type="button" className="absolute inset-0 cursor-default" onClick={onClose} aria-label="ปิดรูปภาพ" />
       <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
-          <h3 className="text-sm font-black text-[#12345f]">{image.label}</h3>
+        <div className="flex items-center justify-between gap-3 border-b border-[#f08a24] px-4 py-3">
+          <h3 className="text-sm font-black text-[#0f2a5f]">{image.label}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-bold text-[#0f2a5f] transition hover:border-[#f08a24] hover:text-[#d66d0c]"
           >
             ปิด
           </button>
@@ -253,9 +253,9 @@ function PortfolioLightbox({ image, onClose }: { image: LightboxImage; onClose: 
 
 function Metric({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-lg border p-3 ${highlight ? 'border-orange-100 bg-[#fff7ed]' : 'border-slate-200 bg-[#f8fafc]'}`}>
+    <div className={`rounded-lg border p-3 ${highlight ? 'border-[#f08a24] bg-[#fff7ed]' : 'border-[#f08a24] bg-[#f8fafc]'}`}>
       <dt className="text-xs font-bold text-slate-500">{label}</dt>
-      <dd className={`mt-1 break-words text-base font-black ${highlight ? 'text-[#b85c00]' : 'text-[#182230]'}`}>
+      <dd className={`mt-1 break-words text-base font-black ${highlight ? 'text-[#f08a24]' : 'text-[#182230]'}`}>
         {value}
       </dd>
     </div>

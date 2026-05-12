@@ -99,14 +99,14 @@ export default function SiteTextManager() {
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">ข้อความหน้าเว็บ</h2>
+          <h2 className="text-lg font-black text-[#0f2a5f]">ข้อความหน้าเว็บ</h2>
           <p className="mt-1 text-sm text-slate-600">แก้ข้อความหลักของหน้าเว็บ เช่น Hero, Section title, Footer และ CTA</p>
         </div>
         <button
           type="submit"
           form="site-text-manager-form"
           disabled={status === 'saving' || status === 'loading'}
-          className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
         </button>
@@ -130,7 +130,7 @@ export default function SiteTextManager() {
                   setMessage('');
                 }}
                 className={`rounded-lg border p-3 text-left transition ${
-                  values.key === item.key ? 'border-[#12345f] bg-[#12345f] text-white' : 'border-slate-200 bg-slate-50 text-[#12345f]'
+                  values.key === item.key ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white' : 'border-slate-200 bg-slate-50 text-[#0f2a5f]'
                 }`}
               >
                 <span className="block text-xs font-black uppercase tracking-wide">{item.key}</span>

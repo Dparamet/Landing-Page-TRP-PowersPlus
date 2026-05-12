@@ -31,7 +31,7 @@ export default function HeroContent() {
         <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
           <Link 
             href="#calculator" 
-            className="w-full rounded-lg bg-[#b85c00] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-200/60 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-[#8a4300] hover:shadow-xl md:w-auto"
+            className="w-full rounded-lg bg-[#f08a24] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-200 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-[#d66d0c] hover:shadow-xl md:w-auto"
           >
             {t('nav.calculator')}
           </Link>
@@ -45,15 +45,15 @@ export default function HeroContent() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-3 text-sm font-black text-[#111827] sm:grid-cols-3 md:mt-8 md:text-base">
-        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.engineers')}</span>
         </div>
-        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.warranty')}</span>
         </div>
-        <div className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
           <span className="text-2xl text-[#f08a24]">✓</span>
           <span>{t('hero.trust.survey')}</span>
         </div>

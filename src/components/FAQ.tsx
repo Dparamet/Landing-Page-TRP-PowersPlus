@@ -25,7 +25,7 @@ export default function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="reveal-item overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-[#f08a24] hover:shadow-md"
+              className="reveal-item overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm transition-all duration-200 hover:border-[#d66d0c] hover:shadow-md"
             >
               <button
                 onClick={() => setActiveIndex(activeIndex === index ? null : index)}
@@ -43,7 +43,7 @@ export default function FAQ() {
               </button>
 
               {activeIndex === index && (
-                <div className="border-t border-slate-200 bg-white px-6 py-4">
+                <div className="border-t border-[#f08a24] bg-white px-6 py-4">
                   <p className="leading-relaxed text-slate-700">{faq.answer[language]}</p>
                 </div>
               )}
@@ -57,7 +57,7 @@ export default function FAQ() {
           </p>
           <a
             href="#contact"
-            className="inline-block rounded-lg bg-[#b85c00] px-8 py-4 font-black text-white transition-colors duration-200 hover:bg-[#8a4300]"
+            className="inline-block rounded-lg bg-[#f08a24] px-8 py-4 font-black text-white transition-colors duration-200 hover:bg-[#d66d0c]"
           >
             {t('contact.title')}
           </a>

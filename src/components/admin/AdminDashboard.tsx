@@ -120,7 +120,7 @@ export default function AdminDashboard() {
 
   if (state.status === 'loading') {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600" aria-busy="true">
+      <div className="rounded-lg border border-[#f08a24] bg-white p-6 text-sm text-slate-600" aria-busy="true">
         กำลังตรวจสอบสิทธิ์ผู้ดูแล...
       </div>
     );
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
 
   return (
     <section className="space-y-5">
-      <div className="overflow-hidden rounded-lg border border-[#12345f]/20 bg-[#12345f] text-white shadow-[0_18px_52px_rgba(18,52,95,0.16)]">
+      <div className="overflow-hidden rounded-lg border border-[#0f2a5f]/20 bg-[#0f2a5f] text-white shadow-[0_18px_52px_rgba(15,42,95,0.16)]">
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#f8a34a]">TRP Powers Plus CMS</p>
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
                 aria-pressed={selected}
                 className={`shrink-0 rounded-lg border px-3 py-2 text-left transition focus:outline-none focus:ring-2 focus:ring-[#f08a24]/40 ${
                   selected
-                    ? 'border-[#f8a34a] bg-white text-[#12345f]'
+                    ? 'border-[#f08a24] bg-white text-[#0f2a5f]'
                     : 'border-white/12 bg-white/8 text-blue-50 hover:border-white/30 hover:bg-white/14'
                 }`}
               >
@@ -173,15 +173,15 @@ export default function AdminDashboard() {
 
       <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_460px]">
           <div className="min-w-0 space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-[#f08a24] bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-wide text-[#f08a24]">กำลังแก้ไข</p>
-                <h2 className="mt-2 text-xl font-black text-[#12345f]">{currentSection.label}</h2>
+                <h2 className="mt-2 text-xl font-black text-[#0f2a5f]">{currentSection.label}</h2>
                 <p className="mt-1 text-sm leading-6 text-slate-600">{currentSection.description}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-500">ช่อง English เว้นว่างได้ ระบบจะเติมให้จากคำหลักอัตโนมัติ</p>
               </div>
-              <span className="inline-flex w-fit rounded-lg border border-blue-100 bg-[#f4f8ff] px-3 py-2 text-xs font-black text-[#12345f]">
+              <span className="inline-flex w-fit rounded-lg border border-[#f08a24] bg-[#e3f2fd] px-3 py-2 text-xs font-black text-[#0f2a5f]">
                 Preview: {currentSection.previewHash}
               </span>
             </div>
@@ -189,22 +189,22 @@ export default function AdminDashboard() {
           {renderAdminSection(activeSection)}
         </div>
 
-        <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm 2xl:sticky 2xl:top-5 2xl:self-start">
+        <aside className="rounded-lg border border-[#f08a24] bg-white p-4 shadow-sm 2xl:sticky 2xl:top-5 2xl:self-start">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-black text-[#12345f]">ตัวอย่างหน้าบ้าน</h2>
+                <h2 className="text-sm font-black text-[#0f2a5f]">ตัวอย่างหน้าบ้าน</h2>
                 <p className="mt-1 text-xs leading-5 text-slate-500">{currentSection.previewHash}</p>
               </div>
               <a
                 href={`/${currentSection.previewHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
+                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-[#0f2a5f] transition hover:border-[#f08a24] hover:text-[#d66d0c]"
               >
                 เปิดเต็ม
               </a>
             </div>
-            <div className="mt-4 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+            <div className="mt-4 overflow-hidden rounded-lg border border-[#f08a24] bg-slate-100">
               <iframe
                 key={currentSection.previewHash}
                 title={`ตัวอย่าง ${currentSection.label}`}

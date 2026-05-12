@@ -68,8 +68,8 @@ export const COOKIE_COLORS = {
   textTertiary: 'text-gray-600',
 
   // Buttons
-  btnPrimaryBg: 'bg-[#b85c00]',
-  btnPrimaryBgHover: 'hover:-translate-y-0.5 hover:bg-[#8a4300] hover:shadow-md active:translate-y-0',
+  btnPrimaryBg: 'bg-[#f08a24]',
+  btnPrimaryBgHover: 'hover:-translate-y-0.5 hover:bg-[#d66d0c] hover:shadow-md active:translate-y-0',
   btnSecondaryBg: 'bg-blue-50',
   btnSecondaryBgHover: 'hover:-translate-y-0.5 hover:bg-blue-100 active:translate-y-0',
   btnTertiaryBg: 'bg-transparent',

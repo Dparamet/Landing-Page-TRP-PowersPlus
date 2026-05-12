@@ -18,7 +18,7 @@ export default function CookieConsentBanner() {
             <div className={`inline-flex items-center rounded-full border ${COOKIE_COLORS.badgeBorder} ${COOKIE_COLORS.badgeBg} px-2.5 py-1 text-[11px] font-bold ${COOKIE_COLORS.badgeText}`}>
               {t('cookie.badge')}
             </div>
-            <h2 className="mt-3 text-base font-black text-[#12345f] sm:text-lg">
+            <h2 className="mt-3 text-base font-black text-[#0f2a5f] sm:text-lg">
               {t('cookie.title')}
             </h2>
             <p className={`mt-1.5 text-sm leading-relaxed ${COOKIE_COLORS.textSecondary}`}>
@@ -30,14 +30,14 @@ export default function CookieConsentBanner() {
             <button
               type="button"
               onClick={rejectAll}
-              className={`rounded-md border border-slate-200 ${COOKIE_COLORS.btnSecondaryBg} px-4 py-2 text-sm font-bold transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap`}
+              className={`rounded-md border border-[#f08a24] ${COOKIE_COLORS.btnSecondaryBg} px-4 py-2 text-sm font-bold transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap`}
             >
               {t('cookie.reject')}
             </button>
             <button
               type="button"
               onClick={openSettings}
-              className={`rounded-md border border-blue-100 ${COOKIE_COLORS.btnSecondaryBg} px-4 py-2 text-sm font-bold text-[#12345f] transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap`}
+              className={`rounded-md border border-[#f08a24] ${COOKIE_COLORS.btnSecondaryBg} px-4 py-2 text-sm font-bold text-[#0f2a5f] transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${COOKIE_COLORS.btnSecondaryBgHover} whitespace-nowrap`}
             >
               {t('cookie.customize')}
             </button>

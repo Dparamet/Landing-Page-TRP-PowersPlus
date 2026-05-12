@@ -7,7 +7,7 @@ export default function FooterBrandStory() {
   const { t } = useLanguage();
 
   return (
-    <div className="border-t border-slate-200 bg-[#eef4ff] px-4 py-16">
+    <div className="border-t border-slate-200 bg-[#e3f2fd] px-4 py-16\">
       <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
         <Image
           src="/images/LogoTRP.webp"

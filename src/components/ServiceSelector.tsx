@@ -23,10 +23,10 @@ export default function ServiceSelector() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
           <div>
-            <span className="inline-flex rounded-full border border-orange-100 bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#b85c00]">
+            <span className="inline-flex rounded-full border border-[#f08a24] bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#d66d0c]">
               {t('serviceSelector.eyebrow')}
             </span>
-            <h2 className="mt-5 text-3xl font-black leading-tight text-[#12345f] md:text-5xl">
+            <h2 className="mt-5 text-3xl font-black leading-tight text-[#0f2a5f] md:text-5xl">
               {t('serviceSelector.title')}
             </h2>
           </div>
@@ -49,8 +49,8 @@ export default function ServiceSelector() {
                   onClick={() => setActiveKey(service.key)}
                   className={`rounded-lg border p-4 text-left transition-colors duration-200 ${
                     selected
-                      ? 'border-[#12345f] bg-[#12345f] text-white shadow-lg shadow-slate-200'
-                      : 'border-slate-200 bg-white text-[#12345f] hover:border-[#f08a24] hover:bg-[#fff7ed]'
+                      ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-lg shadow-blue-200'
+                      : 'border-[#f08a24] bg-white text-[#0f2a5f] hover:border-[#d66d0c] hover:bg-[#fff7ed]'
                   }`}
                 >
                   <span className="block text-sm font-black">{service.shortTitle[language]}</span>
@@ -62,10 +62,10 @@ export default function ServiceSelector() {
             })}
           </div>
 
-          <article id="selected-service-panel" role="tabpanel" className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-200 p-5 sm:p-6">
-              <p className="text-sm font-black text-[#b85c00]">{activeService.shortTitle[language]}</p>
-              <h3 className="mt-2 text-2xl font-black leading-tight text-[#12345f] md:text-3xl">
+          <article id="selected-service-panel" role="tabpanel" className="overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">
+            <div className="border-b border-[#f08a24] p-5 sm:p-6">
+              <p className="text-sm font-black text-[#f08a24]">{activeService.shortTitle[language]}</p>
+              <h3 className="mt-2 text-2xl font-black leading-tight text-[#0f2a5f] md:text-3xl">
                 {activeService.title[language]}
               </h3>
               <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600 md:text-base">
@@ -79,10 +79,10 @@ export default function ServiceSelector() {
               <InfoColumn title={t('serviceSelector.prepare')} items={activeService.prepare} />
             </div>
 
-            <div className="grid gap-4 border-t border-slate-200 bg-[#fff7ed] p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
+            <div className="grid gap-4 border-t border-[#f08a24] bg-[#fff7ed] p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6">
               <div>
                 <p className="text-sm font-black text-[#7a3b00]">{t('serviceSelector.linePrompt')}</p>
-                <p className="mt-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#12345f]">
+                <p className="mt-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#0f2a5f]">
                   {lineMessage}
                 </p>
               </div>
@@ -90,7 +90,7 @@ export default function ServiceSelector() {
                 href={companyProfile.lineUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#8a4300]"
+                className="inline-flex items-center justify-center rounded-lg bg-[#f08a24] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#d66d0c]"
               >
                 {t('serviceSelector.lineCta')}
               </a>
@@ -106,8 +106,8 @@ function InfoColumn({ title, items }: { title: string; items: Array<{ th: string
   const { language } = useLanguage();
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-[#f8fafc] p-4">
-      <h4 className="text-sm font-black text-[#12345f]">{title}</h4>
+    <div className="rounded-lg border border-[#f08a24] bg-[#f8fafc] p-4">
+      <h4 className="text-sm font-black text-[#0f2a5f]">{title}</h4>
       <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
         {items.map((item) => (
           <li key={item.en} className="flex gap-2">
