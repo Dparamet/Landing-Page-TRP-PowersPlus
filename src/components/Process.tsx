@@ -13,7 +13,7 @@ export default function Process() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
           <div>
-            <span className="inline-flex rounded-full border border-blue-100 bg-[#f4f8ff] px-4 py-2 text-sm font-bold text-[#12345f]">
+            <span className="inline-flex rounded-full border border-[#f08a24] bg-[#e3f2fd] px-4 py-2 text-sm font-bold text-[#0f2a5f]">
               {t('process.eyebrow')}
             </span>
             <h2 className="mt-5 text-3xl font-black leading-tight text-current sm:text-4xl md:text-5xl">
@@ -27,7 +27,7 @@ export default function Process() {
           {steps.map((step, index) => (
             <li
               key={step.id}
-              className="reveal-item rounded-lg border border-slate-200 bg-[#f8fafc] p-4 transition-colors duration-200 hover:border-[#f08a24] hover:bg-white"
+              className="reveal-item rounded-lg border border-[#f08a24] bg-[#f8fafc] p-4 transition-colors duration-200 hover:border-[#d66d0c] hover:bg-white"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f08a24] text-sm font-black text-white">
                 {index + 1}
@@ -38,11 +38,11 @@ export default function Process() {
           ))}
         </ol>
 
-        <div className="mt-8 flex flex-col gap-3 rounded-lg border border-orange-100 bg-[#fff7ed] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-3 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-3xl text-sm font-semibold leading-relaxed text-[#7a3b00]">{t('process.note')}</p>
           <Link
             href="#contact"
-            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#b85c00] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#8a4300]"
+            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[#f08a24] px-5 py-3 text-sm font-black text-white shadow-sm transition-colors duration-200 hover:bg-[#d66d0c]"
           >
             {t('hero.cta')}
           </Link>

@@ -192,10 +192,10 @@ export default function MediaUploadManager() {
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">รูปภาพเว็บไซต์</h2>
+          <h2 className="text-lg font-black text-[#0f2a5f]">รูปภาพเว็บไซต์</h2>
           <p className="mt-1 text-sm text-slate-600">แปลงรูปเป็น WebP และลดขนาดก่อนเก็บใน Supabase Storage</p>
         </div>
-        <p className="rounded-full bg-[#f4f8ff] px-3 py-1.5 text-xs font-bold text-[#12345f]">สูงสุด 20MB ก่อนแปลง</p>
+        <p className="rounded-full bg-[#e3f2fd] px-3 py-1.5 text-xs font-bold text-[#0f2a5f]">สูงสุด 20MB ก่อนแปลง</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]" noValidate>
@@ -206,7 +206,7 @@ export default function MediaUploadManager() {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
-              className="mt-2 block w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-[#12345f] file:px-3 file:py-2 file:text-sm file:font-bold file:text-white"
+              className="mt-2 block w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-[#0f2a5f] file:px-3 file:py-2 file:text-sm file:font-bold file:text-white"
             />
           </label>
 
@@ -223,7 +223,7 @@ export default function MediaUploadManager() {
           <button
             type="submit"
             disabled={isBusy}
-            className="w-full rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-lg bg-[#0f2a5f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#061a3d] focus:outline-none focus:ring-2 focus:ring-[#0f2a5f]/30 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === 'compressing' ? 'กำลังแปลงรูป...' : status === 'uploading' ? 'กำลัง upload...' : 'แปลงและ Upload'}
           </button>
@@ -268,7 +268,7 @@ export default function MediaUploadManager() {
 
       {assets.length > 0 ? (
         <div className="mt-6">
-          <h3 className="text-sm font-black text-[#12345f]">รูปล่าสุด</h3>
+          <h3 className="text-sm font-black text-[#0f2a5f]">รูปล่าสุด</h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {assets.map((asset) => (
               <a
@@ -276,7 +276,7 @@ export default function MediaUploadManager() {
                 href={asset.public_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group rounded-lg border border-slate-200 bg-white p-3 transition hover:border-[#f08a24]"
+                className="group rounded-lg border border-[#f08a24] bg-white p-3 transition hover:border-[#d66d0c]"
               >
                 <div className="relative aspect-video overflow-hidden rounded-md bg-slate-100">
                   <Image src={asset.public_url} alt={asset.alt_th || asset.alt_en} fill className="object-cover" unoptimized />

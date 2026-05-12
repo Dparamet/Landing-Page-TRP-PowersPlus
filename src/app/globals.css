@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #172554;
-  --foreground: #182230;
+  --background: #0f2a5f;
+  --foreground: #ffffff;
   --brand-blue: #1e4f8f;
-  --brand-blue-dark: #12345f;
-  --brand-blue-soft: #f4f8ff;
+  --brand-blue-dark: #0f2a5f;
+  --brand-blue-soft: #e3f2fd;
   --brand-orange: #f08a24;
-  --brand-orange-deep: #b85c00;
+  --brand-orange-deep: #d66d0c;
   --brand-orange-soft: #fff7ed;
-  --brand-surface: #f8fafc;
+  --brand-surface: #ffffff;
   --ring: #f08a24;
+  --card-background: #ffffff;
+  --card-text: #182230;
 }
 
 @theme inline {
@@ -102,8 +104,8 @@ html {
 }
 
 .site-background > :where(section, footer):nth-of-type(even) {
-  background-color: #12345f;
-  color: #eef4ff;
+  background-color: #0f2a5f;
+  color: #ffffff;
 }
 
 .site-background :where(
@@ -113,7 +115,7 @@ html {
   .bg-\[\#f4f8ff\],
   .bg-\[\#eef4ff\]
 ) {
-  background-color: #fffdf8;
+  background-color: #ffffff;
   color: #182230;
 }
 
@@ -149,7 +151,7 @@ html {
   .bg-\[\#8a4300\]
 ) {
   background-color: #f08a24;
-  color: #fffdf8;
+  color: #ffffff;
 }
 
 .site-background :where(
@@ -158,7 +160,7 @@ html {
   .bg-\[\#b85c00\],
   .bg-\[\#8a4300\]
 ) :where(h1, h2, h3, h4, p, li, span, dt, dd, label) {
-  color: #fffdf8;
+  color: #ffffff;
 }
 
 .site-background :where(.border-slate-200, .border-orange-100, .border-blue-100, .border-orange-200, .border-orange-200\/70) {
@@ -195,10 +197,10 @@ html {
 .liquid-glass {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 2.75rem 4rem 3rem 3.5rem;
-  background: #fffdf8;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -227,8 +229,8 @@ html {
 }
 
 .glass-text-panel {
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  background: #fffdf8;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.1);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;

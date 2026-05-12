@@ -207,14 +207,14 @@ export default function FaqManager() {
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">คำถามที่พบบ่อย</h2>
+          <h2 className="text-lg font-black text-[#0f2a5f]">คำถามที่พบบ่อย</h2>
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข และซ่อนคำถามในหน้า FAQ</p>
         </div>
         <button
           type="submit"
           form="faq-manager-form"
           disabled={status === 'saving' || status === 'loading'}
-          className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]"
+          className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d]"
         >
           {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึก FAQ' : 'สร้าง FAQ'}
         </button>
@@ -233,7 +233,7 @@ export default function FaqManager() {
                 type="button"
                 onClick={() => selectFaq(item)}
                 className={`rounded-lg border p-3 text-left transition ${
-                  values.id === item.id ? 'border-[#12345f] bg-[#12345f] text-white' : 'border-slate-200 bg-slate-50 text-[#12345f]'
+                  values.id === item.id ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white' : 'border-slate-200 bg-slate-50 text-[#0f2a5f]'
                 }`}
               >
                 <span className="block text-sm font-bold">{item.question.th}</span>
