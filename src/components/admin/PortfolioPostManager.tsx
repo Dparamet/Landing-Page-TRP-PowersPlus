@@ -117,6 +117,9 @@ export default function PortfolioPostManager() {
       return;
     }
 
+    setStatus('saving');
+    setMessage('');
+
     const { error } = await supabase.rpc('soft_delete_portfolio_project', {
       project_id: postId,
       retention_days: 30,
@@ -141,6 +144,9 @@ export default function PortfolioPostManager() {
       return;
     }
 
+    setStatus('saving');
+    setMessage('');
+
     const { error } = await supabase.rpc('restore_portfolio_project', {
       project_id: postId,
     });
@@ -163,6 +169,9 @@ export default function PortfolioPostManager() {
     if (!supabase) {
       return;
     }
+
+    setStatus('saving');
+    setMessage('');
 
     const { error } = await supabase.rpc('hard_delete_portfolio_project', {
       project_id: postId,
@@ -187,7 +196,7 @@ export default function PortfolioPostManager() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">โพสต์ผลงาน</h2>
-          <p className="mt-1 text-sm text-slate-600">สร้าง แก้ไข ซ่อน ลบแบบพักไว้ 30 วัน และกู้คืนโพสต์ผลงาน</p>
+          <p className="mt-1 text-sm text-slate-600">เลือกผลงานเดิมเพื่อแก้ไข หรือกดเพิ่มผลงานเพื่อสร้างรายการใหม่</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <button type="button" onClick={() => { setValues(defaultPortfolioPostFormValues); setMessage(''); }} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]">
@@ -199,7 +208,38 @@ export default function PortfolioPostManager() {
         </div>
       </div>
 
+      <div className="mt-5 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-4">
+        <label className="block text-sm font-black text-[#12345f]">
+          เลือกผลงานที่ต้องการแก้ไข
+          <select
+            value={values.id ?? ''}
+            onChange={(event) => {
+              const selectedPost = posts.find((post) => post.id === event.target.value);
+              if (selectedPost) {
+                editPost(selectedPost);
+              } else {
+                setValues(defaultPortfolioPostFormValues);
+                setMessage('');
+              }
+            }}
+            className={`${inputClass} mt-2`}
+          >
+            <option value="">สร้างผลงานใหม่</option>
+            {posts.map((post) => (
+              <option key={post.id} value={post.id}>
+                {readLocalized(post.title, 'th') || post.slug} {post.deleted_at ? '(ถังพัก)' : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <form id="portfolio-post-form" onSubmit={handleSubmit} className="mt-5 grid gap-4 md:grid-cols-2" noValidate>
+        {values.id ? (
+          <p className="rounded-lg border border-[#0f2a5f] bg-[#e3f2fd] px-3 py-2 text-sm font-black text-[#0f2a5f] md:col-span-2">
+            กำลังแก้ไขผลงานเดิม
+          </p>
+        ) : null}
         <Field label="ชื่อผลงาน ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />
         <Field label="ชื่อผลงาน ภาษาอังกฤษ" value={values.titleEn} onChange={(value) => updateField('titleEn', value)} />
         <label className="block text-sm font-semibold text-slate-800">

@@ -8,12 +8,7 @@ import { portfolioProjects } from '@/content/site';
 import { formatPortfolioImageError, formatPortfolioImageLoadError } from '@/lib/admin/databaseErrors';
 import { formatBytes } from '@/lib/admin/mediaUpload';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
-import {
-  landingHeroBackgroundKey,
-  landingHeroBackgroundSlot,
-  portfolioProjectKey,
-  type PortfolioImageAdminSlot,
-} from '@/lib/portfolioImages';
+import { portfolioProjectKey, type PortfolioImageAdminSlot } from '@/lib/portfolioImages';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -21,10 +16,7 @@ type MediaAsset = Database['public']['Tables']['media_assets']['Row'];
 type PortfolioImageOverride = Database['public']['Tables']['portfolio_image_overrides']['Row'];
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
-const projectOptions = [
-  { value: landingHeroBackgroundKey, label: 'พื้นหลังหน้าแรก' },
-  ...portfolioProjects.map((project) => ({ value: portfolioProjectKey(project), label: project.title.th })),
-];
+const projectOptions = portfolioProjects.map((project) => ({ value: portfolioProjectKey(project), label: project.title.th }));
 
 const portfolioImageSlots: Array<{ value: PortfolioImageAdminSlot; label: string }> = [
   { value: 'cover', label: 'รูปหน้าปก' },
@@ -33,19 +25,15 @@ const portfolioImageSlots: Array<{ value: PortfolioImageAdminSlot; label: string
   { value: 'after', label: 'หลังติดตั้ง' },
 ];
 
-const heroBackgroundSlots: Array<{ value: PortfolioImageAdminSlot; label: string }> = [
-  { value: landingHeroBackgroundSlot, label: 'พื้นหลังหน้าแรก' },
-];
-
 const selectClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
 
 export default function PortfolioImageManager() {
-  const firstProjectKey = landingHeroBackgroundKey;
+  const firstProjectKey = projectOptions[0]?.value ?? '';
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [overrides, setOverrides] = useState<PortfolioImageOverride[]>([]);
   const [projectKey, setProjectKey] = useState(firstProjectKey);
-  const [imageSlot, setImageSlot] = useState<PortfolioImageAdminSlot>(landingHeroBackgroundSlot);
+  const [imageSlot, setImageSlot] = useState<PortfolioImageAdminSlot>('cover');
   const [assetId, setAssetId] = useState('');
   const [status, setStatus] = useState<SaveStatus>('loading');
   const [message, setMessage] = useState('');
@@ -55,14 +43,13 @@ export default function PortfolioImageManager() {
   }, []);
 
   const selectedAsset = useMemo(() => assets.find((asset) => asset.id === assetId) ?? null, [assetId, assets]);
-  const availableImageSlots = projectKey === landingHeroBackgroundKey ? heroBackgroundSlots : portfolioImageSlots;
   const selectedProjectLabel = useMemo(() => {
-    return projectOptions.find((project) => project.value === projectKey)?.label ?? projectOptions[0].label;
+    return projectOptions.find((project) => project.value === projectKey)?.label ?? projectOptions[0]?.label ?? 'ยังไม่มีผลงาน';
   }, [projectKey]);
 
   function selectProject(nextProjectKey: string) {
     setProjectKey(nextProjectKey);
-    setImageSlot(nextProjectKey === landingHeroBackgroundKey ? landingHeroBackgroundSlot : 'cover');
+    setImageSlot('cover');
   }
 
   async function loadData() {
@@ -105,6 +92,12 @@ export default function PortfolioImageManager() {
     if (!selectedAsset) {
       setStatus('error');
       setMessage('ยังไม่มีรูปที่ upload แล้วให้เลือก');
+      return;
+    }
+
+    if (!projectKey) {
+      setStatus('error');
+      setMessage('ยังไม่มีผลงานให้ตั้งค่ารูป ให้สร้างโพสต์ผลงานก่อน');
       return;
     }
 
@@ -182,54 +175,16 @@ export default function PortfolioImageManager() {
     requestPreviewRefresh();
   }
 
-  async function resetHeroBackground() {
-    const supabase = getSupabaseBrowserClient();
-
-    if (!supabase) {
-      setStatus('error');
-      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
-      return;
-    }
-
-    setStatus('saving');
-    setMessage('');
-
-    const { error } = await supabase.rpc('hard_delete_portfolio_image_override', {
-      override_project_key: landingHeroBackgroundKey,
-      override_image_slot: landingHeroBackgroundSlot,
-    });
-
-    if (error) {
-      setStatus('error');
-      setMessage(formatPortfolioImageError(error));
-      return;
-    }
-
-    removeOverrideFromView(landingHeroBackgroundKey, landingHeroBackgroundSlot);
-    setStatus('saved');
-    setMessage('ตั้งค่าพื้นหลังหน้าแรกเป็นว่างแล้ว');
-    setProjectKey(landingHeroBackgroundKey);
-    setImageSlot(landingHeroBackgroundSlot);
-    await loadData();
-    requestPreviewRefresh();
-  }
-
   const isBusy = status === 'loading' || status === 'saving';
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">จัดรูปหน้าแรกและผลงาน</h2>
-          <p className="mt-1 text-sm text-slate-600">เลือกรูปที่ upload แล้วไปใช้เป็นพื้นหลังหน้าแรก รูปหน้าปก หรือแกลเลอรีของผลงาน</p>
+          <h2 className="text-lg font-black text-[#12345f]">รูปผลงาน</h2>
+          <p className="mt-1 text-sm text-slate-600">เลือกรูปที่ upload แล้วไปใช้เป็นรูปหน้าปกหรือแกลเลอรีของผลงาน พื้นหลัง Hero ใช้หน้าขาวเปล่า</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <ConfirmResetButton
-            title="ตั้งค่าพื้นหลังหน้าแรกเป็นว่าง"
-            description="ระบบจะยกเลิกภาพพื้นหลัง Hero และกลับไปใช้พื้นหลังเริ่มต้นของหน้าเว็บ"
-            disabled={isBusy}
-            onConfirm={resetHeroBackground}
-          />
           <button
             type="button"
             onClick={() => void loadData()}
@@ -260,17 +215,12 @@ export default function PortfolioImageManager() {
               onChange={(event) => setImageSlot(event.target.value as PortfolioImageAdminSlot)}
               className={`${selectClass} mt-2`}
             >
-              {availableImageSlots.map((slot) => (
+              {portfolioImageSlots.map((slot) => (
                 <option key={slot.value} value={slot.value}>
                   {slot.label}
                 </option>
               ))}
             </select>
-            {imageSlot === landingHeroBackgroundSlot ? (
-              <span className="mt-2 block text-xs font-semibold leading-relaxed text-slate-500">
-                ใช้รูปแนวนอนอย่างน้อย 2400×1100 px และเลือกภาพที่ subject อยู่กลางภาพ เพราะ Hero จะครอบเต็มจอด้วย object-cover
-              </span>
-            ) : null}
           </label>
 
           <label className="block text-sm font-semibold text-slate-800">
@@ -375,5 +325,5 @@ export default function PortfolioImageManager() {
 }
 
 function slotLabel(slot: string) {
-  return [...heroBackgroundSlots, ...portfolioImageSlots].find((item) => item.value === slot)?.label ?? slot;
+  return portfolioImageSlots.find((item) => item.value === slot)?.label ?? slot;
 }

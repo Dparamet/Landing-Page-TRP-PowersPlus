@@ -68,6 +68,15 @@ describe('admin database error messages', () => {
     );
   });
 
+  it('points direct storage table delete errors to the Storage API migration', () => {
+    assert.equal(
+      formatMediaAssetDeleteError({
+        message: 'Direct deletion from storage tables is not allowed. Use the Storage API instead.',
+      }),
+      'ลบ metadata รูปไม่สำเร็จ: ฐานข้อมูลยังใช้ RPC เก่าที่ลบ storage.objects โดยตรง ให้รัน migration 202605150008_media_delete_storage_api.sql แล้ว refresh หน้า',
+    );
+  });
+
   it('points missing explicit admin helper errors to the repair migration', () => {
     assert.equal(
       formatPortfolioImageError({

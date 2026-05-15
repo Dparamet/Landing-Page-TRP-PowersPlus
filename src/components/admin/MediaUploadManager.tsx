@@ -159,6 +159,14 @@ export default function MediaUploadManager() {
     setStatus('deleting');
     setMessage('');
 
+    const { error: storageError } = await supabase.storage.from(MEDIA_BUCKET).remove([asset.path]);
+
+    if (storageError && !storageError.message?.toLowerCase().includes('not found')) {
+      setStatus('error');
+      setMessage(`ลบไฟล์รูปไม่สำเร็จ: ${storageError.message}`);
+      return;
+    }
+
     const { error: deleteError } = await supabase.rpc('hard_delete_media_asset', { asset_id: asset.id });
 
     if (deleteError) {

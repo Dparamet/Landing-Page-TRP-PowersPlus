@@ -20,7 +20,7 @@ export default function Services({ showAll = false }: { showAll?: boolean }) {
             <span className="inline-flex rounded-full border border-orange-400 bg-white px-4 py-2 text-sm font-black text-[#111827] shadow-sm">
               {t('services.eyebrow')}
             </span>
-            <h2 className="mt-5 max-w-2xl text-3xl font-black leading-[1.12] text-white sm:text-4xl md:text-5xl">
+            <h2 className={`mt-5 max-w-2xl text-3xl font-black leading-[1.12] sm:text-4xl md:text-5xl ${showAll ? 'text-[#0f2a5f]' : 'text-white'}`}>
               {t('services.title')}
             </h2>
           </div>

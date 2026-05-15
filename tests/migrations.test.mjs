@@ -77,4 +77,13 @@ describe('database migrations', () => {
     assert.match(migration, /drop function if exists public\.is_admin\(\);/);
     assert.doesNotMatch(migration.replace(/drop function if exists public\.is_admin\(\);/, ''), /public\.is_admin\(\)/);
   });
+
+  it('keeps media hard delete away from direct storage table deletion', async () => {
+    const migration = await readFile('supabase/migrations/202605150008_media_delete_storage_api.sql', 'utf8');
+
+    assert.match(migration, /create or replace function public\.hard_delete_media_asset/);
+    assert.match(migration, /delete from public\.media_assets/);
+    assert.doesNotMatch(migration, /delete from storage\.objects/);
+    assert.match(migration, /notify pgrst, 'reload schema';/);
+  });
 });

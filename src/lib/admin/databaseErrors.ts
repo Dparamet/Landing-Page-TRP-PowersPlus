@@ -103,6 +103,10 @@ export function formatPortfolioImageError(error: DatabaseErrorLike) {
 }
 
 export function formatMediaAssetDeleteError(error: DatabaseErrorLike) {
+  if (hasErrorText(error, 'Direct deletion from storage tables is not allowed')) {
+    return 'ลบ metadata รูปไม่สำเร็จ: ฐานข้อมูลยังใช้ RPC เก่าที่ลบ storage.objects โดยตรง ให้รัน migration 202605150008_media_delete_storage_api.sql แล้ว refresh หน้า';
+  }
+
   if (isMissingExplicitAdminFunction(error)) {
     return 'ลบ metadata รูปไม่สำเร็จ: ฐานข้อมูลยังไม่มี public.is_admin(uuid) ให้รัน migration 202605150005_repair_admin_rpc_permissions.sql แล้วกดโหลดรูปใหม่';
   }
