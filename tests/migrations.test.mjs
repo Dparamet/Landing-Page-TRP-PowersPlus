@@ -25,6 +25,9 @@ describe('database migrations', () => {
     assert.match(softDeleteMigration, /revoke delete on public\.process_steps from authenticated;/);
     assert.match(softDeleteMigration, /revoke delete on public\.site_texts from authenticated;/);
     assert.match(softDeleteMigration, /revoke delete on public\.portfolio_image_overrides from authenticated;/);
+
+    const standardItemsMigration = await readFile('supabase/migrations/202605100012_standard_items.sql', 'utf8');
+    assert.match(standardItemsMigration, /revoke delete on public\.standard_items from authenticated;/);
   });
 
   it('hardens media hard delete with storage cleanup and explicit admin failure', async () => {

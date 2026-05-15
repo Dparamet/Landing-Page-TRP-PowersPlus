@@ -13,6 +13,7 @@ import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
 import ProcessStepManager from '@/components/admin/ProcessStepManager';
 import ServiceManager from '@/components/admin/ServiceManager';
 import SiteTextManager from '@/components/admin/SiteTextManager';
+import StandardItemManager from '@/components/admin/StandardItemManager';
 import { ADMIN_PREVIEW_REFRESH_EVENT } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -284,6 +285,8 @@ function renderAdminSection(section: AdminSectionKey) {
       return <SiteTextManager />;
     case 'services':
       return <ServiceManager />;
+    case 'standards':
+      return <StandardItemManager />;
     case 'media':
       return <MediaUploadManager />;
     case 'portfolioImages':

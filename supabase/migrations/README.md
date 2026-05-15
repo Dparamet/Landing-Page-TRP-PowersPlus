@@ -13,6 +13,8 @@ Run these files in order when creating or updating a Supabase database.
 9. `202605100009_site_texts_and_process_steps.sql`
 10. `202605100010_soft_delete_content_tables.sql`
 11. `202605100011_contact_items.sql`
+12. `202605100012_standard_items.sql`
+13. `202605100013_standard_hover_images.sql`
 12. `202605130001_web_events.sql`
 13. `202605150001_landing_hero_background_image.sql`
 14. `202605150002_explicit_admin_and_media_hard_delete.sql`
