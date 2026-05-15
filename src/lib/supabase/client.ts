@@ -5,13 +5,15 @@ import type { Database } from './database.types';
 
 let browserClient: SupabaseClient<Database> | null = null;
 
+export const SUPABASE_AUTH_OPTIONS = {
+  autoRefreshToken: true,
+  detectSessionInUrl: true,
+  persistSession: true,
+} as const;
+
 export function createSupabaseClient(config: SupabasePublicConfig = getSupabasePublicConfig()): SupabaseClient<Database> {
   return createClient<Database>(config.url, config.anonKey, {
-    auth: {
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      persistSession: false,
-    },
+    auth: SUPABASE_AUTH_OPTIONS,
   });
 }
 

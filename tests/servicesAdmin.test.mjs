@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { serviceCategories } from '../src/content/site.ts';
-import { applyServiceRows, mapServiceFormToUpsert, mapServiceToForm, validateServiceForm } from '../src/lib/admin/services.ts';
+import {
+  applyServiceRows,
+  mapServiceCategoryToUpsert,
+  mapServiceFormToUpsert,
+  mapServiceToForm,
+  validateServiceForm,
+} from '../src/lib/admin/services.ts';
 
 describe('services admin helpers', () => {
   it('maps a service into editable form values', () => {
@@ -41,6 +47,14 @@ describe('services admin helpers', () => {
 
     assert.equal('deleted_at' in update, false);
     assert.equal('purge_after' in update, false);
+  });
+
+  it('maps a service category into an upsert row for portfolio foreign keys', () => {
+    const update = mapServiceCategoryToUpsert(serviceCategories[3], 40);
+
+    assert.equal(update.id, 'solar');
+    assert.equal(update.sort_order, 40);
+    assert.deepEqual(update.short_title, serviceCategories[3].shortTitle);
   });
 
   it('applies database rows over static services and filters unpublished rows', () => {

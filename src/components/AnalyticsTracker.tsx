@@ -16,25 +16,7 @@ type SessionData = {
   lastSeen: number;
 };
 
-type AnalyticsEventPayload = {
-  event_type: 'page_view' | 'click' | 'form_submit';
-  page_url: string;
-  path: string;
-  referrer: string | null;
-  element_tag?: string | null;
-  element_text?: string | null;
-  element_id?: string | null;
-  element_href?: string | null;
-  form_id?: string | null;
-  form_name?: string | null;
-  form_action?: string | null;
-  session_id?: string | null;
-  utm_source?: string | null;
-  utm_medium?: string | null;
-  utm_campaign?: string | null;
-  user_agent?: string | null;
-  metadata?: Record<string, unknown>;
-};
+type AnalyticsEventPayload = Database['public']['Tables']['web_events']['Insert'];
 
 function safeText(input: string | null | undefined) {
   if (!input) return null;
@@ -98,7 +80,10 @@ async function sendEvent(payload: AnalyticsEventPayload) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
-  await supabase.from('web_events').insert(payload);
+  const { error } = await supabase.from('web_events').insert(payload);
+  if (error) {
+    console.error('[Analytics] Failed to send event:', error);
+  }
 }
 
 export default function AnalyticsTracker() {

@@ -8,6 +8,7 @@ import {
   mapPortfolioPostFormToUpdate,
   mapPortfolioProjectRowToForm,
   mapPortfolioProjectRowToProject,
+  mapPortfolioProjectViewToForm,
   validatePortfolioPost,
 } from '../src/lib/admin/portfolioPosts.ts';
 
@@ -38,6 +39,41 @@ describe('portfolio posts admin helpers', () => {
     assert.equal(insert.category_key, 'solar');
     assert.equal(Array.isArray(insert.metrics), true);
     assert.equal(insert.sort_order, 25);
+  });
+
+  it('keeps zero sort order inside PostgreSQL integer range', () => {
+    const insert = mapPortfolioPostFormToInsert({ ...validPost, sortOrder: 0 });
+
+    assert.equal(insert.sort_order, 0);
+  });
+
+  it('rejects sort order values outside PostgreSQL integer range', () => {
+    const validation = validatePortfolioPost({ ...validPost, sortOrder: Date.now() });
+
+    assert.equal(validation.ok, false);
+    assert.equal(validation.message, 'ลำดับต้องเป็นเลขจำนวนเต็ม 0 ถึง 2147483647');
+  });
+
+  it('keeps an existing slug when saving a static portfolio project as editable database content', () => {
+    const form = mapPortfolioProjectViewToForm({
+      title: { th: 'งานเดิม', en: 'Existing Project' },
+      categoryKey: 'solar',
+      category: { th: 'โซลาร์', en: 'Solar' },
+      description: { th: 'รายละเอียดเดิม', en: 'Existing detail' },
+      systemType: { th: 'ระบบเดิม', en: 'Existing system' },
+      metrics: [{ label: { th: 'ขนาด', en: 'Size' }, value: { th: '5 kWp', en: '5 kWp' }, highlight: true }],
+      location: { th: 'กรุงเทพฯ', en: 'Bangkok' },
+      province: { th: 'กรุงเทพฯ', en: 'Bangkok' },
+      accent: 'orange',
+      coverImage: { src: '/images/LogoTRP.webp', alt: { th: 'รูป', en: 'Image' } },
+      gallery: [],
+    });
+    const insert = mapPortfolioPostFormToInsert({ ...form, titleTh: 'งานเดิมที่แก้แล้ว' });
+
+    assert.equal(form.id, '');
+    assert.equal(form.slug, 'existing-project');
+    assert.equal(insert.slug, 'existing-project');
+    assert.deepEqual(insert.title, { th: 'งานเดิมที่แก้แล้ว', en: 'Existing Project' });
   });
 
   it('maps an existing database row back into an editable form', () => {

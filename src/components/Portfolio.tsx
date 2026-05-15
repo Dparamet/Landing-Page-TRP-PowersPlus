@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { PortfolioProject } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
@@ -16,7 +17,9 @@ type LightboxImage = {
   label: string;
 };
 
-export default function Portfolio() {
+const LANDING_PORTFOLIO_LIMIT = 4;
+
+export default function Portfolio({ showAll = false }: { showAll?: boolean }) {
   const { t, language } = useLanguage();
   const serviceCategories = useServiceCategories();
   const portfolioProjects = usePortfolioProjects();
@@ -38,6 +41,8 @@ export default function Portfolio() {
   const visibleProjects = useMemo(() => {
     return labeledProjects.filter((project) => activeCategory === 'all' || project.categoryKey === activeCategory);
   }, [activeCategory, labeledProjects]);
+  const cardProjects = showAll ? visibleProjects : visibleProjects.slice(0, LANDING_PORTFOLIO_LIMIT);
+  const hasMore = visibleProjects.length > cardProjects.length;
 
   const selectedProject = useMemo(() => {
     return visibleProjects.find((project) => project.title.en === selectedTitle) ?? visibleProjects[0] ?? labeledProjects[0];
@@ -53,29 +58,32 @@ export default function Portfolio() {
     <section id="portfolio" className="section-reveal overflow-hidden bg-transparent py-16 text-[#182230] md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
-            <span className="inline-flex rounded-full border border-[#f08a24] bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#d66d0c]">
+          <div className="reveal-item">
+            <span className="inline-flex rounded-full border border-[#f08a24] bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#d66d0c] transition-all duration-300 hover:scale-105">
               {t('portfolio.eyebrow')}
             </span>
             <h2 className="mt-5 max-w-2xl text-3xl font-black leading-tight text-current sm:text-4xl md:text-5xl">
               {t('portfolio.title')}
             </h2>
           </div>
-          <p className="max-w-3xl text-sm font-semibold leading-7 text-current opacity-90 sm:text-base md:text-lg">{t('portfolio.description')}</p>
+          <p className="reveal-item max-w-3xl text-sm font-semibold leading-7 text-current opacity-90 sm:text-base md:text-lg">{t('portfolio.description')}</p>
         </div>
 
         <div className="mb-8 flex gap-2 overflow-x-auto pb-2" aria-label={t('portfolio.filterLabel')}>
-          {categoryFilters.map((filter) => (
+          {categoryFilters.map((filter, index) => (
             <button
               key={filter.key}
               type="button"
               onClick={() => selectCategory(filter.key)}
               aria-pressed={activeCategory === filter.key}
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition-colors duration-200 ${
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition-all duration-300 ease-out ${
                 activeCategory === filter.key
-                  ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-md shadow-blue-200'
-                  : 'border-[#f08a24] bg-white text-[#0f2a5f] hover:border-[#d66d0c] hover:bg-[#fff7ed] hover:text-[#d66d0c]'
+                  ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-md shadow-blue-200 -translate-y-0.5'
+                  : 'border-[#f08a24] bg-white text-[#0f2a5f] hover:border-[#d66d0c] hover:bg-[#fff7ed] hover:text-[#d66d0c] hover:-translate-y-0.5'
               }`}
+              style={{ 
+                transitionDelay: activeCategory === filter.key ? '0ms' : `${index * 20}ms`
+              }}
             >
               {filter.label[language]}
             </button>
@@ -83,15 +91,25 @@ export default function Portfolio() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr] xl:items-start">
-          <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
-            {visibleProjects.map((project) => (
-              <PortfolioCard
-                key={project.title.en}
-                project={project}
-                selected={selectedProject.title.en === project.title.en}
-                onSelect={() => setSelectedTitle(project.title.en)}
-              />
-            ))}
+          <div>
+            <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
+              {cardProjects.map((project) => (
+                <PortfolioCard
+                  key={project.title.en}
+                  project={project}
+                  selected={selectedProject.title.en === project.title.en}
+                  onSelect={() => setSelectedTitle(project.title.en)}
+                />
+              ))}
+            </div>
+            {hasMore ? (
+              <Link
+                href="/portfolio"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-lg border border-[#f08a24] bg-white px-5 py-3 text-center text-sm font-black text-[#0f2a5f] transition hover:bg-[#fff7ed] hover:text-[#d66d0c] sm:w-auto"
+              >
+                {language === 'th' ? 'อ่านเพิ่มเติมผลงานทั้งหมด' : 'View all portfolio'}
+              </Link>
+            ) : null}
           </div>
 
           <ProjectDetail project={selectedProject} serviceCategories={serviceCategories} onOpenImage={setLightboxImage} />
@@ -119,7 +137,7 @@ function PortfolioCard({
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`group flex h-full flex-col overflow-hidden rounded-lg border text-left transition-colors duration-200 hover:border-[#f08a24] ${borderClass}`}
+      className={`group glass-card flex h-full flex-col overflow-hidden rounded-lg border text-left transition-all duration-300 ease-out hover:border-[#f08a24] hover:shadow-lg hover:-translate-y-1 ${borderClass}`}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
         <Image
@@ -127,19 +145,19 @@ function PortfolioCard({
           alt={project.coverImage.alt[language]}
           fill
           sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 100vw"
-          className="object-cover"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f2a5f]/80 via-transparent to-transparent" />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-black text-[#0f2a5f]">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f2a5f]/80 via-transparent to-transparent transition-opacity duration-300" />
+        <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-black text-[#0f2a5f] transition-all duration-300 group-hover:scale-110">
           {project.category[language]}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-lg font-black leading-snug text-[#182230]">{project.title[language]}</h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">{project.description[language]}</p>
+      <div className="flex flex-1 flex-col p-4 transition-all duration-300">
+        <h3 className="text-lg font-black leading-snug text-[#182230] transition-colors duration-300">{project.title[language]}</h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 transition-colors duration-300">{project.description[language]}</p>
 
-        <dl className="mt-auto grid grid-cols-2 gap-3 pt-4 text-sm">
+        <dl className="mt-auto grid grid-cols-2 gap-3 pt-4 text-sm transition-all duration-300">
           {project.metrics.slice(0, 2).map((metric) => (
             <Metric key={metric.label.en} label={metric.label[language]} value={metric.value[language]} highlight={metric.highlight} />
           ))}
@@ -200,7 +218,7 @@ function ProjectDetail({
 
         <div className="grid gap-3 sm:grid-cols-3">
           {project.gallery.map((image) => (
-            <figure key={image.stage} className="overflow-hidden rounded-lg border border-[#f08a24] bg-white">
+            <figure key={image.stage} className="glass-card overflow-hidden rounded-lg border border-[#f08a24] bg-white">
               <button
                 type="button"
                 onClick={() => onOpenImage({ src: image.src, alt: image.alt[language], label: image.label[language] })}
@@ -232,7 +250,7 @@ function PortfolioLightbox({ image, onClose }: { image: LightboxImage; onClose: 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/82 p-4" role="dialog" aria-modal="true" aria-label={image.label}>
       <button type="button" className="absolute inset-0 cursor-default" onClick={onClose} aria-label="ปิดรูปภาพ" />
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
+      <div className="glass-float relative w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
         <div className="flex items-center justify-between gap-3 border-b border-[#f08a24] px-4 py-3">
           <h3 className="text-sm font-black text-[#0f2a5f]">{image.label}</h3>
           <button

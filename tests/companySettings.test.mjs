@@ -38,6 +38,10 @@ describe('company settings admin data', () => {
       line_url: '',
       facebook_display: '',
       facebook_url: '',
+      instagram_display: '',
+      instagram_url: '',
+      tiktok_display: '',
+      tiktok_url: '',
       address: '',
       google_maps_search_url: '',
       google_maps_embed_url: '',
@@ -54,6 +58,8 @@ describe('company settings admin data', () => {
 
     assert.equal(upsert.id, true);
     assert.equal(upsert.phone_display, defaultCompanySettings.phoneDisplay);
+    assert.equal(upsert.instagram_url, defaultCompanySettings.instagramUrl);
+    assert.equal(upsert.tiktok_url, defaultCompanySettings.tiktokUrl);
     assert.equal(upsert.google_maps_embed_url, defaultCompanySettings.googleMapsEmbedUrl);
     assert.match(upsert.updated_at, /^\d{4}-\d{2}-\d{2}T/);
   });

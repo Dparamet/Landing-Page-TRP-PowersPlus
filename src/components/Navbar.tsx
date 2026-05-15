@@ -2,37 +2,53 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const { t } = useLanguage();
+  const pathname = usePathname();
+  const anchorPrefix = pathname === '/' ? '' : '/';
 
   const navLinks = [
-    { href: '#hero', label: t('nav.home') },
-    { href: '#services', label: t('nav.services') },
-    { href: '#portfolio', label: t('nav.portfolio') },
-    { href: '#calculator', label: t('nav.calculator') },
-    { href: '#contact', label: t('nav.contact') },
+    { href: `${anchorPrefix}#hero`, label: t('nav.home') },
+    { href: `${anchorPrefix}#services`, label: t('nav.services') },
+    { href: `${anchorPrefix}#portfolio`, label: t('nav.portfolio') },
+    { href: `${anchorPrefix}#calculator`, label: t('nav.calculator') },
+    { href: `${anchorPrefix}#contact`, label: t('nav.contact') },
   ];
+
+  // Detect scroll for smooth navbar enhancement
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 12);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-[#d66d0c] bg-[#f08a24] shadow-lg shadow-orange-300/30 backdrop-blur" role="navigation" aria-label={t('nav.mainNavigation')}>
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
         
-        {/* โลโก้: พร้อม SEO-friendly alt text */}
+        {/* Logo with smooth hover */}
         <Link 
           href="/" 
-          className="relative flex h-12 w-40 shrink-0 items-center md:h-14 md:w-48"
+          className="relative flex h-10 w-32 shrink-0 items-center transition-transform duration-300 hover:scale-105 md:h-12 md:w-40"
           aria-label={t('nav.logoLinkLabel')}
         > 
           <Image 
             src="/images/LogoTRP.webp" 
             alt={t('nav.logoAlt')} 
             fill 
-            className="object-contain"
+            className="object-contain transition-transform duration-300"
             sizes="(min-width: 768px) 192px, 160px"
             priority 
           />
@@ -47,12 +63,13 @@ export default function Navbar() {
               className="relative transition-colors duration-200 after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-0 after:bg-white after:transition-all hover:text-white/80 hover:after:w-full"
             >
               {link.label}
+              <span className="absolute -bottom-2 left-0 h-0.5 w-0 bg-gradient-to-r from-[#f08a24] to-[#d66d0c] transition-all duration-320 group-hover:w-full" />
             </Link>
           ))}
         </div>
 
         {/* Language Switcher + CTA Button - Desktop */}
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher />
           <Link 
             href="#contact" 
@@ -65,7 +82,7 @@ export default function Navbar() {
         {/* Hamburger Menu - Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex flex-col gap-1.5 lg:hidden"
+          className="flex flex-col gap-1.5 lg:hidden transition-transform duration-300"
           aria-label={t('nav.toggleMenu')}
           aria-expanded={mobileMenuOpen}
         >
@@ -75,7 +92,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu with smooth animation */}
       {mobileMenuOpen && (
         <div className="border-t border-[#d66d0c] bg-[#f08a24] lg:hidden">
           <div className="flex flex-col gap-4 px-4 py-4">
@@ -89,7 +106,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <div className="py-2">
+            <div className="py-2 transition-all duration-300">
               <LanguageSwitcher />
             </div>
             <Link 

@@ -10,6 +10,8 @@ describe('public company profile mapping', () => {
 
     assert.equal(profile.name, 'TRP Powers Plus Test');
     assert.equal(profile.phoneHref, defaultCompanySettings.phoneHref);
+    assert.equal(profile.instagramUrl, defaultCompanySettings.instagramUrl);
+    assert.equal(profile.tiktokUrl, defaultCompanySettings.tiktokUrl);
   });
 
   it('falls back to default values for an empty database row', () => {

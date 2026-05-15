@@ -2,21 +2,27 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 
-import { serviceCategories as fallbackServiceCategories } from '@/content/site';
+import { portfolioProjects as staticPortfolioProjects, serviceCategories as fallbackServiceCategories } from '@/content/site';
 import { useServiceCategories } from '@/hooks/useServiceCategories';
+import { mapServiceCategoryToUpsert } from '@/lib/admin/services';
 import {
   defaultPortfolioPostFormValues,
   mapPortfolioPostFormToInsert,
   mapPortfolioPostFormToUpdate,
   mapPortfolioProjectRowToForm,
+  mapPortfolioProjectViewToForm,
   validatePortfolioPost,
   type PortfolioPostFormValues,
   type PortfolioProjectRow,
 } from '@/lib/admin/portfolioPosts';
+import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
+type EditablePortfolioOption =
+  | { key: string; label: string; source: 'database'; row: PortfolioProjectRow }
+  | { key: string; label: string; source: 'static'; form: PortfolioPostFormValues };
 
 const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
@@ -36,6 +42,22 @@ export default function PortfolioPostManager() {
     setValues((current) => ({ ...current, [field]: value }));
   }
 
+  function editPost(post: PortfolioProjectRow) {
+    setValues(mapPortfolioProjectRowToForm(post));
+    setMessage('');
+    window.requestAnimationFrame(() => {
+      document.getElementById('portfolio-post-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function editStaticProject(form: PortfolioPostFormValues) {
+    setValues(form);
+    setMessage('');
+    window.requestAnimationFrame(() => {
+      document.getElementById('portfolio-post-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
   async function loadPosts() {
     const supabase = getSupabaseBrowserClient();
 
@@ -52,7 +74,7 @@ export default function PortfolioPostManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`โหลดโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminLoadError('โพสต์ผลงาน', 'portfolio_projects', error));
       return;
     }
 
@@ -83,14 +105,34 @@ export default function PortfolioPostManager() {
     setStatus('saving');
     setMessage('');
 
+    const categoryOptions = serviceCategories.length > 0 ? serviceCategories : fallbackServiceCategories;
+    const selectedCategoryIndex = categoryOptions.findIndex((service) => service.key === validation.value.categoryKey);
+    const selectedCategory = categoryOptions[selectedCategoryIndex];
+
+    if (!selectedCategory) {
+      setStatus('error');
+      setMessage(`บันทึกโพสต์ผลงานไม่สำเร็จ: ไม่พบหมวดบริการ ${validation.value.categoryKey}`);
+      return;
+    }
+
+    const { error: serviceError } = await supabase
+      .from('services')
+      .upsert(mapServiceCategoryToUpsert(selectedCategory, (selectedCategoryIndex + 1) * 10), { onConflict: 'id' });
+
+    if (serviceError) {
+      setStatus('error');
+      setMessage(formatAdminSaveError('หมวดบริการของผลงาน', 'services', serviceError));
+      return;
+    }
+
     const saveQuery = validation.value.id
       ? supabase.from('portfolio_projects').update(mapPortfolioPostFormToUpdate(validation.value)).eq('id', validation.value.id)
-      : supabase.from('portfolio_projects').insert(mapPortfolioPostFormToInsert(validation.value));
+      : supabase.from('portfolio_projects').upsert(mapPortfolioPostFormToInsert(validation.value), { onConflict: 'slug' });
     const { error } = await saveQuery;
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminSaveError('โพสต์ผลงาน', 'portfolio_projects', error));
       return;
     }
 
@@ -108,6 +150,9 @@ export default function PortfolioPostManager() {
       return;
     }
 
+    setStatus('saving');
+    setMessage('');
+
     const { error } = await supabase.rpc('soft_delete_portfolio_project', {
       project_id: postId,
       retention_days: 30,
@@ -115,7 +160,7 @@ export default function PortfolioPostManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบโพสต์', 'soft_delete_portfolio_project', error));
       return;
     }
 
@@ -132,13 +177,16 @@ export default function PortfolioPostManager() {
       return;
     }
 
+    setStatus('saving');
+    setMessage('');
+
     const { error } = await supabase.rpc('restore_portfolio_project', {
       project_id: postId,
     });
 
     if (error) {
       setStatus('error');
-      setMessage(`กู้คืนโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('กู้คืนโพสต์', 'restore_portfolio_project', error));
       return;
     }
 
@@ -155,13 +203,16 @@ export default function PortfolioPostManager() {
       return;
     }
 
+    setStatus('saving');
+    setMessage('');
+
     const { error } = await supabase.rpc('hard_delete_portfolio_project', {
       project_id: postId,
     });
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบถาวรโพสต์ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบถาวรโพสต์', 'hard_delete_portfolio_project', error));
       return;
     }
 
@@ -172,24 +223,77 @@ export default function PortfolioPostManager() {
   }
 
   const isBusy = status === 'loading' || status === 'saving';
+  const databaseSlugs = new Set(posts.map((post) => post.slug));
+  const editableOptions: EditablePortfolioOption[] = [
+    ...posts.map((post) => ({
+      key: `database:${post.id}`,
+      label: `${readLocalized(post.title, 'th') || post.slug}${post.deleted_at ? ' (ถังพัก)' : ''}`,
+      source: 'database' as const,
+      row: post,
+    })),
+    ...staticPortfolioProjects
+      .map(mapPortfolioProjectViewToForm)
+      .filter((form) => !databaseSlugs.has(form.slug))
+      .map((form) => ({
+        key: `static:${form.slug}`,
+        label: `${form.titleTh || form.slug} (ข้อมูลเดิมในเว็บ)`,
+        source: 'static' as const,
+        form,
+      })),
+  ];
+  const selectedOptionKey = values.id ? `database:${values.id}` : values.slug ? `static:${values.slug}` : '';
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">โพสต์ผลงาน</h2>
-          <p className="mt-1 text-sm text-slate-600">สร้าง แก้ไข ซ่อน ลบแบบพักไว้ 30 วัน และกู้คืนโพสต์ผลงาน</p>
+          <p className="mt-1 text-sm text-slate-600">เลือกผลงานเดิมเพื่อแก้ไข หรือกดเพิ่มผลงานเพื่อสร้างรายการใหม่</p>
         </div>
-        <button
-          type="button"
-          onClick={() => void loadPosts()}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-[#f08a24] hover:text-[#f08a24]"
-        >
-          โหลดโพสต์ใหม่
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button type="button" onClick={() => { setValues(defaultPortfolioPostFormValues); setMessage(''); }} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]">
+            เพิ่มผลงาน
+          </button>
+          <button type="button" onClick={() => void loadPosts()} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-[#f08a24] hover:text-[#f08a24]">
+            โหลดโพสต์ใหม่
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-5 grid gap-4 md:grid-cols-2" noValidate>
+      <div className="mt-5 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-4">
+        <label className="block text-sm font-black text-[#12345f]">
+          เลือกผลงานที่ต้องการแก้ไข
+          <select
+            value={selectedOptionKey}
+            onChange={(event) => {
+              const selectedOption = editableOptions.find((option) => option.key === event.target.value);
+              if (selectedOption?.source === 'database') {
+                editPost(selectedOption.row);
+              } else if (selectedOption?.source === 'static') {
+                editStaticProject(selectedOption.form);
+              } else {
+                setValues(defaultPortfolioPostFormValues);
+                setMessage('');
+              }
+            }}
+            className={`${inputClass} mt-2`}
+          >
+            <option value="">สร้างผลงานใหม่</option>
+            {editableOptions.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <form id="portfolio-post-form" onSubmit={handleSubmit} className="mt-5 grid gap-4 md:grid-cols-2" noValidate>
+        {values.id || values.slug ? (
+          <p className="rounded-lg border border-[#0f2a5f] bg-[#e3f2fd] px-3 py-2 text-sm font-black text-[#0f2a5f] md:col-span-2">
+            {values.id ? 'กำลังแก้ไขผลงานจากฐานข้อมูล' : 'กำลังแก้ไขผลงานเดิมในเว็บ เมื่อบันทึกจะเก็บเป็นข้อมูลใน CMS'}
+          </p>
+        ) : null}
         <Field label="ชื่อผลงาน ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />
         <Field label="ชื่อผลงาน ภาษาอังกฤษ" value={values.titleEn} onChange={(value) => updateField('titleEn', value)} />
         <label className="block text-sm font-semibold text-slate-800">
@@ -224,7 +328,7 @@ export default function PortfolioPostManager() {
         <Field label="Metric หลัก ภาษาไทย" value={values.metricValueTh} onChange={(value) => updateField('metricValueTh', value)} />
         <Field label="Metric หลัก ภาษาอังกฤษ" value={values.metricValueEn} onChange={(value) => updateField('metricValueEn', value)} />
         <label className="block text-sm font-semibold text-slate-800">
-          ลำดับ
+          ลำดับที่
           <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
         </label>
         <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
@@ -243,20 +347,8 @@ export default function PortfolioPostManager() {
           disabled={isBusy}
           className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {status === 'saving' ? 'กำลังบันทึกโพสต์...' : values.id ? 'บันทึกโพสต์' : 'สร้างโพสต์'}
+          {status === 'saving' ? 'กำลังบันทึกโพสต์...' : 'บันทึกโพสต์'}
         </button>
-        {values.id ? (
-          <button
-            type="button"
-            onClick={() => {
-              setValues(defaultPortfolioPostFormValues);
-              setMessage('');
-            }}
-            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
-          >
-            เริ่มโพสต์ใหม่
-          </button>
-        ) : null}
       </form>
 
       {message ? (
@@ -277,12 +369,19 @@ export default function PortfolioPostManager() {
           {posts.map((post) => {
             const title = readLocalized(post.title, 'th') || post.slug;
             const isDeleted = Boolean(post.deleted_at);
+            const isActive = values.id === post.id;
 
             return (
-              <article key={post.id} className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <article
+                key={post.id}
+                className={`flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between ${
+                  isActive ? 'border-[#f08a24] bg-[#fff7ed]' : 'border-slate-200 bg-slate-50'
+                }`}
+              >
                 <div>
                   <p className="text-sm font-black text-[#12345f]">{title}</p>
                   <p className="mt-1 text-xs text-slate-500">
+                    {isActive ? 'กำลังเปิดแก้ไข · ' : ''}
                     {isDeleted ? `อยู่ในถังพัก ลบจริงหลัง ${post.purge_after ?? '-'}` : post.published ? 'เผยแพร่อยู่' : 'draft'}
                   </p>
                 </div>
@@ -307,14 +406,19 @@ export default function PortfolioPostManager() {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <button
                       type="button"
-                      onClick={() => {
-                        setValues(mapPortfolioProjectRowToForm(post));
-                        setMessage('');
-                      }}
+                      onClick={() => editPost(post)}
                       className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
                     >
-                      แก้ไข
+                      ดู/แก้ไข
                     </button>
+                    <a
+                      href="/portfolio#portfolio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#b85c00]"
+                    >
+                      ดูหน้าเว็บ
+                    </a>
                     <button
                       type="button"
                       onClick={() => void softDeletePost(post.id)}

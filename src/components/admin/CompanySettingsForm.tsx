@@ -149,6 +149,28 @@ export default function CompanySettingsForm() {
           onChange={(value) => updateField('facebookUrl', value)}
         />
         <Field
+          label="ชื่อ Instagram"
+          value={values.instagramDisplay}
+          onChange={(value) => updateField('instagramDisplay', value)}
+        />
+        <Field
+          label="Instagram URL"
+          type="url"
+          value={values.instagramUrl}
+          onChange={(value) => updateField('instagramUrl', value)}
+        />
+        <Field
+          label="ชื่อ TikTok"
+          value={values.tiktokDisplay}
+          onChange={(value) => updateField('tiktokDisplay', value)}
+        />
+        <Field
+          label="TikTok URL"
+          type="url"
+          value={values.tiktokUrl}
+          onChange={(value) => updateField('tiktokUrl', value)}
+        />
+        <Field
           label="Google Maps URL"
           type="url"
           value={values.googleMapsSearchUrl}
