@@ -177,6 +177,10 @@ export function mapServiceFormToUpsert(values: ServiceFormValues, fallback: Serv
   };
 }
 
+export function mapServiceCategoryToUpsert(service: ServiceCategory, sortOrder = 0): ServiceUpsert {
+  return mapServiceFormToUpsert({ ...mapServiceToForm(service), sortOrder }, service);
+}
+
 function trimLocalizedList(items: LocalizedText[]): LocalizedText[] {
   return items
     .map((item) => localized(item.th, item.en))

@@ -2,13 +2,15 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 
-import { serviceCategories as fallbackServiceCategories } from '@/content/site';
+import { portfolioProjects as staticPortfolioProjects, serviceCategories as fallbackServiceCategories } from '@/content/site';
 import { useServiceCategories } from '@/hooks/useServiceCategories';
+import { mapServiceCategoryToUpsert } from '@/lib/admin/services';
 import {
   defaultPortfolioPostFormValues,
   mapPortfolioPostFormToInsert,
   mapPortfolioPostFormToUpdate,
   mapPortfolioProjectRowToForm,
+  mapPortfolioProjectViewToForm,
   validatePortfolioPost,
   type PortfolioPostFormValues,
   type PortfolioProjectRow,
@@ -18,6 +20,9 @@ import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
+type EditablePortfolioOption =
+  | { key: string; label: string; source: 'database'; row: PortfolioProjectRow }
+  | { key: string; label: string; source: 'static'; form: PortfolioPostFormValues };
 
 const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
@@ -39,6 +44,14 @@ export default function PortfolioPostManager() {
 
   function editPost(post: PortfolioProjectRow) {
     setValues(mapPortfolioProjectRowToForm(post));
+    setMessage('');
+    window.requestAnimationFrame(() => {
+      document.getElementById('portfolio-post-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function editStaticProject(form: PortfolioPostFormValues) {
+    setValues(form);
     setMessage('');
     window.requestAnimationFrame(() => {
       document.getElementById('portfolio-post-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -92,9 +105,29 @@ export default function PortfolioPostManager() {
     setStatus('saving');
     setMessage('');
 
+    const categoryOptions = serviceCategories.length > 0 ? serviceCategories : fallbackServiceCategories;
+    const selectedCategoryIndex = categoryOptions.findIndex((service) => service.key === validation.value.categoryKey);
+    const selectedCategory = categoryOptions[selectedCategoryIndex];
+
+    if (!selectedCategory) {
+      setStatus('error');
+      setMessage(`บันทึกโพสต์ผลงานไม่สำเร็จ: ไม่พบหมวดบริการ ${validation.value.categoryKey}`);
+      return;
+    }
+
+    const { error: serviceError } = await supabase
+      .from('services')
+      .upsert(mapServiceCategoryToUpsert(selectedCategory, (selectedCategoryIndex + 1) * 10), { onConflict: 'id' });
+
+    if (serviceError) {
+      setStatus('error');
+      setMessage(formatAdminSaveError('หมวดบริการของผลงาน', 'services', serviceError));
+      return;
+    }
+
     const saveQuery = validation.value.id
       ? supabase.from('portfolio_projects').update(mapPortfolioPostFormToUpdate(validation.value)).eq('id', validation.value.id)
-      : supabase.from('portfolio_projects').insert(mapPortfolioPostFormToInsert(validation.value));
+      : supabase.from('portfolio_projects').upsert(mapPortfolioPostFormToInsert(validation.value), { onConflict: 'slug' });
     const { error } = await saveQuery;
 
     if (error) {
@@ -190,6 +223,25 @@ export default function PortfolioPostManager() {
   }
 
   const isBusy = status === 'loading' || status === 'saving';
+  const databaseSlugs = new Set(posts.map((post) => post.slug));
+  const editableOptions: EditablePortfolioOption[] = [
+    ...posts.map((post) => ({
+      key: `database:${post.id}`,
+      label: `${readLocalized(post.title, 'th') || post.slug}${post.deleted_at ? ' (ถังพัก)' : ''}`,
+      source: 'database' as const,
+      row: post,
+    })),
+    ...staticPortfolioProjects
+      .map(mapPortfolioProjectViewToForm)
+      .filter((form) => !databaseSlugs.has(form.slug))
+      .map((form) => ({
+        key: `static:${form.slug}`,
+        label: `${form.titleTh || form.slug} (ข้อมูลเดิมในเว็บ)`,
+        source: 'static' as const,
+        form,
+      })),
+  ];
+  const selectedOptionKey = values.id ? `database:${values.id}` : values.slug ? `static:${values.slug}` : '';
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
@@ -212,11 +264,13 @@ export default function PortfolioPostManager() {
         <label className="block text-sm font-black text-[#12345f]">
           เลือกผลงานที่ต้องการแก้ไข
           <select
-            value={values.id ?? ''}
+            value={selectedOptionKey}
             onChange={(event) => {
-              const selectedPost = posts.find((post) => post.id === event.target.value);
-              if (selectedPost) {
-                editPost(selectedPost);
+              const selectedOption = editableOptions.find((option) => option.key === event.target.value);
+              if (selectedOption?.source === 'database') {
+                editPost(selectedOption.row);
+              } else if (selectedOption?.source === 'static') {
+                editStaticProject(selectedOption.form);
               } else {
                 setValues(defaultPortfolioPostFormValues);
                 setMessage('');
@@ -225,9 +279,9 @@ export default function PortfolioPostManager() {
             className={`${inputClass} mt-2`}
           >
             <option value="">สร้างผลงานใหม่</option>
-            {posts.map((post) => (
-              <option key={post.id} value={post.id}>
-                {readLocalized(post.title, 'th') || post.slug} {post.deleted_at ? '(ถังพัก)' : ''}
+            {editableOptions.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.label}
               </option>
             ))}
           </select>
@@ -235,9 +289,9 @@ export default function PortfolioPostManager() {
       </div>
 
       <form id="portfolio-post-form" onSubmit={handleSubmit} className="mt-5 grid gap-4 md:grid-cols-2" noValidate>
-        {values.id ? (
+        {values.id || values.slug ? (
           <p className="rounded-lg border border-[#0f2a5f] bg-[#e3f2fd] px-3 py-2 text-sm font-black text-[#0f2a5f] md:col-span-2">
-            กำลังแก้ไขผลงานเดิม
+            {values.id ? 'กำลังแก้ไขผลงานจากฐานข้อมูล' : 'กำลังแก้ไขผลงานเดิมในเว็บ เมื่อบันทึกจะเก็บเป็นข้อมูลใน CMS'}
           </p>
         ) : null}
         <Field label="ชื่อผลงาน ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />

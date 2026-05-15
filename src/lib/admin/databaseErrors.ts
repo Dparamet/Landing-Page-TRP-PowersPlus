@@ -155,7 +155,13 @@ export function formatSiteTextError(error: DatabaseErrorLike) {
 }
 
 function isMissingRelation(error: DatabaseErrorLike, relation: string) {
-  return error.code === '42P01' || hasErrorText(error, `relation "${relation}" does not exist`) || hasErrorText(error, relation);
+  return (
+    error.code === '42P01' ||
+    hasErrorText(error, `relation "${relation}" does not exist`) ||
+    hasErrorText(error, `relation "public.${relation}" does not exist`) ||
+    hasErrorText(error, `Could not find the table '${relation}'`) ||
+    hasErrorText(error, `Could not find the table '${relation}' in the schema cache`)
+  );
 }
 
 function isMissingRpc(error: DatabaseErrorLike, rpcName: string) {

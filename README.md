@@ -1,13 +1,15 @@
 # TRP Powers Plus Web
 
-เว็บไซต์ Landing Page สำหรับบริษัท TRP Powers Plus งานระบบไฟฟ้า โซลาร์เซลล์ และบริการประเมินเบื้องต้นสำหรับลูกค้าในประเทศไทย
+เว็บไซต์ Landing Page สำหรับบริษัท TRP Powers Plus (ระบบไฟฟ้าและโซลาร์เซลล์) พร้อมระบบ CMS ฝั่งผู้ดูแลผ่าน Supabase
 
-โปรเจกต์นี้ถูกจัดให้ส่งมอบต่อได้ง่าย: ข้อมูลธุรกิจและผลงานอยู่ในไฟล์ content กลาง, ข้อความภาษาไทย/อังกฤษอยู่ใน locale files, และมีคู่มือสำหรับคนที่ไม่เคยเขียนโปรแกรมมาก่อน
+โปรเจกต์นี้ออกแบบให้ส่งมอบต่อได้ง่าย: หน้าเว็บลูกค้าเป็น Next.js, ข้อมูลหลักยังแก้จาก content files ได้, และมีระบบ Admin สำหรับแก้ข้อมูลจริงในฐานข้อมูล
 
 ## สารบัญ
 
 - [สิ่งที่ต้องติดตั้งก่อน](#สิ่งที่ต้องติดตั้งก่อน)
 - [เริ่มใช้งานในเครื่อง](#เริ่มใช้งานในเครื่อง)
+- [ตั้งค่า Supabase และ ENV](#ตั้งค่า-supabase-และ-env)
+- [ระบบ Admin และ CMS](#ระบบ-admin-และ-cms)
 - [คำสั่งทั้งหมด](#คำสั่งทั้งหมด)
 - [โครงสร้างโปรเจกต์](#โครงสร้างโปรเจกต์)
 - [แก้ข้อความ รูปภาพ และข้อมูลบริษัท](#แก้ข้อความ-รูปภาพ-และข้อมูลบริษัท)
@@ -71,37 +73,75 @@ npm run dev -- -p 3001
 http://localhost:3001
 ```
 
+## ตั้งค่า Supabase และ ENV
+
+สร้างไฟล์ `.env.local` ใน root ของโปรเจกต์:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+ถ้าไม่มีค่าข้างต้น เว็บส่วน Admin/CMS จะไม่สามารถเชื่อมต่อฐานข้อมูลได้
+
+ตั้งค่า Supabase ครั้งแรก:
+
+1. สร้างโปรเจกต์ Supabase
+2. เปิด SQL Editor แล้วรัน `supabase/schema.sql`
+3. รันไฟล์ใน `supabase/migrations/` ตามลำดับชื่อไฟล์
+4. เพิ่มผู้ใช้แอดมินคนแรกในตาราง `admin_profiles`
+5. สร้าง Storage bucket ชื่อ `site-media`
+
+ดูคู่มือเต็ม: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)
+
+## ระบบ Admin และ CMS
+
+- หน้าเข้าสู่ระบบแอดมิน: `/admin/login`
+- หน้าแดชบอร์ดแอดมิน: `/admin`
+- ใช้อีเมลที่มีใน Supabase Auth และต้องมีสิทธิ์ใน `admin_profiles`
+
+หมายเหตุ:
+
+- หน้าเว็บไซต์หลักยังใช้งานได้ตามปกติแม้ยังไม่ล็อกอิน
+- ฟีเจอร์แก้ข้อมูล/อัปโหลดรูปในระบบหลังบ้านต้องพึ่ง Supabase
+
 ## คำสั่งทั้งหมด
 
 | คำสั่ง | ใช้ทำอะไร |
 | --- | --- |
 | `npm install` | ติดตั้ง dependencies หลัง clone หรือรับโปรเจกต์มาใหม่ |
 | `npm run dev` | เปิดเว็บในโหมดพัฒนา |
-| `npm test` | ตรวจสูตรคำนวณ, โครงสร้างภาษา, และ path รูปภาพ |
+| `npm test` | ตรวจสูตรคำนวณ, โครงสร้างภาษา, content schema และ integration tests ของ data layer |
 | `npm run lint` | ตรวจคุณภาพโค้ดและ accessibility พื้นฐาน |
 | `npm run build` | build static site สำหรับส่งขึ้น hosting |
-| `npm run start` | ใช้กับ Next server mode แต่โปรเจกต์นี้ตั้งค่า static export เป็นหลัก |
+| `npm run start` | ใช้กับ Next server mode (โปรเจกต์นี้ตั้งค่า static export เป็นหลัก) |
 
 ## โครงสร้างโปรเจกต์
 
 ```text
 trp-powers-plus-web/
 ├── docs/
+│   ├── CLIENT_CMS_REFACTOR_SPEC.md สเปกการปรับโครงสร้าง CMS
 │   ├── CONTENT_GUIDE.md       คู่มือแก้ข้อความและรูปภาพสำหรับผู้ดูแลเว็บ
-│   └── HANDOFF_SPEC.md        สเปกการจัดโครงสร้างเพื่อส่งมอบ
+│   ├── HANDOFF_SPEC.md        สเปกการจัดโครงสร้างเพื่อส่งมอบ
+│   └── SUPABASE_SETUP.md      คู่มือตั้งค่า Supabase
 ├── public/
 │   └── images/
 │       ├── LogoTRP.webp       โลโก้หลัก
 │       └── portfolio/         ใส่รูปผลงานที่นี่
 ├── src/
 │   ├── app/                   Next.js App Router, metadata, global CSS
+│   │   └── admin/             หน้า login/dashboard สำหรับผู้ดูแล
 │   ├── components/            ส่วนประกอบ UI เช่น Hero, Portfolio, Calculator
 │   ├── content/
 │   │   └── site.ts            ข้อมูลบริษัท ช่องทางติดต่อ และผลงาน
 │   ├── context/               Language และ cookie consent providers
 │   ├── data/                  compatibility export สำหรับไฟล์เก่า
-│   ├── lib/                   logic ใช้ซ้ำ เช่น solar estimator
+│   ├── lib/                   logic ใช้ซ้ำ เช่น solar estimator และ supabase clients
 │   └── locales/               ข้อความภาษาไทยและอังกฤษ
+├── supabase/
+│   ├── schema.sql             schema หลักของฐานข้อมูล
+│   └── migrations/            SQL migrations ของ CMS/Admin
 ├── tests/                     test files
 ├── next.config.ts             ตั้งค่า static export และ image mode
 ├── package.json               scripts และ dependencies
@@ -231,7 +271,7 @@ npm run build
 
 ## การ Build และ Deploy
 
-โปรเจกต์นี้ตั้งค่า static export ใน `next.config.ts`
+โปรเจกต์นี้ตั้งค่า static export ใน `next.config.ts` (`output: 'export'`) และปิด Next image optimization เพื่อรองรับ static hosting
 
 Build:
 
@@ -246,6 +286,11 @@ out/
 ```
 
 นำโฟลเดอร์ `out/` ไปใช้กับ static hosting ได้ เช่น GitHub Pages, Netlify, Vercel static output หรือ hosting ที่รองรับไฟล์ HTML/CSS/JS
+
+ถ้า deploy เว็บหลักพร้อม CMS:
+
+- ฝั่ง frontend deploy จากโฟลเดอร์ `out/`
+- ฝั่งข้อมูลและแอดมินใช้งานผ่าน Supabase project ที่ตั้งค่าไว้ใน `.env.local` (และค่าที่เทียบเท่าใน environment ของ production)
 
 ## แก้ปัญหาที่พบบ่อย
 
@@ -306,11 +351,11 @@ npm run build
 
 ## สถานะล่าสุด
 
-- Last updated: May 12, 2026
+- Last updated: May 15, 2026
 - Maintained for: TRP Powers Plus
-- Project type: Static Next.js landing page
-- Current branch: `main` (13 commits ahead of origin/main)
-- Development branch: `dev` (synced with main)
+- Project type: Static Next.js landing page + Supabase-backed CMS/Admin
+- Current branch: `feat/cms-admin`
+- Default branch: `main`
 
 ### ความเปลี่ยนแปลงล่าสุด (May 2026)
 
@@ -320,3 +365,6 @@ npm run build
 - ✅ เพิ่ม Language Switcher
 - ✅ เพิ่ม Cookie Consent Modal
 - ✅ ปรับปรุง Footer และ Content components
+- ✅ เพิ่มระบบ Admin Login และ Dashboard ที่เชื่อม Supabase
+- ✅ เพิ่ม migrations ฝั่ง CMS/Content หลายชุดใน `supabase/migrations/`
+- ✅ เพิ่ม RPC สำหรับลบ media asset ฝั่งฐานข้อมูล (`202605150008_media_delete_storage_api.sql`)

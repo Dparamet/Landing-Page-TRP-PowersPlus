@@ -19,6 +19,16 @@ describe('admin database error messages', () => {
     );
   });
 
+  it('does not hide non-missing portfolio project save errors behind migration guidance', () => {
+    assert.equal(
+      formatAdminSaveError('โพสต์ผลงาน', 'portfolio_projects', {
+        code: 'PGRST204',
+        message: "Could not find the 'deleted_at' column of 'portfolio_projects' in the schema cache",
+      }),
+      "บันทึกโพสต์ผลงานไม่สำเร็จ: Could not find the 'deleted_at' column of 'portfolio_projects' in the schema cache",
+    );
+  });
+
   it('formats missing admin RPC errors with the migration to run', () => {
     assert.equal(
       formatAdminRpcError('ลบ FAQ', 'soft_delete_faq_item', {
