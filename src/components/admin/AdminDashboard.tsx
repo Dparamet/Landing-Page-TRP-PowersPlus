@@ -170,29 +170,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="flex w-fit gap-1 rounded-lg bg-white/10 p-1" aria-label="Preview page mode">
-            {[
-              { key: 'landing' as const, label: 'หน้า Landing Page' },
-              { key: 'details' as const, label: 'หน้าข้อมูลเพิ่มเติม' },
-            ].map((mode) => {
-              const selected = previewPageMode === mode.key;
-
-              return (
-                <button
-                  key={mode.key}
-                  type="button"
-                  onClick={() => setPreviewPageMode(mode.key)}
-                  aria-pressed={selected}
-                  className={`rounded-md px-3 py-2 text-sm font-black transition ${
-                    selected ? 'bg-white text-[#0f2a5f]' : 'text-blue-50 hover:bg-white/12'
-                  }`}
-                >
-                  {mode.label}
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-3">
           <nav className="flex gap-2 overflow-x-auto rounded-[20px] bg-[#0b214f] px-3 py-3" aria-label="Admin sections">
           {adminSections.map((section) => {
             const selected = section.key === activeSection;
@@ -221,16 +199,45 @@ export default function AdminDashboard() {
         <div className="min-w-0 rounded-[28px] border border-[#f08a24] bg-white p-4 shadow-[0_18px_48px_rgba(15,42,95,0.12)]">
           {showPreview ? (
             <div className="mb-4 rounded-[20px] border border-[#f08a24] bg-white p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-wide text-[#f08a24]">ข้อมูลหน้า</p>
-                  <h2 className="mt-2 text-xl font-black text-[#0f2a5f]">กำลังแก้ไข: {currentSection.label}</h2>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">{currentSection.description}</p>
-                  <p className="mt-2 text-xs leading-5 text-slate-500">กดปุ่มเพิ่มรายการของแต่ละหน้า แล้วกรอกข้อมูลในฟอร์มแก้ไข</p>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-wide text-[#f08a24]">ข้อมูลหน้า</p>
+                    <h2 className="mt-2 text-xl font-black text-[#0f2a5f]">กำลังแก้ไข: {currentSection.label}</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">{currentSection.description}</p>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">กดปุ่มเพิ่มรายการของแต่ละหน้า แล้วกรอกข้อมูลในฟอร์มแก้ไข</p>
+                  </div>
+                  <span className="inline-flex w-fit rounded-lg border border-[#f08a24] bg-[#e3f2fd] px-3 py-2 text-xs font-black text-[#0f2a5f]">
+                    Preview: {previewPath}{previewHash}
+                  </span>
                 </div>
-                <span className="inline-flex w-fit rounded-lg border border-[#f08a24] bg-[#e3f2fd] px-3 py-2 text-xs font-black text-[#0f2a5f]">
-                  Preview: {previewPath}{previewHash}
-                </span>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-black uppercase tracking-wide text-slate-500">เลือกหน้าที่กำลังแก้ไข</p>
+                  <div className="mt-2 flex flex-wrap gap-2" aria-label="Preview page mode">
+                    {[
+                      { key: 'landing' as const, label: 'หน้า Landing Page' },
+                      { key: 'details' as const, label: 'หน้าข้อมูลเพิ่มเติม' },
+                    ].map((mode) => {
+                      const selected = previewPageMode === mode.key;
+
+                      return (
+                        <button
+                          key={mode.key}
+                          type="button"
+                          onClick={() => setPreviewPageMode(mode.key)}
+                          aria-pressed={selected}
+                          className={`rounded-lg border px-4 py-2 text-sm font-black transition ${
+                            selected
+                              ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white'
+                              : 'border-slate-300 bg-white text-[#0f2a5f] hover:border-[#f08a24] hover:text-[#d66d0c]'
+                          }`}
+                        >
+                          {mode.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           ) : null}

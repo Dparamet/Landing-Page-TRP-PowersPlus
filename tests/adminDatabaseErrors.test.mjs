@@ -31,7 +31,7 @@ describe('admin database error messages', () => {
   it('points ambiguous admin RPC errors to the latest policy repair migration', () => {
     assert.equal(
       formatAdminRpcError('ลบ FAQ', 'soft_delete_faq_item', { message: 'function public.is_admin() is not unique' }),
-      'ลบ FAQไม่สำเร็จ: ฐานข้อมูลยังมี RPC/policy เก่าที่เรียก public.is_admin() ให้รัน migration 202605150006_social_links_and_admin_policy_repair.sql แล้ว refresh หน้า',
+      'ลบ FAQไม่สำเร็จ: ฐานข้อมูลยังมี function/policy เก่า public.is_admin() ให้รัน migration 202605150007_drop_legacy_is_admin_noarg.sql แล้ว refresh หน้า',
     );
   });
 

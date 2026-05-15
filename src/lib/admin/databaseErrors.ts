@@ -60,7 +60,7 @@ export function formatAdminSaveError(entityLabel: string, relation: string, erro
 
 export function formatAdminRpcError(actionLabel: string, rpcName: string, error: DatabaseErrorLike) {
   if (isAdminFunctionAmbiguous(error)) {
-    return `${actionLabel}ไม่สำเร็จ: ฐานข้อมูลยังมี RPC/policy เก่าที่เรียก public.is_admin() ให้รัน migration 202605150006_social_links_and_admin_policy_repair.sql แล้ว refresh หน้า`;
+    return `${actionLabel}ไม่สำเร็จ: ฐานข้อมูลยังมี function/policy เก่า public.is_admin() ให้รัน migration 202605150007_drop_legacy_is_admin_noarg.sql แล้ว refresh หน้า`;
   }
 
   if (isMissingRpc(error, rpcName)) {

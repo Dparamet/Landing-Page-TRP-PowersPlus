@@ -65,4 +65,16 @@ describe('database migrations', () => {
     assert.doesNotMatch(migration, /public\.is_admin\(\)/);
     assert.match(migration, /notify pgrst, 'reload schema';/);
   });
+
+  it('drops the legacy no-arg admin helper after rewriting admin dependencies', async () => {
+    const migration = await readFile('supabase/migrations/202605150007_drop_legacy_is_admin_noarg.sql', 'utf8');
+
+    assert.match(migration, /on storage\.objects for insert/);
+    assert.match(migration, /create or replace function public\.soft_delete_faq_item/);
+    assert.match(migration, /create or replace function public\.soft_delete_process_step/);
+    assert.match(migration, /create or replace function public\.soft_delete_service/);
+    assert.match(migration, /public\.is_admin\(auth\.uid\(\)\)/);
+    assert.match(migration, /drop function if exists public\.is_admin\(\);/);
+    assert.doesNotMatch(migration.replace(/drop function if exists public\.is_admin\(\);/, ''), /public\.is_admin\(\)/);
+  });
 });
