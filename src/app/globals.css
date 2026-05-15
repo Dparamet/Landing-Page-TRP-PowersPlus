@@ -318,6 +318,23 @@ html {
   }
 }
 
+.standards-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.standards-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.standards-scrollbar::-webkit-scrollbar-track,
+.standards-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
 @supports not (animation-timeline: view()) {
   .section-reveal,
   .reveal-item {

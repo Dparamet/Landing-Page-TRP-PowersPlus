@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Services from "../components/Services";
+import StandardsTechnology from "../components/StandardsTechnology";
 import ServiceSelector from "../components/ServiceSelector";
 import SolarCalculator from "../components/SolarCalculator";
 import Portfolio from "../components/Portfolio";
@@ -15,6 +16,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
+      <StandardsTechnology />
       <ServiceSelector />
       <SolarCalculator />
       <Portfolio />

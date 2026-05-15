@@ -12,10 +12,11 @@ import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
 import ProcessStepManager from '@/components/admin/ProcessStepManager';
 import ServiceManager from '@/components/admin/ServiceManager';
 import SiteTextManager from '@/components/admin/SiteTextManager';
+import StandardItemManager from '@/components/admin/StandardItemManager';
 import { ADMIN_PREVIEW_REFRESH_EVENT } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-type AdminSectionKey = 'texts' | 'services' | 'media' | 'portfolioImages' | 'portfolioPosts' | 'process' | 'faqs' | 'contact';
+type AdminSectionKey = 'texts' | 'services' | 'standards' | 'media' | 'portfolioImages' | 'portfolioPosts' | 'process' | 'faqs' | 'contact';
 type DashboardState =
   | { status: 'loading'; email?: string }
   | { status: 'ready'; email: string; role: string }
@@ -30,6 +31,7 @@ const adminSections: Array<{
 }> = [
   { key: 'texts', label: 'ข้อความ', description: 'หัวข้อและ copy หลัก', previewHash: '#hero' },
   { key: 'services', label: 'บริการ', description: 'การ์ดและข้อมูลเตรียมงาน', previewHash: '#services' },
+  { key: 'standards', label: 'มาตรฐาน', description: 'โลโก้และเทคโนโลยีหน้าเว็บ', previewHash: '#standards' },
   { key: 'portfolioPosts', label: 'ผลงาน', description: 'ข้อมูลโครงการ', previewHash: '#portfolio' },
   { key: 'portfolioImages', label: 'รูปผลงาน', description: 'หน้าปกและ gallery', previewHash: '#portfolio' },
   { key: 'media', label: 'คลังรูป', description: 'อัปโหลดรูป', previewHash: '#portfolio' },
@@ -225,6 +227,8 @@ function renderAdminSection(section: AdminSectionKey) {
       return <SiteTextManager />;
     case 'services':
       return <ServiceManager />;
+    case 'standards':
+      return <StandardItemManager />;
     case 'media':
       return <MediaUploadManager />;
     case 'portfolioImages':

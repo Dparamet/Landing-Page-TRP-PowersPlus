@@ -356,6 +356,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      standard_items: {
+        Row: {
+          alt_text: string;
+          created_at: string | null;
+          deleted_at: string | null;
+          id: string;
+          hover_image_url: string | null;
+          hover_media_asset_id: string | null;
+          image_url: string | null;
+          media_asset_id: string | null;
+          published: boolean;
+          purge_after: string | null;
+          sort_order: number;
+          title: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          alt_text?: string;
+          created_at?: string | null;
+          deleted_at?: string | null;
+          id: string;
+          hover_image_url?: string | null;
+          hover_media_asset_id?: string | null;
+          image_url?: string | null;
+          media_asset_id?: string | null;
+          published?: boolean;
+          purge_after?: string | null;
+          sort_order?: number;
+          title: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          alt_text?: string;
+          created_at?: string | null;
+          deleted_at?: string | null;
+          id?: string;
+          hover_image_url?: string | null;
+          hover_media_asset_id?: string | null;
+          image_url?: string | null;
+          media_asset_id?: string | null;
+          published?: boolean;
+          purge_after?: string | null;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'standard_items_hover_media_asset_id_fkey';
+            columns: ['hover_media_asset_id'];
+            isOneToOne: false;
+            referencedRelation: 'media_assets';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'standard_items_media_asset_id_fkey';
+            columns: ['media_asset_id'];
+            isOneToOne: false;
+            referencedRelation: 'media_assets';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       site_settings: {
         Row: {
           address: string;
@@ -507,6 +570,18 @@ export type Database = {
       };
       hard_delete_service: {
         Args: { service_id: string };
+        Returns: undefined;
+      };
+      soft_delete_standard_item: {
+        Args: { item_id: string; retention_days?: number };
+        Returns: undefined;
+      };
+      restore_standard_item: {
+        Args: { item_id: string };
+        Returns: undefined;
+      };
+      hard_delete_standard_item: {
+        Args: { item_id: string };
         Returns: undefined;
       };
       soft_delete_contact_item: {
