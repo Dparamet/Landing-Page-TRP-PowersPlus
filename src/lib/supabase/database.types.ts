@@ -356,6 +356,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      web_events: {
+        Row: {
+          created_at: string | null;
+          element_href: string | null;
+          element_id: string | null;
+          element_tag: string | null;
+          element_text: string | null;
+          event_type: 'page_view' | 'click' | 'form_submit';
+          form_action: string | null;
+          form_id: string | null;
+          form_name: string | null;
+          id: string;
+          metadata: Json;
+          page_url: string;
+          path: string;
+          referrer: string | null;
+          session_id: string | null;
+          user_agent: string | null;
+          utm_campaign: string | null;
+          utm_medium: string | null;
+          utm_source: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          element_href?: string | null;
+          element_id?: string | null;
+          element_tag?: string | null;
+          element_text?: string | null;
+          event_type: 'page_view' | 'click' | 'form_submit';
+          form_action?: string | null;
+          form_id?: string | null;
+          form_name?: string | null;
+          id?: string;
+          metadata?: Json;
+          page_url: string;
+          path: string;
+          referrer?: string | null;
+          session_id?: string | null;
+          user_agent?: string | null;
+          utm_campaign?: string | null;
+          utm_medium?: string | null;
+          utm_source?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          element_href?: string | null;
+          element_id?: string | null;
+          element_tag?: string | null;
+          element_text?: string | null;
+          event_type?: 'page_view' | 'click' | 'form_submit';
+          form_action?: string | null;
+          form_id?: string | null;
+          form_name?: string | null;
+          id?: string;
+          metadata?: Json;
+          page_url?: string;
+          path?: string;
+          referrer?: string | null;
+          session_id?: string | null;
+          user_agent?: string | null;
+          utm_campaign?: string | null;
+          utm_medium?: string | null;
+          utm_source?: string | null;
+        };
+        Relationships: [];
+      };
       site_settings: {
         Row: {
           address: string;

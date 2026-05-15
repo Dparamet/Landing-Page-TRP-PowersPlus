@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AdminAnalyticsDashboard from '@/components/admin/AdminAnalyticsDashboard';
 import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
 import ContactItemManager from '@/components/admin/ContactItemManager';
 import FaqManager from '@/components/admin/FaqManager';
@@ -15,7 +16,16 @@ import SiteTextManager from '@/components/admin/SiteTextManager';
 import { ADMIN_PREVIEW_REFRESH_EVENT } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-type AdminSectionKey = 'texts' | 'services' | 'media' | 'portfolioImages' | 'portfolioPosts' | 'process' | 'faqs' | 'contact';
+type AdminSectionKey =
+  | 'analytics'
+  | 'texts'
+  | 'services'
+  | 'media'
+  | 'portfolioImages'
+  | 'portfolioPosts'
+  | 'process'
+  | 'faqs'
+  | 'contact';
 type DashboardState =
   | { status: 'loading'; email?: string }
   | { status: 'ready'; email: string; role: string }
@@ -28,6 +38,7 @@ const adminSections: Array<{
   description: string;
   previewHash: string;
 }> = [
+  { key: 'analytics', label: 'แดชบอร์ด', description: 'ดูการเคลื่อนไหวหน้าเว็บ', previewHash: '#hero' },
   { key: 'texts', label: 'ข้อความ', description: 'หัวข้อและ copy หลัก', previewHash: '#hero' },
   { key: 'services', label: 'บริการ', description: 'การ์ดและข้อมูลเตรียมงาน', previewHash: '#services' },
   { key: 'portfolioPosts', label: 'ผลงาน', description: 'ข้อมูลโครงการ', previewHash: '#portfolio' },
@@ -41,7 +52,7 @@ const adminSections: Array<{
 export default function AdminDashboard() {
   const router = useRouter();
   const [state, setState] = useState<DashboardState>({ status: 'loading' });
-  const [activeSection, setActiveSection] = useState<AdminSectionKey>('texts');
+  const [activeSection, setActiveSection] = useState<AdminSectionKey>('analytics');
   const [previewVersion, setPreviewVersion] = useState(0);
 
   useEffect(() => {
@@ -120,16 +131,17 @@ export default function AdminDashboard() {
 
   if (state.status === 'loading') {
     return (
-      <div className="rounded-lg border border-[#f08a24] bg-white p-6 text-sm text-slate-600" aria-busy="true">
+      <div className="admin-card rounded-lg border border-[#f08a24] bg-white p-6 text-sm text-slate-600" aria-busy="true">
         กำลังตรวจสอบสิทธิ์ผู้ดูแล...
       </div>
     );
   }
 
   const currentSection = adminSections.find((section) => section.key === activeSection) ?? adminSections[0];
+  const showPreview = activeSection !== 'analytics';
 
   return (
-    <section className="space-y-5">
+    <section className="admin-page admin-stagger space-y-5">
       <div className="overflow-hidden rounded-lg border border-[#0f2a5f]/20 bg-[#0f2a5f] text-white shadow-[0_18px_52px_rgba(15,42,95,0.16)]">
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -171,25 +183,28 @@ export default function AdminDashboard() {
         </nav>
       </div>
 
-      <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_460px]">
-          <div className="min-w-0 space-y-6">
-          <div className="rounded-lg border border-[#f08a24] bg-white p-5 shadow-sm">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-[#f08a24]">กำลังแก้ไข</p>
-                <h2 className="mt-2 text-xl font-black text-[#0f2a5f]">{currentSection.label}</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-600">{currentSection.description}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">ช่อง English เว้นว่างได้ ระบบจะเติมให้จากคำหลักอัตโนมัติ</p>
+      <div className={`grid gap-5 ${showPreview ? '2xl:grid-cols-[minmax(0,1fr)_460px]' : ''}`}>
+        <div className="min-w-0 space-y-6">
+          {showPreview ? (
+            <div className="admin-card rounded-lg border border-[#f08a24] bg-white p-5 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-[#f08a24]">กำลังแก้ไข</p>
+                  <h2 className="mt-2 text-xl font-black text-[#0f2a5f]">{currentSection.label}</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{currentSection.description}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-500">ช่อง English เว้นว่างได้ ระบบจะเติมให้จากคำหลักอัตโนมัติ</p>
+                </div>
+                <span className="inline-flex w-fit rounded-lg border border-[#f08a24] bg-[#e3f2fd] px-3 py-2 text-xs font-black text-[#0f2a5f]">
+                  Preview: {currentSection.previewHash}
+                </span>
               </div>
-              <span className="inline-flex w-fit rounded-lg border border-[#f08a24] bg-[#e3f2fd] px-3 py-2 text-xs font-black text-[#0f2a5f]">
-                Preview: {currentSection.previewHash}
-              </span>
             </div>
-          </div>
+          ) : null}
           {renderAdminSection(activeSection)}
         </div>
 
-        <aside className="rounded-lg border border-[#f08a24] bg-white p-4 shadow-sm 2xl:sticky 2xl:top-5 2xl:self-start">
+        {showPreview ? (
+          <aside className="admin-card rounded-lg border border-[#f08a24] bg-white p-4 shadow-sm 2xl:sticky 2xl:top-5 2xl:self-start">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-black text-[#0f2a5f]">ตัวอย่างหน้าบ้าน</h2>
@@ -209,11 +224,12 @@ export default function AdminDashboard() {
                 key={currentSection.previewHash}
                 title={`ตัวอย่าง ${currentSection.label}`}
                 src={`/${currentSection.previewHash}?preview=${previewVersion}`}
-              className="h-[580px] w-full bg-white"
+                className="h-[580px] w-full bg-white"
                 loading="lazy"
               />
             </div>
           </aside>
+        ) : null}
       </div>
     </section>
   );
@@ -221,6 +237,8 @@ export default function AdminDashboard() {
 
 function renderAdminSection(section: AdminSectionKey) {
   switch (section) {
+    case 'analytics':
+      return <AdminAnalyticsDashboard />;
     case 'texts':
       return <SiteTextManager />;
     case 'services':

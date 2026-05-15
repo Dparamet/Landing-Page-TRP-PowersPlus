@@ -1,237 +1,215 @@
-# Spec: Client CMS Database Refactor
+# คู่มือแก้ข้อความและรูปภาพสำหรับผู้ดูแลเว็บ
 
-## Assumptions
-- App: Next.js 16 + React 19 + Supabase.
-- Database: Supabase PostgreSQL with RLS.
-- Admin users already come from `admin_profiles`.
-- Goal is CMS CRUD for customer-facing sections shown in screenshots, not a full CRM.
-- Before applying DB migration to live Supabase, export backup or use Supabase project backup.
+คู่มือนี้เขียนสำหรับคนที่ไม่เคยเขียนโปรแกรมมาก่อน ให้แก้เฉพาะไฟล์ที่ระบุไว้ในหน้านี้ก่อน ถ้าไม่แน่ใจให้สำรองไฟล์เดิมไว้ก่อนแก้
 
-## Objective
-Refactor content data so admin can manage these sections without code edits:
+## แก้ข้อความในเว็บไซต์
 
-- Services: CRUD all service cards and service selector data.
-- Service selector: CRUD "เหมาะกับ", "งานที่รับ", "ข้อมูลที่ควรเตรียม", LINE message.
-- Portfolio: CRUD projects, metrics, cover image, gallery images, publish/delete/restore.
-- Contact: CRUD contact items and editable map/company settings.
+ข้อความภาษาไทยอยู่ที่:
 
-Success means the public page renders only published/non-deleted content from CMS with static fallback only when Supabase env is missing.
+`src/locales/th.json`
 
-## Tech Stack
-- Next.js `16.2.4`
-- React `19.2.4`
-- Supabase JS `^2.105.4`
-- TypeScript `^5`
-- Tests: Node test runner via `node --test tests/*.test.mjs`
+ข้อความภาษาอังกฤษอยู่ที่:
 
-## Commands
-Dev:
-```bash
-npm run dev
+`src/locales/en.json`
+
+วิธีแก้:
+
+1. เปิดไฟล์ภาษาที่ต้องการแก้
+2. ค้นหาข้อความเดิม เช่น `ติดต่อเรา`
+3. เปลี่ยนเฉพาะข้อความหลังเครื่องหมาย `:`
+4. อย่าลบเครื่องหมายคำพูด `" "` และอย่าลบ comma `,`
+5. ถ้าเพิ่มหัวข้อใหม่ในภาษาไทย ต้องเพิ่ม key เดียวกันในภาษาอังกฤษด้วย
+6. รัน `npm test` เพื่อตรวจว่าภาษาไทย/อังกฤษยังมีโครงสร้างตรงกัน
+
+ตัวอย่าง:
+
+```json
+"contact": {
+	"title": "ติดต่อเรา"
+}
 ```
 
-Build:
-```bash
-npm run build
+เปลี่ยนเป็น:
+
+```json
+"contact": {
+	"title": "ติดต่อทีมงาน"
+}
 ```
 
-Lint:
-```bash
-npm run lint
+## แก้เบอร์โทร อีเมล Line Facebook และแผนที่
+
+แก้ที่ไฟล์เดียว:
+
+`src/content/site.ts`
+
+หา `companyProfile` แล้วแก้ค่าที่ต้องการ เช่น:
+
+```ts
+phoneDisplay: '+66 (0) 12-345-6789',
+email: 'TRPPowersplus@gmail.com',
+lineId: '@TRPPowersplus',
+facebookDisplay: 'TRP Powers Plus',
+facebookUrl: 'https://facebook.com/TRPPowersplus',
 ```
 
-Test:
-```bash
-npm test
+ข้อควรระวัง:
+
+- `phoneHref` ต้องใช้ตัวเลขติดกันสำหรับลิงก์โทรศัพท์ เช่น `+66012345678`
+- `facebookUrl` ต้องเป็นลิงก์หน้าเพจ ไม่ใช่ Facebook plugin หรือ iframe
+- `googleMapsEmbedUrl` ต้องเป็นลิงก์ embed จาก Google Maps
+- `googleMapsSearchUrl` ใช้สำหรับปุ่มเปิดตำแหน่งใน Google Maps
+
+## เพิ่มหรือเปลี่ยนรูปผลงาน
+
+โฟลเดอร์สำหรับรูปผลงาน:
+
+`public/images/portfolio/`
+
+ขั้นตอนที่ง่ายที่สุด:
+
+1. เตรียมรูปเป็น `.webp`, `.jpg`, หรือ `.png`
+2. ตั้งชื่อไฟล์เป็นภาษาอังกฤษ ไม่มีเว้นวรรค เช่น `factory-solar.webp`
+3. วางไฟล์ไว้ใน `public/images/portfolio/`
+4. เปิดไฟล์ `src/content/site.ts`
+5. หา `portfolioProjects`
+6. แก้ค่า `coverImage.src` หรือรูปใน `gallery` ของผลงานที่ต้องการ
+
+ตัวอย่าง:
+
+```ts
+coverImage: {
+	src: '/images/portfolio/factory-solar.webp',
+	alt: {
+		th: 'งานติดตั้งโซลาร์เซลล์โรงงาน',
+		en: 'Factory solar installation project',
+	},
+},
 ```
 
-DB verification:
-```bash
-npm test -- tests/migrations.test.mjs
+สำคัญ:
+
+- path ต้องขึ้นต้นด้วย `/images/portfolio/`
+- ชื่อไฟล์ใน `src` ต้องตรงกับไฟล์จริงทุกตัวอักษร
+- `alt` คือคำอธิบายรูปสำหรับ SEO และผู้ใช้ screen reader
+- ถ้ามีรูปหลายช่วง ให้ใส่ใน `gallery` เป็น `before`, `during`, และ `after`
+
+## เพิ่มหรือแก้บริการ
+
+บริการและตัวเลือกในส่วน "เลือกประเภทงาน" อยู่ที่ไฟล์:
+
+`src/content/site.ts`
+
+หา `serviceCategories` แล้วแก้ข้อมูลในรายการที่ต้องการ แต่ละบริการมีข้อมูลสำคัญ:
+
+- `title`: ชื่อบริการเต็ม
+- `shortTitle`: ชื่อสั้นที่ใช้บนปุ่ม
+- `description`: คำอธิบายบริการ
+- `bestFor`: เหมาะกับลูกค้าแบบไหน
+- `includes`: งานที่รับ
+- `prepare`: ข้อมูลที่ลูกค้าควรเตรียม
+- `lineMessage`: ข้อความแนะนำสำหรับส่งใน LINE
+- `accent`: ใช้ `orange` หรือ `blue`
+
+ค่า `key` ใช้เชื่อมกับผลงานและปุ่มกรอง เลือกจากชุดนี้:
+
+- `residential` บ้านพักอาศัย
+- `building` อาคารและสำนักงาน
+- `factory` โรงงานและคลังสินค้า
+- `solar` โซลาร์เซลล์
+- `maintenance` ตรวจสอบและบำรุงรักษา
+- `controlPanel` ตู้ควบคุม
+
+## เพิ่มผลงานใหม่
+
+ใน `src/content/site.ts` ให้คัดลอกหนึ่ง block ใน `portfolioProjects` แล้วเปลี่ยนข้อมูล:
+
+```ts
+{
+	title: { th: 'ชื่อผลงานภาษาไทย', en: 'Project name in English' },
+	categoryKey: 'solar',
+	category: { th: 'ประเภทงานภาษาไทย', en: 'Category in English' },
+	description: {
+		th: 'คำอธิบายภาษาไทย',
+		en: 'English description.',
+	},
+	systemType: { th: 'ระบบออนกริด', en: 'On-grid system' },
+	metrics: [
+		{
+			label: { th: 'ขนาดระบบ', en: 'System size' },
+			value: { th: '10 kWp', en: '10 kWp' },
+			highlight: true,
+		},
+		{
+			label: { th: 'ผลิตไฟต่อเดือน', en: 'Monthly production' },
+			value: { th: '1,200 kWh', en: '1,200 kWh' },
+		},
+		{
+			label: { th: 'ลดค่าไฟต่อเดือน', en: 'Monthly savings' },
+			value: { th: 'ประมาณ ฿5,400', en: 'Approx. ฿5,400' },
+			highlight: true,
+		},
+		{
+			label: { th: 'ประเภทหน้างาน', en: 'Site type' },
+			value: { th: 'บ้านพักอาศัย', en: 'Residential' },
+		},
+	],
+	location: { th: 'กรุงเทพฯ', en: 'Bangkok' },
+	province: { th: 'กรุงเทพฯ', en: 'Bangkok' },
+	accent: 'orange',
+	coverImage: {
+		src: '/images/portfolio/example.webp',
+		alt: {
+			th: 'คำอธิบายรูปภาษาไทย',
+			en: 'English image description',
+		},
+	},
+	gallery: [
+		{
+			stage: 'before',
+			label: { th: 'ก่อนติดตั้ง', en: 'Before' },
+			src: '/images/portfolio/example-before.webp',
+			alt: { th: 'รูปก่อนติดตั้ง', en: 'Before installation image' },
+		},
+		{
+			stage: 'during',
+			label: { th: 'ระหว่างติดตั้ง', en: 'During' },
+			src: '/images/portfolio/example-during.webp',
+			alt: { th: 'รูประหว่างติดตั้ง', en: 'During installation image' },
+		},
+		{
+			stage: 'after',
+			label: { th: 'หลังติดตั้ง', en: 'After' },
+			src: '/images/portfolio/example-after.webp',
+			alt: { th: 'รูปหลังติดตั้ง', en: 'After installation image' },
+		},
+	],
+}
 ```
 
-## Project Structure
-- `src/components/*` -> public UI sections.
-- `src/components/admin/*` -> admin CMS managers.
-- `src/hooks/*` -> public Supabase loaders with fallback.
-- `src/lib/admin/*` -> validation and DB mapping helpers.
-- `src/lib/supabase/database.types.ts` -> generated/manual Supabase types.
-- `supabase/migrations/*` -> schema changes.
-- `tests/*.test.mjs` -> unit/schema guard tests.
+ใช้ `accent: 'orange'` หรือ `accent: 'blue'` เท่านั้น
 
-## Current Findings
-- `services` table has `includes` and `prepare`, but `ServiceManager` does not edit them; `mapServiceFormToUpsert()` keeps fallback arrays.
-- `ServiceSelector` uses `bestFor`, `includes`, `prepare`; missing admin editing causes screenshot 2 data gap.
-- `PortfolioPostManager` supports create + soft delete/restore/hard delete, but not full edit/update for existing posts.
-- `portfolio_projects.gallery` exists, but new DB portfolio posts map to default logo gallery; image override manager targets static project keys and does not naturally manage DB project gallery.
-- Portfolio cards/detail use `object-contain p-8/p-6`, causing visible background and non-full images.
-- There is no image lightbox/modal for additional portfolio photos.
-- `site_settings` supports one company/contact settings row, but screenshot contact list is not item-level CRUD.
-- `Contact` builds contact items in code from `companyProfile`; admin cannot reorder/hide/add contact methods.
+ค่า `categoryKey` ต้องตรงกับ `key` ใน `serviceCategories`
 
-## Proposed Data Model
+ตัวอย่าง `metrics` สำหรับงานไฟฟ้าอาคาร:
 
-### Existing tables to extend
-`services`
-- Keep `id`, localized title fields, `best_for`, `includes`, `prepare`, `line_message`, `published`, `deleted_at`.
-- Admin must edit list fields as repeatable localized items.
-
-`portfolio_projects`
-- Keep existing fields.
-- Use `cover_image_id` for cover image.
-- Replace loose/default gallery usage with managed gallery rows or normalized table.
-
-`site_settings`
-- Keep as single company/map settings record.
-- Add only if needed: `logo_asset_id`.
-
-### New table: `portfolio_project_images`
-Purpose: CRUD multiple images per project.
-
-Fields:
-- `id uuid primary key`
-- `project_id uuid references portfolio_projects(id) on delete cascade`
-- `media_asset_id uuid references media_assets(id) on delete set null`
-- `image_url text not null`
-- `alt jsonb not null`
-- `caption jsonb not null`
-- `stage text check (stage in ('cover','before','during','after','other'))`
-- `sort_order integer not null default 0`
-- `published boolean not null default true`
-- `deleted_at timestamptz`
-- `purge_after timestamptz`
-- timestamps
-
-### New table: `contact_items`
-Purpose: CRUD rows shown in Contact card.
-
-Fields:
-- `id uuid primary key`
-- `type text not null`
-- `icon text not null`
-- `label jsonb not null`
-- `value jsonb not null`
-- `href text`
-- `copy_value text`
-- `external boolean not null default false`
-- `sort_order integer not null default 0`
-- `published boolean not null default true`
-- `deleted_at timestamptz`
-- `purge_after timestamptz`
-- timestamps
-
-## Boundaries
-- Always: use RLS with `public.is_admin()` for writes.
-- Always: soft delete first; hard delete only for records already in trash.
-- Always: run `npm test` and `npm run build` before handoff.
-- Ask first: applying migrations to production Supabase.
-- Ask first: deleting existing live content permanently.
-- Never: commit `.env.local`, Supabase keys, service role keys, or customer private data.
-
-## Safe DB Process
-Backup first:
-```bash
-supabase db dump --file backup-before-client-cms-refactor.sql
+```ts
+metrics: [
+	{ label: { th: 'ขอบเขตงาน', en: 'Scope' }, value: { th: 'ตู้ควบคุมและโหลดไฟ', en: 'Panels and loads' }, highlight: true },
+	{ label: { th: 'พื้นที่', en: 'Area' }, value: { th: 'อาคาร 3 ชั้น', en: '3 floors' } },
+	{ label: { th: 'จุดที่ปรับปรุง', en: 'Improvement' }, value: { th: 'แยกวงจรและจัดโหลด', en: 'Circuit and load organization' } },
+	{ label: { th: 'ผลลัพธ์', en: 'Result' }, value: { th: 'อ่านง่ายและปลอดภัยขึ้น', en: 'Clearer and safer operation' }, highlight: true },
+]
 ```
 
-Apply migration only after review:
-```bash
-supabase db push
-```
+## ตรวจหลังแก้ทุกครั้ง
 
-Rollback strategy:
-- Use Supabase backup restore for destructive failure.
-- Keep migrations additive first: create tables/columns before deleting legacy paths.
-- Do not drop existing columns until public/admin UI is verified.
+รันคำสั่งนี้ตามลำดับ:
 
-Verification:
-```bash
-npm test
-npm run build
-```
-
-## Success Criteria
-- Admin can create, edit, publish/unpublish, soft-delete, restore, hard-delete services.
-- Admin can edit service `best_for`, `includes`, `prepare`, and `line_message`.
-- Public service cards and selector update from DB without code edit.
-- Admin can create and edit existing portfolio projects.
-- Admin can set cover image and multiple gallery images per project.
-- Portfolio images fill their frames without blue padding/background issue.
-- User can click portfolio images to view larger gallery/lightbox.
-- Admin can CRUD contact rows: company, phone, LINE, Facebook, email, address, or custom.
-- Contact map/company settings remain editable.
-- Tests cover mapping/validation/migration names for new CMS tables.
-
-## Implementation Plan
-
-### Phase 1: DB contract
-- Add migration for `portfolio_project_images` and `contact_items`.
-- Add RLS, grants, soft-delete/restore/hard-delete RPCs.
-- Update `src/lib/supabase/database.types.ts`.
-
-Checkpoint:
-- `npm test -- tests/migrations.test.mjs`
-
-### Phase 2: Services CRUD completion
-- Extend `ServiceFormValues` for repeatable `includes` and `prepare`.
-- Update `ServiceManager` UI to add/remove/edit list rows in TH/EN.
-- Update tests in `tests/servicesAdmin.test.mjs`.
-
-Checkpoint:
-- `npm test -- tests/servicesAdmin.test.mjs`
-
-### Phase 3: Portfolio CRUD completion
-- Add edit mode in `PortfolioPostManager`.
-- Support update existing project, slug/sort order, metrics list, cover image.
-- Add `PortfolioGalleryManager` or merge gallery CRUD into post manager.
-- Replace static-key image override path for DB projects with `project_id` gallery rows.
-
-Checkpoint:
-- `npm test -- tests/portfolioPosts.test.mjs`
-
-### Phase 4: Public portfolio UX
-- Update `usePortfolioProjects()` to load project images.
-- Change image classes from contained logo-style display to full image display.
-- Add image lightbox for cover/gallery.
-- Keep accessible alt/caption text.
-
-Checkpoint:
-- Manual browser check desktop/mobile for portfolio.
-- `npm run build`
-
-### Phase 5: Contact CRUD
-- Add `contact_items` admin manager.
-- Add `useContactItems()` hook.
-- Update `Contact` to render DB contact rows with fallback.
-- Keep `CompanySettingsForm` for map/company-level settings.
-
-Checkpoint:
-- `npm test -- tests/companySettings.test.mjs`
-- Add `tests/contactItems.test.mjs`
-
-### Phase 6: Final hardening
-- Validate RLS and admin-only writes.
-- Confirm deleted content does not render publicly.
-- Run full verification.
-
-Final verification:
 ```bash
 npm test
 npm run lint
 npm run build
 ```
 
-## Risks
-| Risk | Impact | Mitigation |
-|---|---|---|
-| Migration affects live content | High | Backup first, additive migration, no column drop |
-| Static fallback duplicates DB content | Medium | Deduplicate by `id`/`slug`, prefer DB rows |
-| Portfolio image relation complexity | Medium | Normalize images by `project_id`, keep old override until cutover verified |
-| Contact item URLs unsafe | Medium | Validate `https://`, `mailto:`, `tel:`, and LINE URL patterns |
-| Admin UI grows too dense | Medium | Split managers into tabs/sections after DB contract is stable |
-
-## Open Questions
-- ต้องการให้ static content เดิมยังแสดงคู่กับ DB content หรือให้ DB override ทั้งหมด?
-- Contact item แบบ custom ต้องรองรับ icon อะไรบ้าง?
-- Portfolio หนึ่งโปรเจกต์ต้องรองรับรูปสูงสุดกี่รูป?
-- ต้องการเก็บ `portfolio_image_overrides` ต่อเพื่อ override งาน static เดิม หรือ migrate ไป `portfolio_project_images` ทั้งหมด?
+ถ้าทั้งสามคำสั่งผ่าน แปลว่าโครงสร้างข้อมูล รูปภาพ และ build เบื้องต้นปลอดภัยสำหรับส่งต่อหรือ deploy

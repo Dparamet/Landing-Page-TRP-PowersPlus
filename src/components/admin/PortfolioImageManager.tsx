@@ -165,7 +165,7 @@ export default function PortfolioImageManager() {
   const isBusy = status === 'loading' || status === 'saving';
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5">
+    <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">จัดรูปผลงาน</h2>
