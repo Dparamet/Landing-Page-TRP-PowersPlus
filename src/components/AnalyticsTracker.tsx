@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useCookieConsent } from '@/context/CookieConsentContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import type { Json } from '@/lib/supabase/database.types';
 
 const SESSION_STORAGE_KEY = 'trp-analytics-session';
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
@@ -33,7 +34,7 @@ type AnalyticsEventPayload = {
   utm_medium?: string | null;
   utm_campaign?: string | null;
   user_agent?: string | null;
-  metadata?: Record<string, unknown>;
+  metadata?: Json;
 };
 
 function safeText(input: string | null | undefined) {

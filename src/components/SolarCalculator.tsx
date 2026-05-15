@@ -30,7 +30,7 @@ export default function SolarCalculator() {
   return (
     <section id="calculator" className="section-reveal bg-transparent py-20">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="reveal-item mx-auto mb-10 max-w-3xl rounded-2xl bg-white px-5 py-6 text-center shadow-sm sm:px-8">
+        <div className="reveal-item glass-header mx-auto mb-10 max-w-3xl rounded-2xl bg-white px-5 py-6 text-center shadow-sm sm:px-8">
           <span className="inline-flex rounded-full bg-[#fff7ed] px-4 py-2 text-sm font-bold text-[#d66d0c]">
             {t('nav.calculator')}
           </span>
@@ -39,7 +39,7 @@ export default function SolarCalculator() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.88fr_1.12fr]">
-          <div className="reveal-item rounded-lg border border-[#f08a24] bg-[#f8fafc] p-6 shadow-sm">
+          <div className="reveal-item glass-card rounded-lg border border-[#f08a24] bg-[#f8fafc] p-6 shadow-sm">
             <p className="mb-4 text-sm font-bold text-[#0f2a5f]">{t('calculator.inputTitle')}</p>
             <div className="grid grid-cols-2 gap-3">
               {(['onGrid', 'hybrid'] as SystemType[]).map((type) => (
@@ -48,10 +48,10 @@ export default function SolarCalculator() {
                   type="button"
                   onClick={() => setSystemType(type)}
                   aria-pressed={systemType === type}
-                  className={`rounded-lg border px-4 py-4 text-left font-bold transition ${
+                  className={`rounded-lg border px-4 py-4 text-left font-bold transition-all duration-300 ease-out ${
                     systemType === type
-                      ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-lg shadow-blue-100'
-                        : 'border-[#f08a24] bg-white text-slate-700 hover:border-[#d66d0c] hover:text-[#d66d0c]'
+                      ? 'border-[#0f2a5f] bg-[#0f2a5f] text-white shadow-lg shadow-blue-100 -translate-y-0.5'
+                        : 'border-[#f08a24] bg-white text-slate-700 hover:border-[#d66d0c] hover:text-[#d66d0c] hover:-translate-y-0.5'
                   }`}
                 >
                   {t(`calculator.${type}`)}
@@ -59,7 +59,7 @@ export default function SolarCalculator() {
               ))}
             </div>
 
-            <p className="mt-4 rounded-lg border border-[#f08a24] bg-white p-4 text-sm leading-relaxed text-slate-700">
+            <p className="mt-4 glass-panel rounded-lg border border-[#f08a24] bg-white p-4 text-sm leading-relaxed text-slate-700">
               {activeDescription}
             </p>
 
@@ -93,14 +93,14 @@ export default function SolarCalculator() {
                     type="button"
                     onClick={() => setRoofProfile(profile)}
                     aria-pressed={roofProfile === profile}
-                    className={`rounded-lg border px-3 py-3 text-left text-sm font-bold transition ${
+                    className={`rounded-lg border px-3 py-3 text-left text-sm font-bold transition-all duration-300 ease-out ${
                       roofProfile === profile
-                        ? 'border-[#b85c00] bg-[#fff7ed] text-[#b85c00]'
-                        : 'border-[#f08a24] bg-white text-slate-700 hover:border-[#d66d0c]'
+                        ? 'border-[#b85c00] bg-[#fff7ed] text-[#b85c00] shadow-md -translate-y-0.5'
+                        : 'border-[#f08a24] bg-white text-slate-700 hover:border-[#d66d0c] hover:-translate-y-0.5'
                     }`}
                   >
                     <span className="block">{t(`calculator.roof.${profile}`)}</span>
-                    <span className="mt-1 block text-xs font-semibold text-slate-500">
+                    <span className="mt-1 block text-xs font-semibold text-slate-500 transition-colors duration-300">
                       {getMonthlyYield(profile)} kWh/kWp
                     </span>
                   </button>
@@ -109,8 +109,8 @@ export default function SolarCalculator() {
             </div>
           </div>
 
-          <div className="reveal-item rounded-lg border border-[#f08a24] bg-white p-6 shadow-sm">
-            <div className="mb-5 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-5">
+          <div className="reveal-item glass-card rounded-lg border border-[#f08a24] bg-white p-6 shadow-sm">
+            <div className="glass-panel mb-5 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-5">
               <p className="text-sm font-bold text-[#b85c00]">{t('calculator.decisionSummary')}</p>
               <p className="mt-2 text-2xl font-black text-[#12345f]">
                 {result.recommendedSize.toFixed(1)} kWp · {t('calculator.saveAbout')} ฿{formatEstimateNumber(result.monthlySavings, language)} / {t('calculator.month')}
@@ -133,7 +133,7 @@ export default function SolarCalculator() {
               />
             </div>
 
-            <div className="mt-6 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-5 text-sm leading-relaxed text-slate-700">
+            <div className="glass-panel mt-6 rounded-lg border border-[#f08a24] bg-[#fff7ed] p-5 text-sm leading-relaxed text-slate-700">
               <p className="font-bold text-[#182230]">{t('calculator.assumptionsTitle')}</p>
               <p className="mt-2">
                 {t('calculator.assumptionsPrefix')} {result.monthlyYieldPerKwp} kWh/kWp/{t('calculator.month')} · Ft 0.1623 · VAT 7%
@@ -186,12 +186,12 @@ function RangeInput({
 function Result({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div
-      className={`rounded-lg border p-4 transition-colors duration-200 ${
+      className={`rounded-lg border p-4 transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-1 ${
         highlight ? 'border-[#f08a24] bg-[#fff7ed]' : 'border-[#f08a24] bg-[#f8fafc]'
       }`}
     >
-      <p className="text-sm text-slate-600">{label}</p>
-      <p className={`mt-2 text-2xl font-black ${highlight ? 'text-[#b85c00]' : 'text-[#182230]'}`}>{value}</p>
+      <p className="text-sm text-slate-600 transition-colors duration-300">{label}</p>
+      <p className={`mt-2 text-2xl font-black transition-colors duration-300 ${highlight ? 'text-[#b85c00]' : 'text-[#182230]'}`}>{value}</p>
     </div>
   );
 }

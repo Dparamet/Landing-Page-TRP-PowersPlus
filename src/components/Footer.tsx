@@ -8,7 +8,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white text-slate-700">
+    <footer className="section-reveal bg-white text-slate-700">
       <FooterContent />
 
       {/* Copyright Bar */}

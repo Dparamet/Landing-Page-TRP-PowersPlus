@@ -12,7 +12,7 @@ export default function HeroContent() {
       <div className="pointer-events-none absolute bottom-12 right-4 hidden h-20 w-40 rounded-b-full border border-white/60 bg-white/30 md:block" />
 
       <div className="relative mx-auto">
-        <p className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black uppercase tracking-wide text-[#111827] shadow-sm">
+        <p className="mb-5 inline-flex rounded-full glass-panel border border-slate-200 bg-white px-4 py-2 text-sm font-black uppercase tracking-wide text-[#111827] shadow-sm transition-all duration-300 hover:scale-105">
           {t('hero.eyebrow')}
         </p>
 
@@ -31,13 +31,13 @@ export default function HeroContent() {
         <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
           <Link 
             href="#calculator" 
-            className="w-full rounded-lg bg-[#f08a24] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-200 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-[#d66d0c] hover:shadow-xl md:w-auto"
+            className="glass-button w-full rounded-lg bg-[#f08a24] px-8 py-4 text-lg font-black text-white shadow-lg shadow-orange-200 transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#d66d0c] hover:shadow-xl active:translate-y-0 md:w-auto"
           >
             {t('nav.calculator')}
           </Link>
           <Link 
             href="#portfolio" 
-            className="w-full rounded-lg bg-white/78 px-8 py-4 text-lg font-black text-[#0f2f55] shadow-sm transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:bg-white/92 hover:text-[#8a4300] md:w-auto"
+            className="glass-panel w-full rounded-lg bg-white/78 px-8 py-4 text-lg font-black text-[#0f2f55] shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white/92 hover:text-[#8a4300] hover:shadow-md active:translate-y-0 md:w-auto"
           >
             {t('nav.portfolio')}
           </Link>
@@ -45,18 +45,22 @@ export default function HeroContent() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-3 text-sm font-black text-[#111827] sm:grid-cols-3 md:mt-8 md:text-base">
-        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
-          <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.engineers')}</span>
-        </div>
-        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
-          <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.warranty')}</span>
-        </div>
-        <div className="flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm">
-          <span className="text-2xl text-[#f08a24]">✓</span>
-          <span>{t('hero.trust.survey')}</span>
-        </div>
+        {[
+          { icon: '✓', text: t('hero.trust.engineers') },
+          { icon: '✓', text: t('hero.trust.warranty') },
+          { icon: '✓', text: t('hero.trust.survey') },
+        ].map((item, index) => (
+          <div 
+            key={index}
+            className="glass-float flex items-center justify-center gap-2 rounded-full border border-[#f08a24] bg-white px-4 py-3 shadow-sm transition-all duration-300 ease-out hover:shadow-md hover:scale-105 hover:-translate-y-1"
+            style={{ 
+              animationDelay: `${index * 50}ms`
+            }}
+          >
+            <span className="text-2xl text-[#f08a24] transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
+            <span>{item.text}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

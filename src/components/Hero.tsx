@@ -15,7 +15,7 @@ export default function Hero() {
       {/* Schema Markup สำหรับ SEO */}
       <script type="application/ld+json">{JSON.stringify(schemaData)}</script>
 
-      <section id="hero" className="relative z-10 flex min-h-[560px] w-full items-center justify-center overflow-visible bg-transparent px-0 py-12 sm:min-h-[620px] md:min-h-[680px] md:py-20">
+      <section id="hero" className="section-reveal relative z-10 flex min-h-[560px] w-full items-center justify-center overflow-visible bg-transparent px-0 py-12 sm:min-h-[620px] md:min-h-[680px] md:py-20">
         <HeroContent />
       </section>
     </>

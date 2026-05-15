@@ -334,23 +334,28 @@ export default function AdminAnalyticsDashboard() {
       return;
     }
 
+    const client = supabase;
+
     if (!rangeInfo.start || !rangeInfo.end) {
       setState({ status: 'error', message: 'กรุณาเลือกช่วงวันที่ให้ครบ' });
       return;
     }
+
+    const start = rangeInfo.start;
+    const end = rangeInfo.end;
 
     let isMounted = true;
 
     async function loadEvents() {
       setState({ status: 'loading' });
 
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('web_events')
         .select(
           'event_type, path, page_url, referrer, element_tag, element_text, element_id, element_href, form_id, form_name, form_action, session_id, utm_source, utm_medium, utm_campaign, created_at'
         )
-        .gte('created_at', rangeInfo.start.toISOString())
-        .lte('created_at', rangeInfo.end.toISOString())
+        .gte('created_at', start.toISOString())
+        .lte('created_at', end.toISOString())
         .order('created_at', { ascending: false });
 
       if (!isMounted) return;
