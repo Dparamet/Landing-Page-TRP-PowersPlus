@@ -14,6 +14,7 @@ import {
   type LocalizedText,
   type ServiceRow,
 } from '@/lib/admin/services';
+import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -44,7 +45,7 @@ export default function ServiceManager() {
 
       if (error) {
         setStatus('error');
-        setMessage(`โหลดบริการไม่สำเร็จ: ${error.message}`);
+        setMessage(formatAdminLoadError('บริการ', 'services', error));
         return;
       }
 
@@ -75,7 +76,7 @@ export default function ServiceManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`โหลดบริการไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminLoadError('บริการ', 'services', error));
       return;
     }
 
@@ -154,7 +155,7 @@ export default function ServiceManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกบริการไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminSaveError('บริการ', 'services', error));
       return;
     }
 
@@ -177,7 +178,7 @@ export default function ServiceManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบบริการไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบบริการ', 'soft_delete_service', error));
       return;
     }
 
@@ -199,7 +200,7 @@ export default function ServiceManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`กู้คืนบริการไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('กู้คืนบริการ', 'restore_service', error));
       return;
     }
 
@@ -221,7 +222,7 @@ export default function ServiceManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบถาวรไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบถาวรบริการ', 'hard_delete_service', error));
       return;
     }
 
@@ -239,13 +240,8 @@ export default function ServiceManager() {
           <p className="mt-1 text-sm text-slate-600">แก้ชื่อ คำอธิบาย ข้อความ LINE และสถานะเผยแพร่ของบริการหลัก</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="submit"
-            form="service-manager-form"
-            disabled={status === 'saving' || status === 'loading'}
-            className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748]"
-          >
-            {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึกบริการ' : 'สร้างบริการ'}
+          <button type="button" onClick={startNewService} disabled={status === 'saving'} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+            เพิ่มบริการ
           </button>
           <button
             type="button"
@@ -279,7 +275,7 @@ export default function ServiceManager() {
         <form id="service-manager-form" onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
           <Field label="Service ID" value={values.id} onChange={(value) => updateField('id', value)} />
           <label className="block text-sm font-semibold text-slate-800">
-            ลำดับ
+            ลำดับที่
             <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
           </label>
           <Field label="ชื่อบริการ ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />
@@ -327,13 +323,8 @@ export default function ServiceManager() {
             แสดงบนหน้าเว็บ
           </label>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
-            <button
-              type="button"
-              onClick={startNewService}
-              disabled={status === 'saving'}
-              className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              เพิ่มบริการ
+            <button type="submit" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกบริการ'}
             </button>
             <button type="button" onClick={() => void softDeleteService()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
               ลบแบบพักไว้ 30 วัน

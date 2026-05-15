@@ -9,6 +9,10 @@ export type CompanySettingsFormValues = {
   lineUrl: string;
   facebookDisplay: string;
   facebookUrl: string;
+  instagramDisplay: string;
+  instagramUrl: string;
+  tiktokDisplay: string;
+  tiktokUrl: string;
   address: string;
   googleMapsSearchUrl: string;
   googleMapsEmbedUrl: string;
@@ -30,6 +34,10 @@ export const defaultCompanySettings: CompanySettingsFormValues = {
   lineUrl: 'https://line.me/ti/p/@TRPPowersplus',
   facebookDisplay: 'TRP Powers Plus',
   facebookUrl: 'https://facebook.com/TRPPowersplus',
+  instagramDisplay: 'TRP Powers Plus',
+  instagramUrl: 'https://instagram.com/TRPPowersplus',
+  tiktokDisplay: 'TRP Powers Plus',
+  tiktokUrl: 'https://www.tiktok.com/@TRPPowersplus',
   address: '123 Solar Street, Green Energy District Bangkok 10500, Thailand',
   googleMapsSearchUrl: 'https://maps.google.com/?q=123+Solar+Street,+Green+Energy+District,+Bangkok+10500,+Thailand',
   googleMapsEmbedUrl:
@@ -45,6 +53,10 @@ const requiredFields: Array<[keyof CompanySettingsFormValues, string]> = [
   ['lineUrl', 'LINE URL'],
   ['facebookDisplay', 'ชื่อ Facebook'],
   ['facebookUrl', 'Facebook URL'],
+  ['instagramDisplay', 'ชื่อ Instagram'],
+  ['instagramUrl', 'Instagram URL'],
+  ['tiktokDisplay', 'ชื่อ TikTok'],
+  ['tiktokUrl', 'TikTok URL'],
   ['address', 'ที่อยู่'],
   ['googleMapsSearchUrl', 'Google Maps URL'],
   ['googleMapsEmbedUrl', 'Google Maps Embed URL'],
@@ -68,6 +80,10 @@ function trimCompanySettings(values: CompanySettingsFormValues): CompanySettings
     lineUrl: values.lineUrl.trim(),
     facebookDisplay: values.facebookDisplay.trim(),
     facebookUrl: values.facebookUrl.trim(),
+    instagramDisplay: values.instagramDisplay.trim(),
+    instagramUrl: values.instagramUrl.trim(),
+    tiktokDisplay: values.tiktokDisplay.trim(),
+    tiktokUrl: values.tiktokUrl.trim(),
     address: values.address.trim(),
     googleMapsSearchUrl: values.googleMapsSearchUrl.trim(),
     googleMapsEmbedUrl: values.googleMapsEmbedUrl.trim(),
@@ -91,7 +107,13 @@ export function validateCompanySettings(values: CompanySettingsFormValues): Comp
     return { ok: false, message: 'รูปแบบอีเมลไม่ถูกต้อง' };
   }
 
-  if (!isHttpsUrl(trimmed.lineUrl) || !isHttpsUrl(trimmed.facebookUrl) || !isHttpsUrl(trimmed.googleMapsSearchUrl)) {
+  if (
+    !isHttpsUrl(trimmed.lineUrl) ||
+    !isHttpsUrl(trimmed.facebookUrl) ||
+    !isHttpsUrl(trimmed.instagramUrl) ||
+    !isHttpsUrl(trimmed.tiktokUrl) ||
+    !isHttpsUrl(trimmed.googleMapsSearchUrl)
+  ) {
     return { ok: false, message: 'URL ภายนอกต้องเป็น https:// เท่านั้น' };
   }
 
@@ -116,6 +138,10 @@ export function mapSiteSettingsRowToForm(row: SiteSettingsRow | null): CompanySe
     lineUrl: row.line_url || defaultCompanySettings.lineUrl,
     facebookDisplay: row.facebook_display || defaultCompanySettings.facebookDisplay,
     facebookUrl: row.facebook_url || defaultCompanySettings.facebookUrl,
+    instagramDisplay: row.instagram_display || defaultCompanySettings.instagramDisplay,
+    instagramUrl: row.instagram_url || defaultCompanySettings.instagramUrl,
+    tiktokDisplay: row.tiktok_display || defaultCompanySettings.tiktokDisplay,
+    tiktokUrl: row.tiktok_url || defaultCompanySettings.tiktokUrl,
     address: row.address || defaultCompanySettings.address,
     googleMapsSearchUrl: row.google_maps_search_url || defaultCompanySettings.googleMapsSearchUrl,
     googleMapsEmbedUrl: row.google_maps_embed_url || defaultCompanySettings.googleMapsEmbedUrl,
@@ -133,6 +159,10 @@ export function mapCompanySettingsFormToUpsert(values: CompanySettingsFormValues
     line_url: values.lineUrl,
     facebook_display: values.facebookDisplay,
     facebook_url: values.facebookUrl,
+    instagram_display: values.instagramDisplay,
+    instagram_url: values.instagramUrl,
+    tiktok_display: values.tiktokDisplay,
+    tiktok_url: values.tiktokUrl,
     address: values.address,
     google_maps_search_url: values.googleMapsSearchUrl,
     google_maps_embed_url: values.googleMapsEmbedUrl,

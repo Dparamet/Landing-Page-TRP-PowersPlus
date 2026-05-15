@@ -2,6 +2,9 @@ import type { PortfolioProject, PortfolioStage } from '@/content/site';
 import type { Database } from '@/lib/supabase/database.types';
 
 export type PortfolioImageSlot = 'cover' | PortfolioStage;
+export const landingHeroBackgroundKey = 'landing-page';
+export const landingHeroBackgroundSlot = 'hero_background';
+export type PortfolioImageAdminSlot = PortfolioImageSlot | typeof landingHeroBackgroundSlot;
 export type PortfolioImageOverride = Database['public']['Tables']['portfolio_image_overrides']['Row'];
 
 export function portfolioProjectKey(project: Pick<PortfolioProject, 'title'>): string {

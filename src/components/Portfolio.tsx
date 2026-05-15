@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { PortfolioProject } from '@/content/site';
 import { useLanguage } from '@/context/LanguageContext';
@@ -16,7 +17,9 @@ type LightboxImage = {
   label: string;
 };
 
-export default function Portfolio() {
+const LANDING_PORTFOLIO_LIMIT = 4;
+
+export default function Portfolio({ showAll = false }: { showAll?: boolean }) {
   const { t, language } = useLanguage();
   const serviceCategories = useServiceCategories();
   const portfolioProjects = usePortfolioProjects();
@@ -38,6 +41,8 @@ export default function Portfolio() {
   const visibleProjects = useMemo(() => {
     return labeledProjects.filter((project) => activeCategory === 'all' || project.categoryKey === activeCategory);
   }, [activeCategory, labeledProjects]);
+  const cardProjects = showAll ? visibleProjects : visibleProjects.slice(0, LANDING_PORTFOLIO_LIMIT);
+  const hasMore = visibleProjects.length > cardProjects.length;
 
   const selectedProject = useMemo(() => {
     return visibleProjects.find((project) => project.title.en === selectedTitle) ?? visibleProjects[0] ?? labeledProjects[0];
@@ -83,15 +88,25 @@ export default function Portfolio() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr] xl:items-start">
-          <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
-            {visibleProjects.map((project) => (
-              <PortfolioCard
-                key={project.title.en}
-                project={project}
-                selected={selectedProject.title.en === project.title.en}
-                onSelect={() => setSelectedTitle(project.title.en)}
-              />
-            ))}
+          <div>
+            <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
+              {cardProjects.map((project) => (
+                <PortfolioCard
+                  key={project.title.en}
+                  project={project}
+                  selected={selectedProject.title.en === project.title.en}
+                  onSelect={() => setSelectedTitle(project.title.en)}
+                />
+              ))}
+            </div>
+            {hasMore ? (
+              <Link
+                href="/portfolio"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-lg border border-[#f08a24] bg-white px-5 py-3 text-center text-sm font-black text-[#0f2a5f] transition hover:bg-[#fff7ed] hover:text-[#d66d0c] sm:w-auto"
+              >
+                {language === 'th' ? 'อ่านเพิ่มเติมผลงานทั้งหมด' : 'View all portfolio'}
+              </Link>
+            ) : null}
           </div>
 
           <ProjectDetail project={selectedProject} serviceCategories={serviceCategories} onOpenImage={setLightboxImage} />

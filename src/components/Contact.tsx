@@ -1,15 +1,20 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useContactItems } from '@/hooks/useContactItems';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
-export default function Contact() {
+const LANDING_CONTACT_LIMIT = 6;
+
+export default function Contact({ showAll = false }: { showAll?: boolean }) {
   const { t, language } = useLanguage();
   const companyProfile = useCompanyProfile();
   const contactItems = useContactItems(companyProfile);
+  const visibleContactItems = showAll ? contactItems : contactItems.slice(0, LANDING_CONTACT_LIMIT);
+  const hasMore = contactItems.length > visibleContactItems.length;
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
   const copyContact = async (type: string, value: string) => {
@@ -54,12 +59,14 @@ export default function Contact() {
     const iconMap: Record<string, string> = {
       phone: '☎',
       facebook: 'f',
+      instagram: 'IG',
+      tiktok: '♪',
       email: '@',
       address: '⌖',
     };
 
     return (
-      <span className={`text-lg font-black leading-none ${icon === 'facebook' ? 'text-[#1877f2]' : 'text-[#f08a24]'}`}>
+      <span className={`text-lg font-black leading-none ${['facebook', 'instagram', 'tiktok'].includes(icon) ? 'text-[#1877f2]' : 'text-[#f08a24]'}`}>
         {iconMap[icon] ?? icon}
       </span>
     );
@@ -80,7 +87,7 @@ export default function Contact() {
               <p className="mt-1 text-sm text-slate-600">{t('contact.description')}</p>
             </div>
             <div className="grid divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-1 lg:divide-x-0 lg:divide-y">
-              {contactItems.map((contact) => (
+              {visibleContactItems.map((contact) => (
                 <div key={contact.id} className="group flex min-h-20 items-center gap-3 p-3 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#e3f2fd]">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd] text-center transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:bg-white">
                     {renderIcon(contact.icon)}
@@ -119,6 +126,16 @@ export default function Contact() {
                 </div>
               ))}
             </div>
+            {hasMore ? (
+              <div className="border-t border-[#f08a24] p-4 text-center">
+                <Link
+                  href="/contact"
+                  className="inline-flex rounded-lg border border-[#f08a24] bg-white px-5 py-3 text-sm font-black text-[#0f2a5f] transition hover:bg-[#fff7ed] hover:text-[#d66d0c]"
+                >
+                  {language === 'th' ? 'อ่านเพิ่มเติมช่องทางติดต่อทั้งหมด' : 'View all contact channels'}
+                </Link>
+              </div>
+            ) : null}
           </div>
 
           <div className="reveal-item overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">

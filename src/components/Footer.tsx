@@ -12,7 +12,7 @@ export default function Footer() {
       <FooterContent />
 
       {/* Copyright Bar */}
-      <div className="border-t border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm backdrop-blur">
+      <div className="bg-white px-4 pb-6 pt-2 text-center text-sm">
         <p className="text-slate-600">
           © {currentYear} <span className="font-bold text-[#0f2a5f]">TRP Powers Plus</span>. {t('footer.legal')}
         </p>

@@ -3,10 +3,17 @@
 import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
+import ConfirmResetButton from '@/components/admin/ConfirmResetButton';
 import { portfolioProjects } from '@/content/site';
+import { formatPortfolioImageError, formatPortfolioImageLoadError } from '@/lib/admin/databaseErrors';
 import { formatBytes } from '@/lib/admin/mediaUpload';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
-import { portfolioProjectKey, type PortfolioImageSlot } from '@/lib/portfolioImages';
+import {
+  landingHeroBackgroundKey,
+  landingHeroBackgroundSlot,
+  portfolioProjectKey,
+  type PortfolioImageAdminSlot,
+} from '@/lib/portfolioImages';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -14,22 +21,31 @@ type MediaAsset = Database['public']['Tables']['media_assets']['Row'];
 type PortfolioImageOverride = Database['public']['Tables']['portfolio_image_overrides']['Row'];
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
-const imageSlots: Array<{ value: PortfolioImageSlot; label: string }> = [
+const projectOptions = [
+  { value: landingHeroBackgroundKey, label: 'พื้นหลังหน้าแรก' },
+  ...portfolioProjects.map((project) => ({ value: portfolioProjectKey(project), label: project.title.th })),
+];
+
+const portfolioImageSlots: Array<{ value: PortfolioImageAdminSlot; label: string }> = [
   { value: 'cover', label: 'รูปหน้าปก' },
   { value: 'before', label: 'ก่อนติดตั้ง' },
   { value: 'during', label: 'ระหว่างติดตั้ง' },
   { value: 'after', label: 'หลังติดตั้ง' },
 ];
 
+const heroBackgroundSlots: Array<{ value: PortfolioImageAdminSlot; label: string }> = [
+  { value: landingHeroBackgroundSlot, label: 'พื้นหลังหน้าแรก' },
+];
+
 const selectClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
 
 export default function PortfolioImageManager() {
-  const firstProjectKey = portfolioProjectKey(portfolioProjects[0]);
+  const firstProjectKey = landingHeroBackgroundKey;
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [overrides, setOverrides] = useState<PortfolioImageOverride[]>([]);
   const [projectKey, setProjectKey] = useState(firstProjectKey);
-  const [imageSlot, setImageSlot] = useState<PortfolioImageSlot>('cover');
+  const [imageSlot, setImageSlot] = useState<PortfolioImageAdminSlot>(landingHeroBackgroundSlot);
   const [assetId, setAssetId] = useState('');
   const [status, setStatus] = useState<SaveStatus>('loading');
   const [message, setMessage] = useState('');
@@ -39,10 +55,15 @@ export default function PortfolioImageManager() {
   }, []);
 
   const selectedAsset = useMemo(() => assets.find((asset) => asset.id === assetId) ?? null, [assetId, assets]);
-  const selectedProject = useMemo(
-    () => portfolioProjects.find((project) => portfolioProjectKey(project) === projectKey) ?? portfolioProjects[0],
-    [projectKey],
-  );
+  const availableImageSlots = projectKey === landingHeroBackgroundKey ? heroBackgroundSlots : portfolioImageSlots;
+  const selectedProjectLabel = useMemo(() => {
+    return projectOptions.find((project) => project.value === projectKey)?.label ?? projectOptions[0].label;
+  }, [projectKey]);
+
+  function selectProject(nextProjectKey: string) {
+    setProjectKey(nextProjectKey);
+    setImageSlot(nextProjectKey === landingHeroBackgroundKey ? landingHeroBackgroundSlot : 'cover');
+  }
 
   async function loadData() {
     const supabase = getSupabaseBrowserClient();
@@ -60,7 +81,7 @@ export default function PortfolioImageManager() {
 
     if (assetError || overrideError) {
       setStatus('error');
-      setMessage('โหลดรูปหรือรายการ override ไม่สำเร็จ ตรวจสอบ migration ล่าสุด');
+      setMessage(formatPortfolioImageLoadError(overrideError ?? assetError));
       return;
     }
 
@@ -70,6 +91,12 @@ export default function PortfolioImageManager() {
     setAssetId((current) => current || nextAssets[0]?.id || '');
     setStatus('idle');
     requestPreviewRefresh();
+  }
+
+  function removeOverrideFromView(projectKey: string, imageSlot: string) {
+    setOverrides((currentOverrides) =>
+      currentOverrides.filter((override) => override.project_key !== projectKey || override.image_slot !== imageSlot),
+    );
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -92,42 +119,22 @@ export default function PortfolioImageManager() {
     setStatus('saving');
     setMessage('');
 
-    const { error } = await supabase.from('portfolio_image_overrides').upsert(
-      {
-        project_key: projectKey,
-        image_slot: imageSlot,
-        image_url: selectedAsset.public_url,
-        alt_th: selectedAsset.alt_th,
-        media_asset_id: selectedAsset.id,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'project_key,image_slot' },
-    );
+    const { error } = await supabase.rpc('set_portfolio_image_override', {
+      override_project_key: projectKey,
+      override_image_slot: imageSlot,
+      override_image_url: selectedAsset.public_url,
+      override_alt_th: selectedAsset.alt_th,
+      override_media_asset_id: selectedAsset.id,
+    });
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกรูปผลงานไม่สำเร็จ: ${error.message}`);
+      setMessage(formatPortfolioImageError(error));
       return;
     }
 
     setStatus('saved');
     setMessage('บันทึกรูปผลงานแล้ว');
-    await loadData();
-    requestPreviewRefresh();
-  }
-
-  async function softDeleteOverride(override: PortfolioImageOverride) {
-    const supabase = getSupabaseBrowserClient();
-
-    if (!supabase) {
-      return;
-    }
-
-    await supabase.rpc('soft_delete_portfolio_image_override', {
-      override_project_key: override.project_key,
-      override_image_slot: override.image_slot,
-      retention_days: 30,
-    });
     await loadData();
     requestPreviewRefresh();
   }
@@ -154,10 +161,55 @@ export default function PortfolioImageManager() {
       return;
     }
 
-    await supabase.rpc('hard_delete_portfolio_image_override', {
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.rpc('hard_delete_portfolio_image_override', {
       override_project_key: override.project_key,
       override_image_slot: override.image_slot,
     });
+
+    if (error) {
+      setStatus('error');
+      setMessage(formatPortfolioImageError(error));
+      return;
+    }
+
+    removeOverrideFromView(override.project_key, override.image_slot);
+    setStatus('saved');
+    setMessage('ลบการตั้งค่ารูปแล้ว');
+    await loadData();
+    requestPreviewRefresh();
+  }
+
+  async function resetHeroBackground() {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.rpc('hard_delete_portfolio_image_override', {
+      override_project_key: landingHeroBackgroundKey,
+      override_image_slot: landingHeroBackgroundSlot,
+    });
+
+    if (error) {
+      setStatus('error');
+      setMessage(formatPortfolioImageError(error));
+      return;
+    }
+
+    removeOverrideFromView(landingHeroBackgroundKey, landingHeroBackgroundSlot);
+    setStatus('saved');
+    setMessage('ตั้งค่าพื้นหลังหน้าแรกเป็นว่างแล้ว');
+    setProjectKey(landingHeroBackgroundKey);
+    setImageSlot(landingHeroBackgroundSlot);
     await loadData();
     requestPreviewRefresh();
   }
@@ -168,26 +220,34 @@ export default function PortfolioImageManager() {
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">จัดรูปผลงาน</h2>
-          <p className="mt-1 text-sm text-slate-600">เลือกรูปที่ upload แล้วไปแทนรูปหน้าปกหรือแกลเลอรีของผลงาน</p>
+          <h2 className="text-lg font-black text-[#12345f]">จัดรูปหน้าแรกและผลงาน</h2>
+          <p className="mt-1 text-sm text-slate-600">เลือกรูปที่ upload แล้วไปใช้เป็นพื้นหลังหน้าแรก รูปหน้าปก หรือแกลเลอรีของผลงาน</p>
         </div>
-        <button
-          type="button"
-          onClick={() => void loadData()}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-[#f08a24] hover:text-[#f08a24]"
-        >
-          โหลดรูปใหม่
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <ConfirmResetButton
+            title="ตั้งค่าพื้นหลังหน้าแรกเป็นว่าง"
+            description="ระบบจะยกเลิกภาพพื้นหลัง Hero และกลับไปใช้พื้นหลังเริ่มต้นของหน้าเว็บ"
+            disabled={isBusy}
+            onConfirm={resetHeroBackground}
+          />
+          <button
+            type="button"
+            onClick={() => void loadData()}
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-[#f08a24] hover:text-[#f08a24]"
+          >
+            โหลดรูปใหม่
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]" noValidate>
         <div className="space-y-4">
           <label className="block text-sm font-semibold text-slate-800">
             ผลงาน
-            <select value={projectKey} onChange={(event) => setProjectKey(event.target.value)} className={`${selectClass} mt-2`}>
-              {portfolioProjects.map((project) => (
-                <option key={portfolioProjectKey(project)} value={portfolioProjectKey(project)}>
-                  {project.title.th}
+            <select value={projectKey} onChange={(event) => selectProject(event.target.value)} className={`${selectClass} mt-2`}>
+              {projectOptions.map((project) => (
+                <option key={project.value} value={project.value}>
+                  {project.label}
                 </option>
               ))}
             </select>
@@ -197,15 +257,20 @@ export default function PortfolioImageManager() {
             ตำแหน่งรูป
             <select
               value={imageSlot}
-              onChange={(event) => setImageSlot(event.target.value as PortfolioImageSlot)}
+              onChange={(event) => setImageSlot(event.target.value as PortfolioImageAdminSlot)}
               className={`${selectClass} mt-2`}
             >
-              {imageSlots.map((slot) => (
+              {availableImageSlots.map((slot) => (
                 <option key={slot.value} value={slot.value}>
                   {slot.label}
                 </option>
               ))}
             </select>
+            {imageSlot === landingHeroBackgroundSlot ? (
+              <span className="mt-2 block text-xs font-semibold leading-relaxed text-slate-500">
+                ใช้รูปแนวนอนอย่างน้อย 2400×1100 px และเลือกภาพที่ subject อยู่กลางภาพ เพราะ Hero จะครอบเต็มจอด้วย object-cover
+              </span>
+            ) : null}
           </label>
 
           <label className="block text-sm font-semibold text-slate-800">
@@ -225,12 +290,12 @@ export default function PortfolioImageManager() {
             disabled={isBusy || !selectedAsset}
             className="w-full rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {status === 'saving' ? 'กำลังบันทึก...' : 'ใช้รูปนี้กับผลงาน'}
+            {status === 'saving' ? 'กำลังบันทึก...' : 'ใช้รูปนี้'}
           </button>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p className="text-sm font-black text-[#12345f]">{selectedProject.title.th}</p>
+          <p className="text-sm font-black text-[#12345f]">{selectedProjectLabel}</p>
           <div className="relative mt-3 flex min-h-60 items-center justify-center overflow-hidden rounded-lg bg-white">
             {selectedAsset ? (
               <Image src={selectedAsset.public_url} alt={selectedAsset.alt_th || selectedAsset.path} fill className="object-contain p-3" unoptimized />
@@ -290,13 +355,15 @@ export default function PortfolioImageManager() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => void softDeleteOverride(override)}
-                    className="mt-2 text-xs font-bold text-red-600 transition hover:text-red-700"
-                  >
-                    ลบแบบพักไว้ 30 วัน
-                  </button>
+                  <ConfirmResetButton
+                    title="ลบรูปที่ตั้งค่าไว้นี้ถาวร"
+                    description="ระบบจะลบการตั้งค่ารูปนี้ออกทันที แต่ไฟล์ต้นฉบับในคลังรูปจะยังอยู่จนกว่าจะลบจากหน้า รูปภาพเว็บไซต์"
+                    buttonLabel="ลบถาวร"
+                    confirmButtonLabel="ยืนยันลบถาวร"
+                    confirmText="ลบถาวร"
+                    variant="danger"
+                    onConfirm={() => hardDeleteOverride(override)}
+                  />
                 )}
               </article>
             ))}
@@ -308,5 +375,5 @@ export default function PortfolioImageManager() {
 }
 
 function slotLabel(slot: string) {
-  return imageSlots.find((item) => item.value === slot)?.label ?? slot;
+  return [...heroBackgroundSlots, ...portfolioImageSlots].find((item) => item.value === slot)?.label ?? slot;
 }

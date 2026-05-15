@@ -262,18 +262,34 @@ function DonutChart({ items }: { items: Array<{ label: string; count: number }> 
   const radius = 70;
   const circumference = 2 * Math.PI * radius;
   const colors = ['#0f2a5f', '#f08a24', '#1e4f8f', '#f59e0b', '#334155', '#94a3b8', '#38bdf8', '#22c55e'];
-  let offset = 0;
+  const segments = items.reduce(
+    (acc, item, index) => {
+      const value = item.count / total;
+      const length = value * circumference;
+      acc.items.push({
+        item,
+        index,
+        strokeDasharray: `${length} ${circumference - length}`,
+        strokeDashoffset: -acc.offset,
+      });
+      return { offset: acc.offset + length, items: acc.items };
+    },
+    {
+      offset: 0,
+      items: [] as Array<{
+        item: { label: string; count: number };
+        index: number;
+        strokeDasharray: string;
+        strokeDashoffset: number;
+      }>,
+    },
+  ).items;
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center">
       <svg viewBox="0 0 200 200" className="h-44 w-44">
         <circle cx="100" cy="100" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="22" />
-        {items.map((item, index) => {
-          const value = item.count / total;
-          const length = value * circumference;
-          const strokeDasharray = `${length} ${circumference - length}`;
-          const strokeDashoffset = -offset;
-          offset += length;
+        {segments.map(({ item, index, strokeDasharray, strokeDashoffset }) => {
           return (
             <circle
               key={item.label}
@@ -330,27 +346,30 @@ export default function AdminAnalyticsDashboard() {
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
-      setState({ status: 'error', message: 'ยังไม่ได้ตั้งค่า Supabase' });
+      queueMicrotask(() => setState({ status: 'error', message: 'ยังไม่ได้ตั้งค่า Supabase' }));
       return;
     }
 
     if (!rangeInfo.start || !rangeInfo.end) {
-      setState({ status: 'error', message: 'กรุณาเลือกช่วงวันที่ให้ครบ' });
+      queueMicrotask(() => setState({ status: 'error', message: 'กรุณาเลือกช่วงวันที่ให้ครบ' }));
       return;
     }
 
+    const client = supabase;
+    const start = rangeInfo.start;
+    const end = rangeInfo.end;
     let isMounted = true;
 
     async function loadEvents() {
       setState({ status: 'loading' });
 
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('web_events')
         .select(
           'event_type, path, page_url, referrer, element_tag, element_text, element_id, element_href, form_id, form_name, form_action, session_id, utm_source, utm_medium, utm_campaign, created_at'
         )
-        .gte('created_at', rangeInfo.start.toISOString())
-        .lte('created_at', rangeInfo.end.toISOString())
+        .gte('created_at', start.toISOString())
+        .lte('created_at', end.toISOString())
         .order('created_at', { ascending: false });
 
       if (!isMounted) return;

@@ -69,6 +69,8 @@ export default function FooterContent() {
               <li><a href={`mailto:${companyProfile.email}`} className="transition hover:text-[#0f2a5f]">@ {companyProfile.email}</a></li>
               <li><a href={companyProfile.lineUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">LINE {companyProfile.lineId}</a></li>
               <li><a href={companyProfile.facebookUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">Facebook {companyProfile.facebookDisplay}</a></li>
+              <li><a href={companyProfile.instagramUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">Instagram {companyProfile.instagramDisplay}</a></li>
+              <li><a href={companyProfile.tiktokUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">TikTok {companyProfile.tiktokDisplay}</a></li>
             </ul>
           </div>
         </div>

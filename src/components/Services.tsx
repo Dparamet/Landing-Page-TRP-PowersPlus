@@ -4,9 +4,13 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useServiceCategories } from '@/hooks/useServiceCategories';
 
-export default function Services() {
+const LANDING_SERVICE_LIMIT = 3;
+
+export default function Services({ showAll = false }: { showAll?: boolean }) {
   const { t, language } = useLanguage();
   const serviceCategories = useServiceCategories();
+  const visibleServices = showAll ? serviceCategories : serviceCategories.slice(0, LANDING_SERVICE_LIMIT);
+  const hasMore = serviceCategories.length > visibleServices.length;
 
   return (
     <section id="services" className="section-reveal relative z-0 bg-transparent py-16 md:py-20">
@@ -16,7 +20,7 @@ export default function Services() {
             <span className="inline-flex rounded-full border border-orange-400 bg-white px-4 py-2 text-sm font-black text-[#111827] shadow-sm">
               {t('services.eyebrow')}
             </span>
-            <h2 className="mt-5 max-w-2xl text-3xl font-black leading-[1.12] text-[#111827] sm:text-4xl md:text-5xl">
+            <h2 className="mt-5 max-w-2xl text-3xl font-black leading-[1.12] text-white sm:text-4xl md:text-5xl">
               {t('services.title')}
             </h2>
           </div>
@@ -24,7 +28,7 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {serviceCategories.map((service, index) => {
+          {visibleServices.map((service, index) => {
             const isOrange = service.accent === 'orange';
 
             return (
@@ -68,6 +72,17 @@ export default function Services() {
             );
           })}
         </div>
+
+        {hasMore ? (
+          <div className="mt-8 text-center">
+            <Link
+              href="/services"
+              className="inline-flex rounded-lg border border-[#f08a24] bg-white px-5 py-3 text-sm font-black text-[#0f2a5f] transition hover:bg-[#fff7ed] hover:text-[#d66d0c]"
+            >
+              {language === 'th' ? 'อ่านเพิ่มเติมบริการทั้งหมด' : 'View all services'}
+            </Link>
+          </div>
+        ) : null}
       </div>
     </section>
   );

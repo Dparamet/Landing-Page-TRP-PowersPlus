@@ -1,13 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { useFaqItems } from '@/hooks/useFaqItems';
 
-export default function FAQ() {
+const LANDING_FAQ_LIMIT = 6;
+
+export default function FAQ({ showAll = false }: { showAll?: boolean }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { t, language } = useLanguage();
   const faqs = useFaqItems();
+  const visibleFaqs = showAll ? faqs : faqs.slice(0, LANDING_FAQ_LIMIT);
+  const hasMore = faqs.length > visibleFaqs.length;
 
   return (
     <section id="faq" className="section-reveal bg-transparent py-20">
@@ -22,7 +27,7 @@ export default function FAQ() {
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {visibleFaqs.map((faq, index) => (
             <div
               key={index}
               className="reveal-item overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm transition-all duration-200 hover:border-[#d66d0c] hover:shadow-md"
@@ -50,6 +55,17 @@ export default function FAQ() {
             </div>
           ))}
         </div>
+
+        {hasMore ? (
+          <div className="mt-8 text-center">
+            <Link
+              href="/faq"
+              className="inline-flex rounded-lg border border-[#f08a24] bg-white px-5 py-3 text-sm font-black text-[#0f2a5f] transition hover:bg-[#fff7ed] hover:text-[#d66d0c]"
+            >
+              {language === 'th' ? 'อ่านเพิ่มเติมคำถามทั้งหมด' : 'View all questions'}
+            </Link>
+          </div>
+        ) : null}
 
         <div className="mt-16 text-center">
           <p className="mb-6 rounded-2xl bg-white px-5 py-4 text-slate-800 shadow-sm">

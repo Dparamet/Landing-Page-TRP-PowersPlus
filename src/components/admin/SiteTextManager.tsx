@@ -2,15 +2,30 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
+import ConfirmResetButton from '@/components/admin/ConfirmResetButton';
 import { createBlankSiteTextForm, mapSiteTextFormToUpsert, mapSiteTextToForm, validateSiteTextForm, type SiteTextFormValues } from '@/lib/admin/siteTexts';
+import { formatSiteTextError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { mapSiteTextRowList, type SiteText, type SiteTextRow } from '@/lib/siteTexts';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import en from '@/locales/en.json';
+import th from '@/locales/th.json';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
 const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
+
+const defaultHeroSiteTexts = [
+  { key: 'hero.eyebrow', th: th.hero.eyebrow, en: en.hero.eyebrow },
+  { key: 'hero.title', th: th.hero.title, en: en.hero.title },
+  { key: 'hero.subtitle', th: th.hero.subtitle, en: en.hero.subtitle },
+  { key: 'hero.description', th: th.hero.description, en: en.hero.description },
+  { key: 'hero.cta', th: th.hero.cta, en: en.hero.cta },
+  { key: 'hero.trust.engineers', th: th.hero.trust.engineers, en: en.hero.trust.engineers },
+  { key: 'hero.trust.warranty', th: th.hero.trust.warranty, en: en.hero.trust.warranty },
+  { key: 'hero.trust.survey', th: th.hero.trust.survey, en: en.hero.trust.survey },
+];
 
 export default function SiteTextManager() {
   const [items, setItems] = useState<SiteText[]>([]);
@@ -85,12 +100,47 @@ export default function SiteTextManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกข้อความไม่สำเร็จ: ${error.message}`);
+      setMessage(formatSiteTextError(error));
       return;
     }
 
     setStatus('saved');
     setMessage('บันทึกข้อความแล้ว รีเฟรชหน้าเว็บเพื่อดูผลล่าสุด');
+    await loadSiteTexts();
+    requestPreviewRefresh();
+  }
+
+  async function resetHeroTexts() {
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const { error } = await supabase.from('site_texts').upsert(
+      defaultHeroSiteTexts.map((item) => ({
+        key: item.key,
+        value: { th: item.th, en: item.en },
+        deleted_at: null,
+        purge_after: null,
+        updated_at: new Date().toISOString(),
+      })),
+      { onConflict: 'key' },
+    );
+
+    if (error) {
+      setStatus('error');
+      setMessage(formatSiteTextError(error));
+      return;
+    }
+
+    setStatus('saved');
+    setMessage('ตั้งค่า Hero เป็นค่าเริ่มต้นแล้ว');
     await loadSiteTexts();
     requestPreviewRefresh();
   }
@@ -102,14 +152,22 @@ export default function SiteTextManager() {
           <h2 className="text-lg font-black text-[#0f2a5f]">ข้อความหน้าเว็บ</h2>
           <p className="mt-1 text-sm text-slate-600">แก้ข้อความหลักของหน้าเว็บ เช่น Hero, Section title, Footer และ CTA</p>
         </div>
-        <button
-          type="submit"
-          form="site-text-manager-form"
-          disabled={status === 'saving' || status === 'loading'}
-          className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <ConfirmResetButton
+            title="ตั้งค่า Hero เริ่มต้น"
+            description="ระบบจะคืนข้อความ Hero, CTA และ trust badges เป็นค่าเริ่มต้นจากไฟล์ภาษา"
+            disabled={status === 'saving' || status === 'loading'}
+            onConfirm={resetHeroTexts}
+          />
+          <button
+            type="submit"
+            form="site-text-manager-form"
+            disabled={status === 'saving' || status === 'loading'}
+            className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">

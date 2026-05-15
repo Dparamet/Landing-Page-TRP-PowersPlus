@@ -10,6 +10,7 @@ import {
   validateProcessStepForm,
   type ProcessStepFormValues,
 } from '@/lib/admin/processSteps';
+import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { buildDefaultProcessSteps, mapProcessStepRows, type ProcessStep, type ProcessStepRow } from '@/lib/processSteps';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -46,7 +47,7 @@ export default function ProcessStepManager() {
 
     if (error) {
       setStatus('error');
-      setMessage('โหลดขั้นตอนทำงานไม่สำเร็จ ให้รัน migration 202605100009_site_texts_and_process_steps.sql ก่อน');
+      setMessage(formatAdminLoadError('ขั้นตอนทำงาน', 'process_steps', error));
       return;
     }
 
@@ -97,7 +98,7 @@ export default function ProcessStepManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกขั้นตอนไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminSaveError('ขั้นตอนทำงาน', 'process_steps', error));
       return;
     }
 
@@ -126,7 +127,7 @@ export default function ProcessStepManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบขั้นตอนไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบขั้นตอน', 'soft_delete_process_step', error));
       return;
     }
 
@@ -154,7 +155,7 @@ export default function ProcessStepManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`กู้คืนขั้นตอนไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('กู้คืนขั้นตอน', 'restore_process_step', error));
       return;
     }
 
@@ -182,7 +183,7 @@ export default function ProcessStepManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบถาวรขั้นตอนไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบถาวรขั้นตอน', 'hard_delete_process_step', error));
       return;
     }
 
@@ -199,8 +200,8 @@ export default function ProcessStepManager() {
           <h2 className="text-lg font-black text-[#12345f]">ขั้นตอนทำงาน</h2>
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข ลบ และซ่อนขั้นตอนใน section กระบวนการทำงาน</p>
         </div>
-        <button type="submit" form="process-step-manager-form" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
-          {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึกขั้นตอน' : 'สร้างขั้นตอน'}
+        <button type="button" onClick={startNewStep} disabled={status === 'saving'} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+          เพิ่มขั้นตอน
         </button>
       </div>
 
@@ -220,7 +221,7 @@ export default function ProcessStepManager() {
             >
               <span className="block text-sm font-bold">{item.title.th}</span>
               <span className={`mt-1 block text-xs ${values.id === item.id ? 'text-blue-100' : 'text-slate-500'}`}>
-                ลำดับ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
+                ลำดับที่ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
               </span>
             </button>
           ))}
@@ -232,7 +233,7 @@ export default function ProcessStepManager() {
           <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
           <Textarea label="คำอธิบาย ภาษาอังกฤษ" value={values.descriptionEn} onChange={(value) => updateField('descriptionEn', value)} />
           <label className="block text-sm font-semibold text-slate-800">
-            ลำดับ
+            ลำดับที่
             <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
           </label>
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
@@ -240,8 +241,8 @@ export default function ProcessStepManager() {
             แสดงบนหน้าเว็บ
           </label>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
-            <button type="button" onClick={startNewStep} disabled={status === 'saving'} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
-              เพิ่มขั้นตอน
+            <button type="submit" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกขั้นตอน'}
             </button>
             <button type="button" onClick={() => void softDeleteStep()} disabled={!values.id || status === 'saving'} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
               ลบแบบพักไว้ 30 วัน
