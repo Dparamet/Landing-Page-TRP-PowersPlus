@@ -10,6 +10,7 @@ import {
   validateFaqForm,
   type FaqFormValues,
 } from '@/lib/admin/faqs';
+import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { buildDefaultFaqItems, mapFaqRows, type FaqItem, type FaqRow } from '@/lib/faqs';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -46,7 +47,7 @@ export default function FaqManager() {
 
     if (error) {
       setStatus('error');
-      setMessage('โหลด FAQ ไม่สำเร็จ ถ้ายังไม่ได้รัน migration ให้รัน 202605100007_faq_items.sql ใน Supabase SQL Editor');
+      setMessage(formatAdminLoadError('FAQ', 'faq_items', error));
       return;
     }
 
@@ -102,7 +103,7 @@ export default function FaqManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึก FAQ ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminSaveError('FAQ', 'faq_items', error));
       return;
     }
 
@@ -133,7 +134,7 @@ export default function FaqManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบ FAQ ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบ FAQ', 'soft_delete_faq_item', error));
       return;
     }
 
@@ -163,7 +164,7 @@ export default function FaqManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`กู้คืน FAQ ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('กู้คืน FAQ', 'restore_faq_item', error));
       return;
     }
 
@@ -193,7 +194,7 @@ export default function FaqManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`ลบถาวร FAQ ไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('ลบถาวร FAQ', 'hard_delete_faq_item', error));
       return;
     }
 
@@ -204,19 +205,14 @@ export default function FaqManager() {
   }
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5">
+    <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#0f2a5f]">คำถามที่พบบ่อย</h2>
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข และซ่อนคำถามในหน้า FAQ</p>
         </div>
-        <button
-          type="submit"
-          form="faq-manager-form"
-          disabled={status === 'saving' || status === 'loading'}
-          className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d]"
-        >
-          {status === 'saving' ? 'กำลังบันทึก...' : values.id ? 'บันทึก FAQ' : 'สร้าง FAQ'}
+        <button type="button" onClick={startNewFaq} disabled={status === 'saving'} className="rounded-lg bg-[#0f2a5f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#061a3d] disabled:cursor-not-allowed disabled:opacity-60">
+          เพิ่มคำถาม
         </button>
       </div>
 
@@ -238,7 +234,7 @@ export default function FaqManager() {
               >
                 <span className="block text-sm font-bold">{item.question.th}</span>
                 <span className={`mt-1 block text-xs ${values.id === item.id ? 'text-blue-100' : 'text-slate-500'}`}>
-                  ลำดับ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
+                  ลำดับที่ {item.sortOrder} · {item.deletedAt ? `ถังพัก ลบจริงหลัง ${item.purgeAfter ?? '-'}` : item.published ? 'แสดงอยู่' : 'ซ่อนอยู่'}
                 </span>
               </button>
             ))
@@ -251,7 +247,7 @@ export default function FaqManager() {
           <Textarea label="คำตอบ ภาษาไทย" value={values.answerTh} onChange={(value) => updateField('answerTh', value)} />
           <Textarea label="คำตอบ ภาษาอังกฤษ" value={values.answerEn} onChange={(value) => updateField('answerEn', value)} />
           <label className="block text-sm font-semibold text-slate-800">
-            ลำดับ
+            ลำดับที่
             <input
               type="number"
               min="0"
@@ -270,13 +266,8 @@ export default function FaqManager() {
             แสดงบนหน้าเว็บ
           </label>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
-            <button
-              type="button"
-              onClick={startNewFaq}
-              disabled={status === 'saving'}
-              className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              เพิ่มคำถาม
+            <button type="submit" disabled={status === 'saving' || status === 'loading'} className="rounded-lg bg-[#0f2a5f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#061a3d] disabled:cursor-not-allowed disabled:opacity-60">
+              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกคำถาม'}
             </button>
             <button
               type="button"

@@ -227,7 +227,7 @@ export type Database = {
           alt_th: string;
           created_at: string | null;
           deleted_at: string | null;
-          image_slot: 'cover' | 'before' | 'during' | 'after';
+          image_slot: 'cover' | 'before' | 'during' | 'after' | 'hero_background';
           image_url: string;
           media_asset_id: string | null;
           project_key: string;
@@ -238,7 +238,7 @@ export type Database = {
           alt_th?: string;
           created_at?: string | null;
           deleted_at?: string | null;
-          image_slot: 'cover' | 'before' | 'during' | 'after';
+          image_slot: 'cover' | 'before' | 'during' | 'after' | 'hero_background';
           image_url: string;
           media_asset_id?: string | null;
           project_key: string;
@@ -249,7 +249,7 @@ export type Database = {
           alt_th?: string;
           created_at?: string | null;
           deleted_at?: string | null;
-          image_slot?: 'cover' | 'before' | 'during' | 'after';
+          image_slot?: 'cover' | 'before' | 'during' | 'after' | 'hero_background';
           image_url?: string;
           media_asset_id?: string | null;
           project_key?: string;
@@ -356,6 +356,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      web_events: {
+        Row: {
+          created_at: string | null;
+          element_href: string | null;
+          element_id: string | null;
+          element_tag: string | null;
+          element_text: string | null;
+          event_type: 'page_view' | 'click' | 'form_submit';
+          form_action: string | null;
+          form_id: string | null;
+          form_name: string | null;
+          id: string;
+          metadata: Json;
+          page_url: string;
+          path: string;
+          referrer: string | null;
+          session_id: string | null;
+          user_agent: string | null;
+          utm_campaign: string | null;
+          utm_medium: string | null;
+          utm_source: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          element_href?: string | null;
+          element_id?: string | null;
+          element_tag?: string | null;
+          element_text?: string | null;
+          event_type: 'page_view' | 'click' | 'form_submit';
+          form_action?: string | null;
+          form_id?: string | null;
+          form_name?: string | null;
+          id?: string;
+          metadata?: Json;
+          page_url: string;
+          path: string;
+          referrer?: string | null;
+          session_id?: string | null;
+          user_agent?: string | null;
+          utm_campaign?: string | null;
+          utm_medium?: string | null;
+          utm_source?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          element_href?: string | null;
+          element_id?: string | null;
+          element_tag?: string | null;
+          element_text?: string | null;
+          event_type?: 'page_view' | 'click' | 'form_submit';
+          form_action?: string | null;
+          form_id?: string | null;
+          form_name?: string | null;
+          id?: string;
+          metadata?: Json;
+          page_url?: string;
+          path?: string;
+          referrer?: string | null;
+          session_id?: string | null;
+          user_agent?: string | null;
+          utm_campaign?: string | null;
+          utm_medium?: string | null;
+          utm_source?: string | null;
+        };
+        Relationships: [];
+      };
       site_settings: {
         Row: {
           address: string;
@@ -366,11 +432,15 @@ export type Database = {
           google_maps_embed_url: string;
           google_maps_search_url: string;
           id: boolean;
+          instagram_display: string;
+          instagram_url: string;
           line_id: string;
           line_url: string;
           name: string;
           phone_display: string;
           phone_href: string;
+          tiktok_display: string;
+          tiktok_url: string;
           updated_at: string | null;
         };
         Insert: {
@@ -382,11 +452,15 @@ export type Database = {
           google_maps_embed_url?: string;
           google_maps_search_url?: string;
           id?: boolean;
+          instagram_display?: string;
+          instagram_url?: string;
           line_id?: string;
           line_url?: string;
           name?: string;
           phone_display?: string;
           phone_href?: string;
+          tiktok_display?: string;
+          tiktok_url?: string;
           updated_at?: string | null;
         };
         Update: {
@@ -398,11 +472,15 @@ export type Database = {
           google_maps_embed_url?: string;
           google_maps_search_url?: string;
           id?: boolean;
+          instagram_display?: string;
+          instagram_url?: string;
           line_id?: string;
           line_url?: string;
           name?: string;
           phone_display?: string;
           phone_href?: string;
+          tiktok_display?: string;
+          tiktok_url?: string;
           updated_at?: string | null;
         };
         Relationships: [];
@@ -487,6 +565,20 @@ export type Database = {
       };
       hard_delete_portfolio_image_override: {
         Args: { override_project_key: string; override_image_slot: string };
+        Returns: undefined;
+      };
+      hard_delete_media_asset: {
+        Args: { asset_id: string };
+        Returns: undefined;
+      };
+      set_portfolio_image_override: {
+        Args: {
+          override_project_key: string;
+          override_image_slot: string;
+          override_image_url: string;
+          override_alt_th: string;
+          override_media_asset_id?: string | null;
+        };
         Returns: undefined;
       };
       restore_portfolio_image_override: {

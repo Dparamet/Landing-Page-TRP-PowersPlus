@@ -306,11 +306,11 @@ npm run build
 
 ## สถานะล่าสุด
 
-- Last updated: May 12, 2026
+- Last updated: May 15, 2026
 - Maintained for: TRP Powers Plus
 - Project type: Static Next.js landing page
-- Current branch: `main` (13 commits ahead of origin/main)
-- Development branch: `dev` (synced with main)
+- Current branch: `main` (active)
+- Development branch: `dev` (available)
 
 ### ความเปลี่ยนแปลงล่าสุด (May 2026)
 

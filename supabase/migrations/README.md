@@ -13,6 +13,15 @@ Run these files in order when creating or updating a Supabase database.
 9. `202605100009_site_texts_and_process_steps.sql`
 10. `202605100010_soft_delete_content_tables.sql`
 11. `202605100011_contact_items.sql`
+12. `202605130001_web_events.sql`
+13. `202605150001_landing_hero_background_image.sql`
+14. `202605150002_explicit_admin_and_media_hard_delete.sql`
+15. `202605150003_harden_media_and_hero_delete.sql`
+16. `202605150004_set_portfolio_image_override_rpc.sql`
+17. `202605150005_repair_admin_rpc_permissions.sql`
+18. `202605150006_social_links_and_admin_policy_repair.sql`
+19. `202605150007_drop_legacy_is_admin_noarg.sql`
+20. `202605150008_media_delete_storage_api.sql`
 
 Rules:
 

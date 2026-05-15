@@ -37,8 +37,13 @@ export function usePortfolioProjects() {
         return;
       }
 
-      const databaseProjects = ((projectRows as PortfolioProjectRow[] | null) ?? []).map(mapPortfolioProjectRowToProject);
-      const mergedProjects = [...staticPortfolioProjects, ...databaseProjects];
+      const databaseRows = (projectRows as PortfolioProjectRow[] | null) ?? [];
+      const databaseSlugs = new Set(databaseRows.map((row) => row.slug));
+      const databaseProjects = databaseRows.map(mapPortfolioProjectRowToProject);
+      const mergedProjects = [
+        ...staticPortfolioProjects.filter((project) => !databaseSlugs.has(slugifyPortfolioTitle(project.title.en))),
+        ...databaseProjects,
+      ];
 
       setProjects(applyPortfolioImageOverrides(mergedProjects, (overrideRows as PortfolioImageOverride[] | null) ?? []));
     }
@@ -51,4 +56,14 @@ export function usePortfolioProjects() {
   }, []);
 
   return projects;
+}
+
+function slugifyPortfolioTitle(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
 }

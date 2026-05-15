@@ -14,6 +14,7 @@ import {
   type ContactItemRow,
   type ContactItemView,
 } from '@/lib/admin/contactItems';
+import { formatAdminLoadError, formatAdminRpcError, formatContactItemError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { defaultCompanyProfile } from '@/lib/companyProfile';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -43,7 +44,7 @@ export default function ContactItemManager() {
 
     if (error) {
       setStatus('error');
-      setMessage('โหลดช่องทางติดต่อไม่สำเร็จ ให้รัน migration 202605100011_contact_items.sql ก่อน');
+      setMessage(formatAdminLoadError('ช่องทางติดต่อ', 'contact_items', error));
       return;
     }
 
@@ -107,7 +108,7 @@ export default function ContactItemManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกช่องทางติดต่อไม่สำเร็จ: ${error.message}`);
+      setMessage(formatContactItemError(error));
       return;
     }
 
@@ -133,7 +134,7 @@ export default function ContactItemManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`จัดการช่องทางติดต่อไม่สำเร็จ: ${error.message}`);
+      setMessage(formatAdminRpcError('จัดการช่องทางติดต่อ', fn, error));
       return;
     }
 
@@ -147,14 +148,14 @@ export default function ContactItemManager() {
   const isBusy = status === 'loading' || status === 'saving';
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5">
+    <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">ช่องทางติดต่อ</h2>
           <p className="mt-1 text-sm text-slate-600">เพิ่ม แก้ไข เรียงลำดับ ซ่อน และลบรายการติดต่อที่แสดงในหน้าเว็บ</p>
         </div>
-        <button type="submit" form="contact-item-form" disabled={isBusy} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
-          {status === 'saving' ? 'กำลังบันทึก...' : values.databaseId ? 'บันทึกรายการ' : 'สร้างรายการ'}
+        <button type="button" onClick={startNewItem} disabled={isBusy} className="rounded-lg bg-[#12345f] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+          เพิ่มรายการ
         </button>
       </div>
 
@@ -182,7 +183,7 @@ export default function ContactItemManager() {
           <label className="block text-sm font-semibold text-slate-800">
             Icon
             <select value={values.icon} onChange={(event) => updateField('icon', event.target.value)} className={`${inputClass} mt-2`}>
-              {['company', 'phone', 'line', 'facebook', 'email', 'address', 'custom'].map((icon) => (
+              {['company', 'phone', 'line', 'facebook', 'instagram', 'tiktok', 'email', 'address', 'custom'].map((icon) => (
                 <option key={icon} value={icon}>
                   {icon}
                 </option>
@@ -196,7 +197,7 @@ export default function ContactItemManager() {
           <Field label="ลิงก์เปิด" value={values.href} onChange={(value) => updateField('href', value)} />
           <Field label="ค่าที่ใช้ copy" value={values.copyValue} onChange={(value) => updateField('copyValue', value)} />
           <label className="block text-sm font-semibold text-slate-800">
-            ลำดับ
+            ลำดับที่
             <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
           </label>
           <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -210,8 +211,8 @@ export default function ContactItemManager() {
             </label>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row md:col-span-2">
-            <button type="button" onClick={startNewItem} disabled={isBusy} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
-              เพิ่มรายการ
+            <button type="submit" disabled={isBusy} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
+              {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกรายการ'}
             </button>
             <button type="button" onClick={() => void callItemRpc('soft_delete_contact_item', 'ย้ายช่องทางติดต่อไปถังพักแล้ว')} disabled={!values.databaseId || isBusy} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
               ลบแบบพักไว้ 30 วัน

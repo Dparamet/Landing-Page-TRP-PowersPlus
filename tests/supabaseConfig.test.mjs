@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 
 import { getSupabasePublicConfig, hasSupabasePublicConfig } from '../src/lib/supabase/config.ts';
@@ -29,5 +30,12 @@ describe('Supabase public config', () => {
         }),
       /valid HTTPS URL/,
     );
+  });
+
+  it('persists admin auth sessions across browser refreshes', async () => {
+    const clientSource = await readFile('src/lib/supabase/client.ts', 'utf8');
+
+    assert.match(clientSource, /persistSession:\s*true/);
+    assert.match(clientSource, /autoRefreshToken:\s*true/);
   });
 });

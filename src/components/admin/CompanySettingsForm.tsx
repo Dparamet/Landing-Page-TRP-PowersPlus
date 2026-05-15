@@ -115,7 +115,7 @@ export default function CompanySettingsForm() {
   const isBusy = status === 'loading' || status === 'saving';
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-[#f08a24] bg-white p-5" noValidate>
+    <form onSubmit={handleSubmit} className="admin-card rounded-lg border border-[#f08a24] bg-white p-5" noValidate>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-black text-[#12345f]">ข้อมูลบริษัท</h2>
@@ -147,6 +147,28 @@ export default function CompanySettingsForm() {
           type="url"
           value={values.facebookUrl}
           onChange={(value) => updateField('facebookUrl', value)}
+        />
+        <Field
+          label="ชื่อ Instagram"
+          value={values.instagramDisplay}
+          onChange={(value) => updateField('instagramDisplay', value)}
+        />
+        <Field
+          label="Instagram URL"
+          type="url"
+          value={values.instagramUrl}
+          onChange={(value) => updateField('instagramUrl', value)}
+        />
+        <Field
+          label="ชื่อ TikTok"
+          value={values.tiktokDisplay}
+          onChange={(value) => updateField('tiktokDisplay', value)}
+        />
+        <Field
+          label="TikTok URL"
+          type="url"
+          value={values.tiktokUrl}
+          onChange={(value) => updateField('tiktokUrl', value)}
         />
         <Field
           label="Google Maps URL"

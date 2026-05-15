@@ -22,6 +22,8 @@ type PortfolioStageImage = {
   alt: LocalizedText;
 };
 
+const POSTGRES_INTEGER_MAX = 2147483647;
+
 export type PortfolioProjectView = {
   title: LocalizedText;
   categoryKey: ServiceCategoryKey;
@@ -53,6 +55,7 @@ export type PortfolioProjectInsert = Database['public']['Tables']['portfolio_pro
 
 export type PortfolioPostFormValues = {
   id: string;
+  slug: string;
   titleTh: string;
   titleEn: string;
   categoryKey: ServiceCategoryKey;
@@ -77,6 +80,7 @@ export type PortfolioPostValidationResult =
 
 export const defaultPortfolioPostFormValues: PortfolioPostFormValues = {
   id: '',
+  slug: '',
   titleTh: '',
   titleEn: '',
   categoryKey: 'solar',
@@ -167,6 +171,7 @@ export function validatePortfolioPost(values: PortfolioPostFormValues): Portfoli
   const trimmed: PortfolioPostFormValues = {
     ...values,
     id: values.id.trim(),
+    slug: values.slug.trim(),
     titleTh: values.titleTh.trim(),
     titleEn: values.titleEn.trim(),
     descriptionTh: values.descriptionTh.trim(),
@@ -193,6 +198,10 @@ export function validatePortfolioPost(values: PortfolioPostFormValues): Portfoli
     return { ok: false, message: 'กรุณากรอก metric หลักอย่างน้อย 1 ค่า' };
   }
 
+  if (!Number.isInteger(trimmed.sortOrder) || trimmed.sortOrder < 0 || trimmed.sortOrder > POSTGRES_INTEGER_MAX) {
+    return { ok: false, message: 'ลำดับต้องเป็นเลขจำนวนเต็ม 0 ถึง 2147483647' };
+  }
+
   return { ok: true, value: trimmed };
 }
 
@@ -205,7 +214,7 @@ export function mapPortfolioPostFormToInsert(values: PortfolioPostFormValues): P
   };
 
   return {
-    slug: slugify(values.titleEn) || `${values.categoryKey}-${Date.now()}`,
+    slug: values.slug || slugify(values.titleEn) || `${values.categoryKey}-${Date.now()}`,
     category_key: values.categoryKey,
     title,
     description: localized(values.descriptionTh, values.descriptionEn),
@@ -215,7 +224,7 @@ export function mapPortfolioPostFormToInsert(values: PortfolioPostFormValues): P
     accent: values.accent,
     published: values.published,
     gallery: [],
-    sort_order: values.sortOrder || Date.now(),
+    sort_order: values.sortOrder,
   };
 }
 
@@ -245,6 +254,7 @@ export function mapPortfolioProjectRowToForm(row: PortfolioProjectRow): Portfoli
 
   return {
     id: row.id,
+    slug: row.slug,
     titleTh: title.th,
     titleEn: title.en,
     categoryKey: row.category_key,
@@ -261,6 +271,31 @@ export function mapPortfolioProjectRowToForm(row: PortfolioProjectRow): Portfoli
     accent: row.accent,
     sortOrder: row.sort_order,
     published: row.published,
+  };
+}
+
+export function mapPortfolioProjectViewToForm(project: PortfolioProjectView): PortfolioPostFormValues {
+  const [metric] = project.metrics;
+
+  return {
+    id: '',
+    slug: slugify(project.title.en) || slugify(project.title.th),
+    titleTh: project.title.th,
+    titleEn: project.title.en,
+    categoryKey: project.categoryKey,
+    descriptionTh: project.description.th,
+    descriptionEn: project.description.en,
+    systemTypeTh: project.systemType.th,
+    systemTypeEn: project.systemType.en,
+    locationTh: project.location.th,
+    locationEn: project.location.en,
+    metricLabelTh: metric?.label.th ?? 'ขอบเขตงาน',
+    metricLabelEn: metric?.label.en ?? 'Scope',
+    metricValueTh: metric?.value.th ?? '',
+    metricValueEn: metric?.value.en ?? '',
+    accent: project.accent,
+    sortOrder: 0,
+    published: true,
   };
 }
 
