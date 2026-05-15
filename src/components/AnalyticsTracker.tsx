@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useCookieConsent } from '@/context/CookieConsentContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { Database } from '@/lib/supabase/database.types';
 
 const SESSION_STORAGE_KEY = 'trp-analytics-session';
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
@@ -81,7 +80,10 @@ async function sendEvent(payload: AnalyticsEventPayload) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
-  await supabase.from('web_events').insert(payload);
+  const { error } = await supabase.from('web_events').insert(payload);
+  if (error) {
+    console.error('[Analytics] Failed to send event:', error);
+  }
 }
 
 export default function AnalyticsTracker() {

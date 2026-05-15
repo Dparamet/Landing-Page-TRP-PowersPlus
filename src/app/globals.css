@@ -46,26 +46,56 @@ h3 {
 
 html {
   scroll-padding-top: 88px;
+  scroll-behavior: smooth;
 }
 
 ::selection {
   background: rgba(245, 158, 11, 0.24);
 }
 
+/* ============================================
+   SMOOTH SCROLLING & SCROLLBAR
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(240, 138, 36, 0.4);
+  border-radius: 4px;
+  transition: background 200ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(240, 138, 36, 0.7);
+}
+
 .site-background {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: visible;
   background: #f8fafc;
 }
 
 .site-background > nav {
   border-bottom-color: rgba(226, 232, 240, 0.92);
-  background-color: #ffffff;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
 }
 
 .site-background > nav :where(a, button, div) {
@@ -73,7 +103,7 @@ html {
 }
 
 .site-background > nav :where(a:hover, button:hover) {
-  color: #b85c00;
+  color: #f08a24;
 }
 
 .site-background > nav button[aria-label] span {
@@ -88,7 +118,7 @@ html {
   content: none;
 }
 
-.site-background > * {
+.site-background > *:not(nav) {
   position: relative;
   z-index: 1;
 }
@@ -380,15 +410,237 @@ html {
 
 .section-reveal,
 .reveal-item {
-  animation: none;
+  opacity: 0.46;
+  transform: translate3d(0, 30px, 0) scale(0.992);
+  filter: saturate(0.95);
+  transition: opacity 760ms cubic-bezier(0.22, 1, 0.36, 1), transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 760ms ease, box-shadow 760ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
+.section-reveal.reveal-from-top,
+.reveal-item.reveal-from-top {
+  transform: translate3d(0, -30px, 0) scale(1.004);
+}
+
+.section-reveal.reveal-from-bottom,
+.reveal-item.reveal-from-bottom {
+  transform: translate3d(0, 30px, 0) scale(0.992);
+}
+
+.section-reveal.is-visible,
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: saturate(1);
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(1) {
+  transition-delay: 20ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(2) {
+  transition-delay: 60ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(3) {
+  transition-delay: 100ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(4) {
+  transition-delay: 140ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(5) {
+  transition-delay: 180ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(6) {
+  transition-delay: 220ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(7) {
+  transition-delay: 260ms;
+}
+
+.site-background > :where(section, footer).section-reveal:nth-of-type(8) {
+  transition-delay: 300ms;
+}
+
+.section-reveal.is-visible.reveal-from-top {
+  z-index: 2;
+  box-shadow: 0 -8px 24px rgba(15, 42, 95, 0.12);
+}
+
+.site-background :where(button, [role='button'], a.inline-flex, a[class*='rounded']) {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 220ms ease;
+  transform-origin: center;
+}
+
+.site-background :where(button, [role='button'], a.inline-flex, a[class*='rounded']):hover {
+  transform: translateY(-2px) scale(1.01);
+  filter: saturate(1.03);
+  box-shadow: 0 10px 18px rgba(15, 42, 95, 0.16);
+}
+
+.site-background :where(button, [role='button'], a.inline-flex, a[class*='rounded']):active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: 0 3px 9px rgba(15, 42, 95, 0.14);
+}
+
+/* ============================================
+   ENHANCED ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+/* Navbar smooth transitions */
+nav {
+  transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+nav a {
+  transition: color 280ms ease, text-shadow 280ms ease;
+}
+
+nav a::after {
+  transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Card and article smooth hover effects */
+article, [class*='card'], .group {
+  transition: all 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Image smooth transitions */
+img {
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 300ms ease,
+              opacity 300ms ease;
+}
+
+/* Input and form transitions */
+input, select, textarea {
+  transition: border-color 240ms ease, 
+              box-shadow 240ms ease,
+              background-color 240ms ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  transition: border-color 240ms ease, 
+              box-shadow 240ms ease;
+}
+
+/* Link smooth hover animations */
+a {
+  transition: color 240ms ease, 
+              opacity 240ms ease,
+              transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modal and dropdown animations */
+@keyframes smoothFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes smoothFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Micro-interaction for hamburger menu */
+button[aria-expanded] span {
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 240ms ease;
+}
+
+/* Smooth label transitions */
+label {
+  transition: color 240ms ease, 
+              transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Service card enhanced hover */
+.group article:hover img {
+  transform: scale(1.02);
+}
+
+/* Reveal items with stagger */
 .reveal-delay-1 {
   animation-delay: 90ms;
 }
 
 .reveal-delay-2 {
   animation-delay: 180ms;
+}
+
+.reveal-delay-3 {
+  animation-delay: 270ms;
+}
+
+.reveal-delay-4 {
+  animation-delay: 360ms;
+}
+
+.reveal-delay-5 {
+  animation-delay: 450ms;
 }
 
 @keyframes reveal-up {
@@ -402,16 +654,77 @@ html {
   }
 }
 
+@keyframes reveal-down {
+  from {
+    opacity: 0;
+    transform: translateY(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Text fade in animations */
+.fade-in-text {
+  animation: fadeInText 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Portfolio slide animations */
 .portfolio-slide {
   will-change: auto;
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .portfolio-slide-next {
-  animation: none;
+  animation: portfolioSlideNext 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .portfolio-slide-previous {
-  animation: none;
+  animation: portfolioSlidePrevious 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes portfolioSlideNext {
+  from {
+    opacity: 0.55;
+    transform: translateX(42px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes portfolioSlidePrevious {
+  from {
+    opacity: 0.55;
+    transform: translateX(-42px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
 @keyframes portfolio-slide-next {
@@ -433,6 +746,215 @@ html {
   to {
     opacity: 1;
     transform: translateX(0) scale(1);
+  }
+}
+
+/* ============================================
+   GLASSMORPHISM EFFECTS
+   ============================================ */
+
+/* Premium glass card effect - subtle frosted glass look */
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 16px 42px rgba(15, 42, 95, 0.14);
+}
+
+/* Glass panel - slightly more transparent */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark glass effect for blue backgrounds */
+.glass-dark {
+  background: rgba(15, 42, 95, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-dark:hover {
+  background: rgba(15, 42, 95, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Glass accent border - subtle highlight */
+.glass-border {
+  border: 1px solid rgba(240, 138, 36, 0.25);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-border:hover {
+  border-color: rgba(240, 138, 36, 0.45);
+}
+
+/* Navbar glass effect */
+.glass-navbar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  border-bottom-color: rgba(226, 232, 240, 0.8);
+  box-shadow: 0 12px 32px rgba(15, 42, 95, 0.12);
+}
+
+/* Floating glass panel - for floating elements */
+.glass-float {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-float:hover {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.12);
+}
+
+/* Glass button */
+.glass-button {
+  background: rgba(240, 138, 36, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(240, 138, 36, 0.4);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-button:hover {
+  background: rgba(240, 138, 36, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(240, 138, 36, 0.6);
+  box-shadow: 0 8px 24px rgba(240, 138, 36, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Glass accordion item */
+.glass-accordion {
+  background: rgba(255, 255, 255, 0.87);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+  border: 1px solid rgba(240, 138, 36, 0.2);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-accordion:hover {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-color: rgba(240, 138, 36, 0.35);
+  box-shadow: 0 8px 28px rgba(15, 42, 95, 0.1);
+}
+
+.glass-accordion.active {
+  background: rgba(255, 247, 237, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: rgba(240, 138, 36, 0.4);
+}
+
+/* Glass section header */
+.glass-header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-header:hover {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(226, 232, 240, 0.6);
+}
+
+/* Subtle glass overlay */
+.glass-overlay {
+  background: rgba(15, 42, 95, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 300ms ease;
+}
+
+.glass-overlay:hover {
+  background: rgba(15, 42, 95, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Responsive adjustments for glass effects */
+@media (max-width: 768px) {
+  .glass-card,
+  .glass-panel,
+  .glass-dark,
+  .glass-float,
+  .glass-accordion,
+  .glass-header {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .glass-card:hover,
+  .glass-panel:hover,
+  .glass-dark:hover,
+  .glass-float:hover,
+  .glass-accordion:hover,
+  .glass-header:hover {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .glass-panel,
+  .glass-dark,
+  .glass-button,
+  .glass-accordion,
+  .glass-header,
+  .glass-float,
+  .glass-overlay {
+    transition: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 

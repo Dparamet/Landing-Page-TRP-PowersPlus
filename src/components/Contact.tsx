@@ -81,32 +81,32 @@ export default function Contact({ showAll = false }: { showAll?: boolean }) {
         </p>
 
         <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="reveal-item overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">
+          <div className="reveal-item glass-card overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">
             <div className="border-b border-[#f08a24] p-5">
               <h3 className="text-lg font-black text-[#0f2a5f]">{t('contact.title')}</h3>
               <p className="mt-1 text-sm text-slate-600">{t('contact.description')}</p>
             </div>
             <div className="grid divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-1 lg:divide-x-0 lg:divide-y">
-              {visibleContactItems.map((contact) => (
-                <div key={contact.id} className="group flex min-h-20 items-center gap-3 p-3 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#e3f2fd]">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd] text-center transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:bg-white">
+              {contactItems.map((contact) => (
+                <div key={contact.id} className="group flex min-h-20 items-center gap-3 p-3 transition-all duration-300 ease-out hover:bg-[#e3f2fd] hover:translate-x-1">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd] text-center transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:bg-white group-hover:shadow-md">
                     {renderIcon(contact.icon)}
                   </div>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 transition-all duration-300">
                     <span className="block text-xs font-bold text-[#182230]">{contact.label[language]}</span>
-                    <span className="mt-0.5 block truncate text-sm font-semibold text-[#f08a24]">
+                    <span className="mt-0.5 block truncate text-sm font-semibold text-[#f08a24] transition-colors duration-300">
                       {contact.value[language]}
                     </span>
                   </div>
 
-                  <div className="flex shrink-0 gap-1.5">
+                  <div className="flex shrink-0 gap-1.5 transition-all duration-300">
                     {contact.href && (
                       <a
                         href={contact.href}
                         target={contact.external ? '_blank' : undefined}
                         rel={contact.external ? 'noopener noreferrer' : undefined}
-                        className="rounded-md bg-[#0f2a5f] px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-[#1e4f8f] hover:shadow-md active:translate-y-0"
+                        className="rounded-md bg-[#0f2a5f] px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#1e4f8f] hover:shadow-md active:translate-y-0"
                         aria-label={`${t('contact.open')} ${contact.label[language]}`}
                       >
                         {t('contact.open')}
@@ -116,7 +116,7 @@ export default function Contact({ showAll = false }: { showAll?: boolean }) {
                       <button
                         type="button"
                         onClick={() => copyContact(contact.type, contact.copyValue)}
-                        className="rounded-md border border-[#f08a24] px-2.5 py-1.5 text-xs font-bold text-[#0f2a5f] transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-[#d66d0c] hover:bg-[#fff7ed] hover:text-[#d66d0c] active:translate-y-0"
+                        className="rounded-md border border-[#f08a24] px-2.5 py-1.5 text-xs font-bold text-[#0f2a5f] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[#d66d0c] hover:bg-[#fff7ed] hover:text-[#d66d0c] active:translate-y-0"
                         aria-label={`${t('contact.copy')} ${contact.label[language]}`}
                       >
                         {copiedType === contact.type ? t('contact.copied') : t('contact.copy')}
@@ -138,7 +138,7 @@ export default function Contact({ showAll = false }: { showAll?: boolean }) {
             ) : null}
           </div>
 
-          <div className="reveal-item overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">
+          <div className="reveal-item glass-card overflow-hidden rounded-lg border border-[#f08a24] bg-white shadow-sm">
             <div className="border-b border-[#f08a24] p-5">
               <h3 className="text-lg font-black text-[#0f2a5f]">{t('contact.mapTitle')}</h3>
             </div>

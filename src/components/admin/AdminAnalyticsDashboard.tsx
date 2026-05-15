@@ -350,6 +350,8 @@ export default function AdminAnalyticsDashboard() {
       return;
     }
 
+   
+
     if (!rangeInfo.start || !rangeInfo.end) {
       queueMicrotask(() => setState({ status: 'error', message: 'กรุณาเลือกช่วงวันที่ให้ครบ' }));
       return;
@@ -358,6 +360,8 @@ export default function AdminAnalyticsDashboard() {
     const client = supabase;
     const start = rangeInfo.start;
     const end = rangeInfo.end;
+ 
+
     let isMounted = true;
 
     async function loadEvents() {
