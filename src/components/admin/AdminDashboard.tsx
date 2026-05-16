@@ -50,7 +50,7 @@ const adminSections: Array<{
   { key: 'logo', label: 'โลโก้', description: 'แก้รูปโลโก้หลักของเว็บไซต์', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#contact' },
   { key: 'texts', label: 'ข้อความ', description: 'หัวข้อและ copy หลัก', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#hero' },
   { key: 'services', label: 'บริการ', description: 'การ์ดและข้อมูลเตรียมงาน', landingPreviewPath: '/', landingPreviewHash: '#services', detailsPreviewPath: '/services', detailsPreviewHash: '#services' },
-  { key: 'standards', label: 'มาตรฐาน', description: 'รูป hover และมาตรฐานงาน', landingPreviewPath: '/', landingPreviewHash: '#standards', detailsPreviewPath: '/', detailsPreviewHash: '#standards' },
+  { key: 'standards', label: 'พาร์ทเนอร์/ลูกค้า', description: 'โลโก้และรูป hover ของพาร์ทเนอร์หรือลูกค้าที่เคยใช้บริการ', landingPreviewPath: '/', landingPreviewHash: '#standards', detailsPreviewPath: '/', detailsPreviewHash: '#standards' },
   { key: 'portfolioPosts', label: 'ผลงาน', description: 'ข้อมูลโครงการ', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'portfolioImages', label: 'รูปผลงาน', description: 'หน้าปกและ gallery', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'media', label: 'คลังรูป', description: 'อัปโหลดรูป', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },

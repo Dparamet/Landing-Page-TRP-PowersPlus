@@ -8,16 +8,16 @@ import { useStandardItems } from '@/hooks/useStandardItems';
 
 const sectionCopy = {
   th: {
-    title: 'มาตรฐานและเทคโนโลยี',
+    title: 'พาร์ทเนอร์และลูกค้าที่ไว้วางใจ',
     description:
-      'เป็นผู้นำในการผลิตและจำหน่ายสินค้านวัตกรรม เพื่องานก่อสร้าง ซ่อมแซม และตกแต่งด้วยมาตรฐานอเมริกา และมาตรฐานสากลนำมาซึ่งความพึงพอใจของผู้บริโภค',
+      'รวมพาร์ทเนอร์และลูกค้าที่เคยเลือกใช้บริการของเรา ตั้งแต่งานบ้านพักอาศัย อาคารพาณิชย์ ไปจนถึงโครงการธุรกิจที่ต้องการระบบไฟฟ้าและพลังงานแสงอาทิตย์ที่ตรวจสอบได้',
     previous: 'เลื่อนรูปไปทางซ้าย',
     next: 'เลื่อนรูปไปทางขวา',
   },
   en: {
-    title: 'Standards and Technology',
+    title: 'Trusted Partners and Clients',
     description:
-      'We bring proven standards and modern construction technology into installation, repair, and finishing work for consistent quality and customer confidence.',
+      'A selection of partners and clients who have trusted our electrical and solar services across homes, commercial buildings, and business projects that need accountable delivery.',
     previous: 'Scroll images left',
     next: 'Scroll images right',
   },

@@ -97,7 +97,7 @@ export default function StandardItemManager() {
 
     if (assetError || itemError) {
       setStatus('error');
-      setMessage('โหลดรูปหรือรายการมาตรฐานไม่สำเร็จ ตรวจสอบ migration ล่าสุด');
+      setMessage('โหลดรูปหรือรายการพาร์ทเนอร์/ลูกค้าไม่สำเร็จ ตรวจสอบ migration ล่าสุด');
       return;
     }
 
@@ -159,7 +159,7 @@ export default function StandardItemManager() {
 
       if (!fallbackResult.error) {
         setStatus('saved');
-        setMessage('บันทึกรายการมาตรฐานแล้ว แต่ยังไม่บันทึกรูป hover เพราะฐานข้อมูลยังไม่ได้รัน migration hover_image_url');
+        setMessage('บันทึกรายการพาร์ทเนอร์/ลูกค้าแล้ว แต่ยังไม่บันทึกรูป hover เพราะฐานข้อมูลยังไม่ได้รัน migration hover_image_url');
         setForm(normalizeForm(defaultForm));
         setAssetId('');
         setHoverAssetId('');
@@ -171,12 +171,12 @@ export default function StandardItemManager() {
 
     if (error) {
       setStatus('error');
-      setMessage(`บันทึกรายการมาตรฐานไม่สำเร็จ: ${error.message}`);
+      setMessage(`บันทึกรายการพาร์ทเนอร์/ลูกค้าไม่สำเร็จ: ${error.message}`);
       return;
     }
 
     setStatus('saved');
-    setMessage('บันทึกรายการมาตรฐานแล้ว');
+    setMessage('บันทึกรายการพาร์ทเนอร์/ลูกค้าแล้ว');
     setForm(normalizeForm(defaultForm));
     setAssetId('');
     setHoverAssetId('');
@@ -227,8 +227,8 @@ export default function StandardItemManager() {
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-black text-[#12345f]">มาตรฐานและเทคโนโลยี</h2>
-          <p className="mt-1 text-sm text-slate-600">เลือกรูปจากคลังรูป แล้วจัดลำดับโลโก้/มาตรฐานที่แสดงในหน้าเว็บ</p>
+          <h2 className="text-lg font-black text-[#12345f]">พาร์ทเนอร์และลูกค้าที่ไว้วางใจ</h2>
+          <p className="mt-1 text-sm text-slate-600">เลือกรูปจากคลังรูป แล้วจัดลำดับโลโก้พาร์ทเนอร์/ลูกค้าที่แสดงในหน้าเว็บ</p>
         </div>
         <button
           type="button"
@@ -297,7 +297,7 @@ export default function StandardItemManager() {
             disabled={isBusy}
             className="w-full rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] focus:outline-none focus:ring-2 focus:ring-[#12345f]/30 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกรายการมาตรฐาน'}
+            {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกรายการพาร์ทเนอร์/ลูกค้า'}
           </button>
         </div>
 
@@ -307,7 +307,7 @@ export default function StandardItemManager() {
             {selectedAsset ? (
               <Image src={selectedAsset.public_url} alt={selectedAsset.alt_th || selectedAsset.path} fill className="object-contain p-4" unoptimized />
             ) : (
-              <span className="text-center text-4xl font-black text-black">{safeText(form.title) || 'WELL'}</span>
+              <span className="text-center text-4xl font-black text-black">{safeText(form.title) || 'Partner'}</span>
             )}
           </div>
           {selectedAsset ? (

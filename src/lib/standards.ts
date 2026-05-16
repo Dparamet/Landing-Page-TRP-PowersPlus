@@ -29,12 +29,12 @@ export type StandardItem = {
 };
 
 export const fallbackStandardItems: StandardItem[] = [
-  { id: 'well', title: 'WELL', imageUrl: null, hoverImageUrl: null, altText: 'WELL standard', sortOrder: 10, published: true, deletedAt: null, purgeAfter: null },
-  { id: 'trees', title: 'TREES', imageUrl: null, hoverImageUrl: null, altText: 'TREES standard', sortOrder: 20, published: true, deletedAt: null, purgeAfter: null },
-  { id: 'ansi', title: 'ANSI', imageUrl: null, hoverImageUrl: null, altText: 'ANSI standard', sortOrder: 30, published: true, deletedAt: null, purgeAfter: null },
-  { id: 'leed', title: 'LEED', imageUrl: null, hoverImageUrl: null, altText: 'LEED technology standard', sortOrder: 40, published: true, deletedAt: null, purgeAfter: null },
-  { id: 'green-industry', title: 'Green Industry', imageUrl: null, hoverImageUrl: null, altText: 'Green Industry certification', sortOrder: 50, published: true, deletedAt: null, purgeAfter: null },
-  { id: 'iso-14001', title: 'ISO 14001', imageUrl: null, hoverImageUrl: null, altText: 'ISO 14001 certification', sortOrder: 60, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'homeowners', title: 'Home Owners', imageUrl: null, hoverImageUrl: null, altText: 'Residential clients', sortOrder: 10, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'commercial-buildings', title: 'Commercial', imageUrl: null, hoverImageUrl: null, altText: 'Commercial building clients', sortOrder: 20, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'factories', title: 'Factories', imageUrl: null, hoverImageUrl: null, altText: 'Factory and industrial clients', sortOrder: 30, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'developers', title: 'Developers', imageUrl: null, hoverImageUrl: null, altText: 'Property developer partners', sortOrder: 40, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'contractors', title: 'Contractors', imageUrl: null, hoverImageUrl: null, altText: 'Contractor partners', sortOrder: 50, published: true, deletedAt: null, purgeAfter: null },
+  { id: 'businesses', title: 'Businesses', imageUrl: null, hoverImageUrl: null, altText: 'Business clients', sortOrder: 60, published: true, deletedAt: null, purgeAfter: null },
 ];
 
 export function mapStandardItemRows(rows: StandardItemRow[], fallback = fallbackStandardItems, includeDeleted = false): StandardItem[] {
