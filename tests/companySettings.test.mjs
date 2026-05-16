@@ -20,6 +20,20 @@ describe('company settings admin data', () => {
     });
   });
 
+  it('accepts a hosted logo URL for the admin logo setting', () => {
+    const result = validateCompanySettings({ ...defaultCompanySettings, logoUrl: 'https://cdn.example.com/logo.webp' });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.ok ? result.value.logoUrl : '', 'https://cdn.example.com/logo.webp');
+  });
+
+  it('rejects unsafe logo URLs', () => {
+    assert.deepEqual(validateCompanySettings({ ...defaultCompanySettings, logoUrl: 'javascript:alert(1)' }), {
+      ok: false,
+      message: 'Logo URL ต้องเป็น https:// หรือ path ที่ขึ้นต้นด้วย / เท่านั้น',
+    });
+  });
+
   it('rejects phone href values that are not tel-safe international numbers', () => {
     assert.deepEqual(validateCompanySettings({ ...defaultCompanySettings, phoneHref: '012-345-6789' }), {
       ok: false,
@@ -51,6 +65,7 @@ describe('company settings admin data', () => {
 
     assert.equal(form.phoneDisplay, defaultCompanySettings.phoneDisplay);
     assert.equal(form.email, defaultCompanySettings.email);
+    assert.equal(form.logoUrl, defaultCompanySettings.logoUrl);
   });
 
   it('maps form values to the Supabase upsert shape', () => {
@@ -61,6 +76,7 @@ describe('company settings admin data', () => {
     assert.equal(upsert.instagram_url, defaultCompanySettings.instagramUrl);
     assert.equal(upsert.tiktok_url, defaultCompanySettings.tiktokUrl);
     assert.equal(upsert.google_maps_embed_url, defaultCompanySettings.googleMapsEmbedUrl);
+    assert.equal(upsert.logo_url, defaultCompanySettings.logoUrl);
     assert.match(upsert.updated_at, /^\d{4}-\d{2}-\d{2}T/);
   });
 

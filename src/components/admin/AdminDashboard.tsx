@@ -7,6 +7,7 @@ import AdminAnalyticsDashboard from '@/components/admin/AdminAnalyticsDashboard'
 import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
 import ContactItemManager from '@/components/admin/ContactItemManager';
 import FaqManager from '@/components/admin/FaqManager';
+import LogoSettingsForm from '@/components/admin/LogoSettingsForm';
 import MediaUploadManager from '@/components/admin/MediaUploadManager';
 import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
 import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
@@ -19,8 +20,10 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type AdminSectionKey =
   | 'analytics'
+  | 'logo'
   | 'texts'
   | 'services'
+  | 'standards'
   | 'media'
   | 'portfolioImages'
   | 'portfolioPosts'
@@ -44,8 +47,10 @@ const adminSections: Array<{
   detailsPreviewHash: string;
 }> = [
   { key: 'analytics', label: 'แดชบอร์ด', description: 'ดูการเคลื่อนไหวหน้าเว็บ', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#hero' },
+  { key: 'logo', label: 'โลโก้', description: 'แก้รูปโลโก้หลักของเว็บไซต์', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#contact' },
   { key: 'texts', label: 'ข้อความ', description: 'หัวข้อและ copy หลัก', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#hero' },
   { key: 'services', label: 'บริการ', description: 'การ์ดและข้อมูลเตรียมงาน', landingPreviewPath: '/', landingPreviewHash: '#services', detailsPreviewPath: '/services', detailsPreviewHash: '#services' },
+  { key: 'standards', label: 'มาตรฐาน', description: 'รูป hover และมาตรฐานงาน', landingPreviewPath: '/', landingPreviewHash: '#standards', detailsPreviewPath: '/', detailsPreviewHash: '#standards' },
   { key: 'portfolioPosts', label: 'ผลงาน', description: 'ข้อมูลโครงการ', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'portfolioImages', label: 'รูปผลงาน', description: 'หน้าปกและ gallery', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'media', label: 'คลังรูป', description: 'อัปโหลดรูป', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
@@ -57,7 +62,7 @@ const adminSections: Array<{
 export default function AdminDashboard() {
   const router = useRouter();
   const [state, setState] = useState<DashboardState>({ status: 'loading' });
-  const [activeSection, setActiveSection] = useState<AdminSectionKey>('analytics');
+  const [activeSection, setActiveSection] = useState<AdminSectionKey>('logo');
   const [previewPageMode, setPreviewPageMode] = useState<PreviewPageMode>('landing');
   const [previewVersion, setPreviewVersion] = useState(0);
 
@@ -281,6 +286,8 @@ function renderAdminSection(section: AdminSectionKey) {
   switch (section) {
     case 'analytics':
       return <AdminAnalyticsDashboard />;
+    case 'logo':
+      return <LogoSettingsForm />;
     case 'texts':
       return <SiteTextManager />;
     case 'services':

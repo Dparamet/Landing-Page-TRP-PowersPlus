@@ -1,6 +1,7 @@
 import type { Database } from '../supabase/database.types';
 
 export type CompanySettingsFormValues = {
+  logoUrl: string;
   name: string;
   phoneDisplay: string;
   phoneHref: string;
@@ -26,6 +27,7 @@ export type CompanySettingsValidationResult =
   | { ok: false; message: string };
 
 export const defaultCompanySettings: CompanySettingsFormValues = {
+  logoUrl: '/images/LogoTRP.webp',
   name: 'TRP Powers Plus',
   phoneDisplay: '+66 (0) 12-345-6789',
   phoneHref: '+66012345678',
@@ -45,6 +47,7 @@ export const defaultCompanySettings: CompanySettingsFormValues = {
 };
 
 const requiredFields: Array<[keyof CompanySettingsFormValues, string]> = [
+  ['logoUrl', 'Logo URL'],
   ['name', 'ชื่อบริษัท'],
   ['phoneDisplay', 'เบอร์โทรที่แสดง'],
   ['phoneHref', 'เบอร์โทรสำหรับกดโทร'],
@@ -70,8 +73,19 @@ function isHttpsUrl(value: string): boolean {
   }
 }
 
+export function isSafeLogoUrl(value: string): boolean {
+  const trimmed = value.trim();
+
+  if (trimmed.startsWith('/')) {
+    return !trimmed.startsWith('//') && !trimmed.includes('\\');
+  }
+
+  return isHttpsUrl(trimmed);
+}
+
 function trimCompanySettings(values: CompanySettingsFormValues): CompanySettingsFormValues {
   return {
+    logoUrl: values.logoUrl.trim(),
     name: values.name.trim(),
     phoneDisplay: values.phoneDisplay.trim(),
     phoneHref: values.phoneHref.trim(),
@@ -121,6 +135,10 @@ export function validateCompanySettings(values: CompanySettingsFormValues): Comp
     return { ok: false, message: 'Google Maps Embed URL ต้องขึ้นต้นด้วย https://www.google.com/maps/embed' };
   }
 
+  if (!isSafeLogoUrl(trimmed.logoUrl)) {
+    return { ok: false, message: 'Logo URL ต้องเป็น https:// หรือ path ที่ขึ้นต้นด้วย / เท่านั้น' };
+  }
+
   return { ok: true, value: trimmed };
 }
 
@@ -130,6 +148,7 @@ export function mapSiteSettingsRowToForm(row: SiteSettingsRow | null): CompanySe
   }
 
   return {
+    logoUrl: row.logo_url || defaultCompanySettings.logoUrl,
     name: row.name || defaultCompanySettings.name,
     phoneDisplay: row.phone_display || defaultCompanySettings.phoneDisplay,
     phoneHref: row.phone_href || defaultCompanySettings.phoneHref,
@@ -151,6 +170,7 @@ export function mapSiteSettingsRowToForm(row: SiteSettingsRow | null): CompanySe
 export function mapCompanySettingsFormToUpsert(values: CompanySettingsFormValues): SiteSettingsUpsert {
   return {
     id: true,
+    logo_url: values.logoUrl,
     name: values.name,
     phone_display: values.phoneDisplay,
     phone_href: values.phoneHref,

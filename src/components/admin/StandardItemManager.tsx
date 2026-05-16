@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { formatBytes } from '@/lib/admin/mediaUpload';
-import { buildStandardItemUpsertRow, type StandardItemUpsertRow } from '@/lib/admin/standardItems';
+import { buildStandardItemUpsertRow, deriveStandardItemIdentity, type StandardItemUpsertRow } from '@/lib/admin/standardItems';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { fallbackStandardItems, getStandardItemAltText, type StandardItemRow } from '@/lib/standards';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -113,22 +113,21 @@ export default function StandardItemManager() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const formId = safeText(form.id).trim();
-    const title = safeText(form.title).trim();
     const altText = safeText(form.altText).trim();
-
-    if (!formId || !/^[a-z0-9-]+$/.test(formId)) {
-      setStatus('error');
-      setMessage('กรุณากรอก ID เป็นภาษาอังกฤษตัวเล็ก ตัวเลข หรือขีดกลาง');
-      return;
-    }
-
-    if (!title) {
-      setStatus('error');
-      setMessage('กรุณากรอกชื่อมาตรฐาน');
-      return;
-    }
-
+    const assetLabel =
+      selectedAsset?.alt_th ||
+      selectedAsset?.alt_en ||
+      selectedAsset?.path ||
+      selectedHoverAsset?.alt_th ||
+      selectedHoverAsset?.alt_en ||
+      selectedHoverAsset?.path;
+    const identity = deriveStandardItemIdentity({
+      id: form.id,
+      title: form.title,
+      altText,
+      assetLabel,
+      fallbackSuffix: Date.now().toString(36),
+    });
     const supabase = getSupabaseBrowserClient();
 
     if (!supabase) {
@@ -141,18 +140,34 @@ export default function StandardItemManager() {
     setMessage('');
 
     const standardClient = supabase as unknown as StandardItemsClient;
-    const { error } = await standardClient.from('standard_items').upsert(
-      buildStandardItemUpsertRow({
-        id: formId,
-        title,
+    const upsertRow = buildStandardItemUpsertRow({
+        id: identity.id,
+        title: identity.title,
         imageUrl: selectedAsset?.public_url ?? null,
+        hoverImageUrl: selectedHoverAsset?.public_url ?? null,
         altText,
         assetAltText: selectedAsset?.alt_th || selectedAsset?.alt_en || selectedAsset?.path,
         sortOrder: form.sortOrder,
         published: form.published,
-      }),
-      { onConflict: 'id' },
-    );
+      });
+    const { error } = await standardClient.from('standard_items').upsert(upsertRow, { onConflict: 'id' });
+
+    if (error && isMissingStandardHoverColumnError(error)) {
+      const fallbackRow = { ...upsertRow };
+      delete fallbackRow.hover_image_url;
+      const fallbackResult = await standardClient.from('standard_items').upsert(fallbackRow, { onConflict: 'id' });
+
+      if (!fallbackResult.error) {
+        setStatus('saved');
+        setMessage('บันทึกรายการมาตรฐานแล้ว แต่ยังไม่บันทึกรูป hover เพราะฐานข้อมูลยังไม่ได้รัน migration hover_image_url');
+        setForm(normalizeForm(defaultForm));
+        setAssetId('');
+        setHoverAssetId('');
+        await loadData();
+        requestPreviewRefresh();
+        return;
+      }
+    }
 
     if (error) {
       setStatus('error');
@@ -226,11 +241,7 @@ export default function StandardItemManager() {
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]" noValidate>
         <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm font-semibold text-slate-800">
-              ID
-              <input value={safeText(form.id)} onChange={(event) => updateForm({ id: event.target.value })} className={`${fieldClass} mt-2`} placeholder="iso-14001" />
-            </label>
+          <div className="grid gap-4">
             <label className="block text-sm font-semibold text-slate-800">
               ลำดับ
               <input
@@ -241,11 +252,6 @@ export default function StandardItemManager() {
               />
             </label>
           </div>
-
-          <label className="block text-sm font-semibold text-slate-800">
-            ชื่อ
-            <input value={safeText(form.title)} onChange={(event) => updateForm({ title: event.target.value })} className={`${fieldClass} mt-2`} placeholder="ISO 14001" />
-          </label>
 
           <label className="block text-sm font-semibold text-slate-800">
             Alt text
@@ -397,4 +403,8 @@ function normalizeForm(form: StandardItemFormInput): StandardItemForm {
 
 function safeText(value: unknown) {
   return typeof value === 'string' ? value : '';
+}
+
+function isMissingStandardHoverColumnError(error: { message?: string }) {
+  return Boolean(error.message?.includes("'hover_image_url' column") || error.message?.includes('hover_image_url'));
 }

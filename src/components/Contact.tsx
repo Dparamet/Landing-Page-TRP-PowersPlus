@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import { useContactItems } from '@/hooks/useContactItems';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
@@ -42,13 +42,7 @@ export default function Contact({ showAll = false }: { showAll?: boolean }) {
   const renderIcon = (icon: string) => {
     if (icon === 'company') {
       return (
-        <Image
-          src="/images/LogoTRP.webp"
-          alt="TRP Powers Plus"
-          width={40}
-          height={40}
-          className="h-8 w-8 object-contain"
-        />
+        <CompanyLogo alt="TRP Powers Plus" className="h-8 w-8 object-contain" />
       );
     }
 

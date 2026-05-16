@@ -24,6 +24,9 @@ Run these files in order when creating or updating a Supabase database.
 18. `202605150006_social_links_and_admin_policy_repair.sql`
 19. `202605150007_drop_legacy_is_admin_noarg.sql`
 20. `202605150008_media_delete_storage_api.sql`
+21. `202605160001_site_logo_setting.sql`
+22. `202605160002_standard_item_slug_ids.sql`
+23. `202605160003_standard_item_image_alt_compat.sql`
 
 Rules:
 

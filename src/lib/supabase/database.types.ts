@@ -364,6 +364,7 @@ export type Database = {
           id: string;
           hover_image_url: string | null;
           hover_media_asset_id: string | null;
+          image_alt: string;
           image_url: string | null;
           media_asset_id: string | null;
           published: boolean;
@@ -379,6 +380,7 @@ export type Database = {
           id: string;
           hover_image_url?: string | null;
           hover_media_asset_id?: string | null;
+          image_alt?: string;
           image_url?: string | null;
           media_asset_id?: string | null;
           published?: boolean;
@@ -394,6 +396,7 @@ export type Database = {
           id?: string;
           hover_image_url?: string | null;
           hover_media_asset_id?: string | null;
+          image_alt?: string;
           image_url?: string | null;
           media_asset_id?: string | null;
           published?: boolean;
@@ -499,6 +502,7 @@ export type Database = {
           instagram_url: string;
           line_id: string;
           line_url: string;
+          logo_url: string;
           name: string;
           phone_display: string;
           phone_href: string;
@@ -519,6 +523,7 @@ export type Database = {
           instagram_url?: string;
           line_id?: string;
           line_url?: string;
+          logo_url?: string;
           name?: string;
           phone_display?: string;
           phone_href?: string;
@@ -539,6 +544,7 @@ export type Database = {
           instagram_url?: string;
           line_id?: string;
           line_url?: string;
+          logo_url?: string;
           name?: string;
           phone_display?: string;
           phone_href?: string;
