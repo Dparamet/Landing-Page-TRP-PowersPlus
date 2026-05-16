@@ -47,7 +47,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/70 shadow-sm backdrop-blur-md" role="navigation" aria-label={t('nav.mainNavigation')}>
+    <nav className="main-site-nav sticky top-0 z-50 w-full border-b border-slate-200 bg-white/70 shadow-sm backdrop-blur-md" role="navigation" aria-label={t('nav.mainNavigation')}>
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
         
         {/* Logo with smooth hover */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const REVEAL_SELECTOR = '.section-reveal, .reveal-item';
 const CLASS_VISIBLE = 'is-visible';
@@ -24,8 +25,13 @@ function applyDirection(element: Element, direction: ScrollDirection) {
 }
 
 export default function ScrollEffects() {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll(REVEAL_SELECTOR).forEach((element) => {
+        element.classList.add(CLASS_VISIBLE);
+      });
       return;
     }
 
@@ -89,12 +95,20 @@ export default function ScrollEffects() {
     );
 
     const observedElements = new Set<Element>();
+    const isHomeRoute = pathname === '/';
 
     const observeRevealElements = () => {
       const revealElements = document.querySelectorAll(REVEAL_SELECTOR);
 
       revealElements.forEach((element) => {
         if (element.classList.contains(CLASS_VISIBLE)) {
+          return;
+        }
+
+        // Keep detail pages readable even when intersection timing is delayed.
+        if (!isHomeRoute) {
+          revealElement(element);
+          observedElements.add(element);
           return;
         }
 
@@ -134,7 +148,7 @@ export default function ScrollEffects() {
       mutationObserver.disconnect();
       observer?.disconnect();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

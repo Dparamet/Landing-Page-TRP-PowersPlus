@@ -32,8 +32,9 @@ export default function StandardsTechnology() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
+  const scrollTweenRef = useRef<number | null>(null);
+  const isTweeningRef = useRef(false);
   const offsetRef = useRef(0);
-  const pausedRef = useRef(false);
   const carouselItems = Array.from({ length: repeatCount }, () => items).flat();
 
   function moveTrack(delta: number) {
@@ -73,11 +74,10 @@ export default function StandardsTechnology() {
 
   useEffect(() => {
     function tick() {
-      const hovered = carouselRef.current?.matches(':hover') ?? false;
-      const focused = carouselRef.current?.contains(document.activeElement) ?? false;
+      const hoveredCard = carouselRef.current?.querySelector('[data-standard-card="true"]:hover') !== null;
 
-      if (!pausedRef.current && !hovered && !focused) {
-        moveTrack(0.45);
+      if (!hoveredCard && !isTweeningRef.current) {
+        moveTrack(0.24);
       }
 
       animationRef.current = window.requestAnimationFrame(tick);
@@ -110,7 +110,46 @@ export default function StandardsTechnology() {
   }, []);
 
   function scrollByAmount(direction: -1 | 1) {
-    moveTrack(direction * 420);
+    const track = trackRef.current;
+
+    if (!track) {
+      return;
+    }
+
+    if (scrollTweenRef.current !== null) {
+      window.cancelAnimationFrame(scrollTweenRef.current);
+    }
+
+    const duration = 700;
+    const startOffset = offsetRef.current;
+    const targetOffset = startOffset + direction * 420;
+    const startTime = window.performance.now();
+
+    isTweeningRef.current = true;
+
+    function easeOutCubic(value: number) {
+      return 1 - Math.pow(1 - value, 3);
+    }
+
+    function animate(now: number) {
+      const elapsed = Math.min(1, (now - startTime) / duration);
+      const progress = easeOutCubic(elapsed);
+      const nextOffset = startOffset + (targetOffset - startOffset) * progress;
+
+      track.style.transform = `translate3d(${-nextOffset}px, 0, 0)`;
+
+      if (elapsed < 1) {
+        scrollTweenRef.current = window.requestAnimationFrame(animate);
+        return;
+      }
+
+      offsetRef.current = targetOffset;
+      moveTrack(0);
+      isTweeningRef.current = false;
+      scrollTweenRef.current = null;
+    }
+
+    scrollTweenRef.current = window.requestAnimationFrame(animate);
   }
 
   return (
@@ -120,6 +159,35 @@ export default function StandardsTechnology() {
       </div>
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(15,42,95,0.12),rgba(255,255,255,0.76),rgba(240,138,36,0.18))]" />
 
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-linear-to-r from-[#f7fafc]/60 via-[#f7fafc]/25 to-transparent md:w-36" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-linear-to-l from-[#fff7ed]/55 via-[#f7fafc]/25 to-transparent md:w-36" aria-hidden="true" />
+
+      <button
+        type="button"
+        onClick={() => {
+          scrollByAmount(-1);
+        }}
+        className="absolute inset-y-0 left-0 z-20 flex h-full w-16 items-stretch justify-start rounded-r-4xl border-r border-white/40 bg-white/20 bg-linear-to-r from-white/35 via-white/12 to-transparent pl-3 shadow-[0_0_20px_rgba(15,42,95,0.06)] backdrop-blur-lg transition duration-300 hover:bg-white/28 hover:pl-4 md:w-20 md:pl-4 md:hover:pl-5"
+        aria-label={copy.previous}
+      >
+        <span className="flex h-full items-center text-4xl font-black leading-none text-[#0f2a5f] transition duration-300 hover:text-[#f08a24] md:text-5xl">
+          ‹
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          scrollByAmount(1);
+        }}
+        className="absolute inset-y-0 right-0 z-20 flex h-full w-16 items-stretch justify-end rounded-l-4xl border-l border-white/40 bg-white/20 bg-linear-to-l from-white/35 via-white/12 to-transparent pr-3 shadow-[0_0_20px_rgba(15,42,95,0.06)] backdrop-blur-lg transition duration-300 hover:bg-white/28 hover:pr-4 md:w-20 md:pr-4 md:hover:pr-5"
+        aria-label={copy.next}
+      >
+        <span className="flex h-full items-center text-4xl font-black leading-none text-[#0f2a5f] transition duration-300 hover:text-[#f08a24] md:text-5xl">
+          ›
+        </span>
+      </button>
+
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
         <h2 className="text-3xl font-black leading-tight sm:text-4xl md:text-5xl">{copy.title}</h2>
           <p className="mt-4 text-sm font-semibold leading-7 text-slate-700 sm:text-base md:text-lg md:leading-8">{copy.description}</p>
@@ -128,41 +196,8 @@ export default function StandardsTechnology() {
       <div
         ref={carouselRef}
         className="group relative mt-7 w-screen overflow-x-hidden overflow-y-visible py-14 md:mt-8 md:py-16"
-        onPointerEnter={() => {
-          pausedRef.current = true;
-        }}
-        onPointerLeave={() => {
-          pausedRef.current = false;
-        }}
-        onMouseEnter={() => {
-          pausedRef.current = true;
-        }}
-        onMouseLeave={() => {
-          pausedRef.current = false;
-        }}
-        onFocus={() => {
-          pausedRef.current = true;
-        }}
-        onBlur={() => {
-          pausedRef.current = false;
-        }}
       >
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-[#f7fafc] via-[#f7fafc]/88 to-transparent md:w-36" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-[#fff7ed] via-[#f7fafc]/88 to-transparent md:w-36" />
-
-        <button
-          type="button"
-          onClick={() => {
-            pausedRef.current = true;
-            scrollByAmount(-1);
-          }}
-          className="absolute left-5 top-1/2 z-20 flex h-20 w-10 -translate-y-1/2 items-center justify-center bg-transparent text-6xl font-light leading-none text-[#0f2a5f] transition hover:text-[#f08a24] focus:outline-none focus:ring-2 focus:ring-[#0f2a5f]/30 md:left-14"
-          aria-label={copy.previous}
-        >
-          ‹
-        </button>
-
-        <div className="overflow-visible px-28 py-8 md:px-44">
+        <div className="overflow-visible pl-36 pr-20 py-8 md:pl-56 md:pr-24 lg:pl-72 lg:pr-28">
           <div ref={trackRef} className="flex w-max items-center gap-14 will-change-transform md:gap-24 lg:gap-32">
           {carouselItems.map((item, index) => {
             const step = index % 3;
@@ -170,6 +205,7 @@ export default function StandardsTechnology() {
             return (
               <article
                 key={`${item.id}-${index}`}
+                data-standard-card="true"
                 className={`group/card relative flex h-44 w-44 shrink-0 ${zigzagClass} items-center justify-center overflow-hidden rounded-lg border border-[#0f2a5f]/16 bg-white p-7 shadow-[0_14px_34px_rgba(15,42,95,0.14)] transition duration-300 hover:z-10 hover:scale-[1.04] hover:border-[#f08a24]/75 hover:shadow-[0_24px_54px_rgba(15,42,95,0.22)] sm:h-52 sm:w-52 md:h-56 md:w-56`}
               >
                 <span className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-[linear-gradient(90deg,#0f2a5f,#f08a24)] opacity-75 transition duration-300 group-hover/card:h-2 group-hover/card:opacity-100" />
@@ -197,17 +233,6 @@ export default function StandardsTechnology() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            pausedRef.current = true;
-            scrollByAmount(1);
-          }}
-          className="absolute right-5 top-1/2 z-20 flex h-20 w-10 -translate-y-1/2 items-center justify-center bg-transparent text-6xl font-light leading-none text-[#0f2a5f] transition hover:text-[#f08a24] focus:outline-none focus:ring-2 focus:ring-[#0f2a5f]/30 md:right-14"
-          aria-label={copy.next}
-        >
-          ›
-        </button>
       </div>
     </section>
   );
