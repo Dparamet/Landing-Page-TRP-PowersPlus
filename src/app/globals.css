@@ -98,12 +98,22 @@ html {
   -webkit-backdrop-filter: blur(16px) saturate(120%);
 }
 
-.site-background > nav :where(a, button, div) {
+nav :where(a, button, div) {
   color: #182230;
 }
 
-.site-background > nav :where(a:hover, button:hover) {
+nav :where(a:hover, button:hover) {
   color: #f08a24;
+}
+
+nav button.text-white,
+nav a.text-white {
+  color: white !important;
+}
+
+nav button.text-white:hover,
+nav a.text-white:hover {
+  color: white !important;
 }
 
 .site-background > nav button[aria-label] span {

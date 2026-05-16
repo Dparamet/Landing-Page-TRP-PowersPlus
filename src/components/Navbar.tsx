@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
@@ -11,13 +11,14 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const { t } = useLanguage();
+  const router = useRouter();
   const pathname = usePathname();
 
   const navLinks = [
     { id: 'hero', label: t('nav.home') },
     { id: 'services', label: t('nav.services') },
-    { id: 'portfolio', label: t('nav.portfolio') },
     { id: 'calculator', label: t('nav.calculator') },
+    { id: 'portfolio', label: t('nav.portfolio') },
     { id: 'contact', label: t('nav.contact') },
   ];
 
@@ -34,6 +35,11 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
+    if (pathname !== '/') {
+      router.push(`/#${sectionId}`);
+      return;
+    }
+
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
