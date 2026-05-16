@@ -69,9 +69,9 @@ export const COOKIE_COLORS = {
 
   // Buttons
   btnPrimaryBg: 'bg-[#f08a24]',
-  btnPrimaryBgHover: 'hover:-translate-y-0.5 hover:bg-[#d66d0c] hover:shadow-md active:translate-y-0',
+  btnPrimaryBgHover: 'hover:bg-[#d66d0c] hover:shadow-md',
   btnSecondaryBg: 'bg-blue-50',
-  btnSecondaryBgHover: 'hover:-translate-y-0.5 hover:bg-blue-100 active:translate-y-0',
+  btnSecondaryBgHover: 'hover:bg-blue-100',
   btnTertiaryBg: 'bg-transparent',
 
   // Status colors
