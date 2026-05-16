@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCookieConsent } from '@/context/CookieConsentContext';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
@@ -19,13 +19,7 @@ export default function FooterContent() {
           {/* Company Info */}
           <div>
             <div className="mb-4 flex flex-col items-start gap-3">
-              <Image
-                src="/images/LogoTRP.webp"
-                alt="TRP Powers Plus"
-                width={190}
-                height={74}
-                className="h-auto w-40 object-contain"
-              />
+              <CompanyLogo alt="TRP Powers Plus" className="h-auto w-40 object-contain" />
               <h3 className="text-lg font-black text-[#0f2a5f]">{companyProfile.name}</h3>
             </div>
             <p className="text-sm leading-relaxed text-slate-600">

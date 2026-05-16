@@ -25,6 +25,9 @@ describe('database migrations', () => {
     assert.match(softDeleteMigration, /revoke delete on public\.process_steps from authenticated;/);
     assert.match(softDeleteMigration, /revoke delete on public\.site_texts from authenticated;/);
     assert.match(softDeleteMigration, /revoke delete on public\.portfolio_image_overrides from authenticated;/);
+
+    const standardItemsMigration = await readFile('supabase/migrations/202605100012_standard_items.sql', 'utf8');
+    assert.match(standardItemsMigration, /revoke delete on public\.standard_items from authenticated;/);
   });
 
   it('hardens media hard delete with storage cleanup and explicit admin failure', async () => {
@@ -84,6 +87,35 @@ describe('database migrations', () => {
     assert.match(migration, /create or replace function public\.hard_delete_media_asset/);
     assert.match(migration, /delete from public\.media_assets/);
     assert.doesNotMatch(migration, /delete from storage\.objects/);
+    assert.match(migration, /notify pgrst, 'reload schema';/);
+  });
+
+  it('adds an editable site logo setting without replacing existing content tables', async () => {
+    const migration = await readFile('supabase/migrations/202605160001_site_logo_setting.sql', 'utf8');
+
+    assert.match(migration, /alter table public\.site_settings/);
+    assert.match(migration, /add column if not exists logo_url/);
+    assert.match(migration, /'\/images\/LogoTRP\.webp'/);
+    assert.match(migration, /notify pgrst, 'reload schema';/);
+  });
+
+  it('repairs standard item ids from uuid to slug text', async () => {
+    const migration = await readFile('supabase/migrations/202605160002_standard_item_slug_ids.sql', 'utf8');
+
+    assert.match(migration, /alter table public\.standard_items/);
+    assert.match(migration, /alter column id type text using id::text/);
+    assert.match(migration, /standard_items_id_slug_check/);
+    assert.match(migration, /create or replace function public\.soft_delete_standard_item\(item_id text/);
+    assert.match(migration, /drop function if exists public\.soft_delete_standard_item\(uuid, integer\);/);
+    assert.match(migration, /notify pgrst, 'reload schema';/);
+  });
+
+  it('keeps standard item alt text compatible with existing databases', async () => {
+    const migration = await readFile('supabase/migrations/202605160003_standard_item_image_alt_compat.sql', 'utf8');
+
+    assert.match(migration, /add column if not exists image_alt/);
+    assert.match(migration, /information_schema\.columns/);
+    assert.match(migration, /alt_text/);
     assert.match(migration, /notify pgrst, 'reload schema';/);
   });
 });

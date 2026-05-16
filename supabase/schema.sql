@@ -24,6 +24,7 @@ grant execute on function public.is_admin() to anon, authenticated;
 
 create table if not exists public.site_settings (
   id boolean primary key default true check (id),
+  logo_url text not null default '/images/LogoTRP.webp',
   name text not null default 'TRP Powers Plus',
   phone_display text not null default '',
   phone_href text not null default '',

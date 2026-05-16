@@ -1,9 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -44,14 +44,7 @@ export default function Navbar() {
           className="relative flex h-10 w-32 shrink-0 items-center transition-transform duration-300 hover:scale-105 md:h-12 md:w-40"
           aria-label={t('nav.logoLinkLabel')}
         > 
-          <Image 
-            src="/images/LogoTRP.webp" 
-            alt={t('nav.logoAlt')} 
-            fill 
-            className="object-contain transition-transform duration-300"
-            sizes="(min-width: 768px) 192px, 160px"
-            priority 
-          />
+          <CompanyLogo alt={t('nav.logoAlt')} className="h-full w-full object-contain transition-transform duration-300" />
         </Link>
 
         {/* เมนูเดสก์ทอป */}
