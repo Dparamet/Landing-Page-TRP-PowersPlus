@@ -26,6 +26,9 @@ export type CompanySettingsValidationResult =
   | { ok: true; value: CompanySettingsFormValues }
   | { ok: false; message: string };
 
+export const LOCAL_LOGO_URL_STORAGE_KEY = 'trp-local-logo-url';
+export const LOGO_URL_COLUMN_MIGRATION = '202605160001_site_logo_setting.sql';
+
 export const defaultCompanySettings: CompanySettingsFormValues = {
   logoUrl: '/images/LogoTRP.webp',
   name: 'TRP Powers Plus',
@@ -81,6 +84,10 @@ export function isSafeLogoUrl(value: string): boolean {
   }
 
   return isHttpsUrl(trimmed);
+}
+
+export function isMissingLogoUrlColumnError(error: { message?: string }) {
+  return Boolean(error.message?.includes("'logo_url' column") || error.message?.includes('logo_url'));
 }
 
 function trimCompanySettings(values: CompanySettingsFormValues): CompanySettingsFormValues {

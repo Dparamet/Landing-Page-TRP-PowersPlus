@@ -2,7 +2,10 @@
 
 /* eslint-disable @next/next/no-img-element */
 
+import { useEffect, useState } from 'react';
+
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
+import { LOCAL_LOGO_URL_STORAGE_KEY } from '@/lib/admin/companySettings';
 
 type CompanyLogoProps = {
   alt?: string;
@@ -11,6 +14,18 @@ type CompanyLogoProps = {
 
 export default function CompanyLogo({ alt = 'TRP Powers Plus', className = '' }: CompanyLogoProps) {
   const companyProfile = useCompanyProfile();
+  const [localLogoUrl, setLocalLogoUrl] = useState(() =>
+    typeof window === 'undefined' ? '' : window.localStorage.getItem(LOCAL_LOGO_URL_STORAGE_KEY) ?? '',
+  );
 
-  return <img src={companyProfile.logoUrl} alt={alt} className={className} />;
+  useEffect(() => {
+    function handleLocalLogoChange(event: Event) {
+      setLocalLogoUrl((event as CustomEvent<string>).detail || window.localStorage.getItem(LOCAL_LOGO_URL_STORAGE_KEY) || '');
+    }
+
+    window.addEventListener('trp-local-logo-change', handleLocalLogoChange);
+    return () => window.removeEventListener('trp-local-logo-change', handleLocalLogoChange);
+  }, []);
+
+  return <img src={localLogoUrl || companyProfile.logoUrl} alt={alt} className={className} />;
 }

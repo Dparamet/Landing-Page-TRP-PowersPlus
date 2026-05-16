@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 
 import {
   defaultCompanySettings,
+  isMissingLogoUrlColumnError,
   mapCompanySettingsFormToUpsert,
   mapSiteSettingsRowToForm,
   validateCompanySettings,
@@ -32,6 +33,15 @@ describe('company settings admin data', () => {
       ok: false,
       message: 'Logo URL ต้องเป็น https:// หรือ path ที่ขึ้นต้นด้วย / เท่านั้น',
     });
+  });
+
+  it('detects missing logo_url schema cache errors', () => {
+    assert.equal(
+      isMissingLogoUrlColumnError({
+        message: "Could not find the 'logo_url' column of 'site_settings' in the schema cache",
+      }),
+      true,
+    );
   });
 
   it('rejects phone href values that are not tel-safe international numbers', () => {

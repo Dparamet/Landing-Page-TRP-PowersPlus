@@ -4,7 +4,14 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 
-import { defaultCompanySettings, isSafeLogoUrl, type SiteSettingsRow } from '@/lib/admin/companySettings';
+import {
+  defaultCompanySettings,
+  isMissingLogoUrlColumnError,
+  isSafeLogoUrl,
+  LOCAL_LOGO_URL_STORAGE_KEY,
+  LOGO_URL_COLUMN_MIGRATION,
+  type SiteSettingsRow,
+} from '@/lib/admin/companySettings';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
@@ -42,16 +49,17 @@ export default function LogoSettingsForm() {
         return;
       }
 
-      if (settingsError) {
+      if (settingsError && !isMissingLogoUrlColumnError(settingsError)) {
         setStatus('error');
         setMessage('โหลดโลโก้ไม่สำเร็จ');
         return;
       }
 
-      setLogoUrl((settings as Pick<SiteSettingsRow, 'logo_url'> | null)?.logo_url || defaultCompanySettings.logoUrl);
+      const localLogoUrl = window.localStorage.getItem(LOCAL_LOGO_URL_STORAGE_KEY);
+      setLogoUrl((settings as Pick<SiteSettingsRow, 'logo_url'> | null)?.logo_url || localLogoUrl || defaultCompanySettings.logoUrl);
       setAssets((mediaAssets as MediaAsset[] | null) ?? []);
       setStatus('idle');
-      setMessage('');
+      setMessage(settingsError ? `ยังไม่ได้รัน ${LOGO_URL_COLUMN_MIGRATION}; ตอนนี้ใช้ค่าโลโก้สำรองในเครื่องนี้ก่อน` : '');
     }
 
     void loadLogo();
@@ -98,12 +106,24 @@ export default function LogoSettingsForm() {
       { onConflict: 'id' },
     );
 
+    if (error && isMissingLogoUrlColumnError(error)) {
+      window.localStorage.setItem(LOCAL_LOGO_URL_STORAGE_KEY, nextLogoUrl);
+      window.dispatchEvent(new CustomEvent('trp-local-logo-change', { detail: nextLogoUrl }));
+      setLogoUrl(nextLogoUrl);
+      setStatus('saved');
+      setMessage(`บันทึกโลโก้สำรองในเครื่องนี้แล้ว; ถ้าต้องการให้ทุกเครื่องเห็น ให้รัน ${LOGO_URL_COLUMN_MIGRATION}`);
+      requestPreviewRefresh();
+      return;
+    }
+
     if (error) {
       setStatus('error');
       setMessage(error.message ? `บันทึกโลโก้ไม่สำเร็จ: ${error.message}` : 'บันทึกโลโก้ไม่สำเร็จ');
       return;
     }
 
+    window.localStorage.removeItem(LOCAL_LOGO_URL_STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent('trp-local-logo-change', { detail: nextLogoUrl }));
     setLogoUrl(nextLogoUrl);
     setStatus('saved');
     setMessage('บันทึกโลโก้แล้ว');
