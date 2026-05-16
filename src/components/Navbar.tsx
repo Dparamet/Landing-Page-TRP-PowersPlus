@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const { t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
@@ -21,18 +20,6 @@ export default function Navbar() {
     { id: 'portfolio', label: t('nav.portfolio') },
     { id: 'contact', label: t('nav.contact') },
   ];
-
-  // Detect scroll for smooth navbar enhancement
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > 12);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const scrollToSection = (sectionId: string) => {
     if (pathname !== '/') {
@@ -56,7 +43,7 @@ export default function Navbar() {
           className="relative flex h-12 w-40 shrink-0 items-center transition-transform duration-300 hover:scale-105 md:h-16 md:w-52"
           aria-label={t('nav.logoLinkLabel')}
         > 
-          <CompanyLogo alt={t('nav.logoAlt')} className="h-full w-full object-contain transition-transform duration-300" />
+          <CompanyLogo alt={t('nav.logoAlt')} priority className="h-full w-full object-contain transition-transform duration-300" />
         </Link>
 
         {/* เมนูเดสก์ทอป */}

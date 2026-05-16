@@ -10,9 +10,10 @@ import { LOCAL_LOGO_URL_STORAGE_KEY } from '@/lib/admin/companySettings';
 type CompanyLogoProps = {
   alt?: string;
   className?: string;
+  priority?: boolean;
 };
 
-export default function CompanyLogo({ alt = 'TRP Powers Plus', className = '' }: CompanyLogoProps) {
+export default function CompanyLogo({ alt = 'TRP Powers Plus', className = '', priority = false }: CompanyLogoProps) {
   const companyProfile = useCompanyProfile();
   const [localLogoUrl, setLocalLogoUrl] = useState(() =>
     typeof window === 'undefined' ? '' : window.localStorage.getItem(LOCAL_LOGO_URL_STORAGE_KEY) ?? '',
@@ -27,5 +28,16 @@ export default function CompanyLogo({ alt = 'TRP Powers Plus', className = '' }:
     return () => window.removeEventListener('trp-local-logo-change', handleLocalLogoChange);
   }, []);
 
-  return <img src={localLogoUrl || companyProfile.logoUrl} alt={alt} className={className} />;
+  return (
+    <img
+      src={localLogoUrl || companyProfile.logoUrl}
+      alt={alt}
+      width={208}
+      height={64}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
+      decoding="async"
+      className={className}
+    />
+  );
 }

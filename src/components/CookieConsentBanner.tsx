@@ -11,8 +11,8 @@ export default function CookieConsentBanner() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[70] p-3 sm:p-5">
-      <div className={`mx-auto max-w-3xl overflow-hidden rounded-lg border ${COOKIE_COLORS.borderPrimary} ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-xl shadow-slate-900/10`}>
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] p-3 sm:p-5">
+      <div className={`pointer-events-auto mx-auto max-w-3xl overflow-hidden rounded-lg border ${COOKIE_COLORS.borderPrimary} ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-xl shadow-slate-900/10`}>
         <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 flex-1">
             <div className={`inline-flex items-center rounded-full border ${COOKIE_COLORS.badgeBorder} ${COOKIE_COLORS.badgeBg} px-2.5 py-1 text-[11px] font-bold ${COOKIE_COLORS.badgeText}`}>

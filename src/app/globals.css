@@ -53,6 +53,11 @@ html {
   background: rgba(245, 158, 11, 0.24);
 }
 
+nextjs-portal {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 /* ============================================
    SMOOTH SCROLLING & SCROLLBAR
    ============================================ */
@@ -466,6 +471,12 @@ html {
 .section-reveal.is-visible .reveal-item {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
+}
+
+.detail-page :where(.section-reveal, .reveal-item) {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 .site-background > :where(section, footer).section-reveal:nth-of-type(1) {

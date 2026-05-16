@@ -120,6 +120,7 @@ export default function StandardsTechnology() {
       window.cancelAnimationFrame(scrollTweenRef.current);
     }
 
+    const activeTrack = track;
     const duration = 700;
     const startOffset = offsetRef.current;
     const targetOffset = startOffset + direction * 420;
@@ -136,7 +137,7 @@ export default function StandardsTechnology() {
       const progress = easeOutCubic(elapsed);
       const nextOffset = startOffset + (targetOffset - startOffset) * progress;
 
-      track.style.transform = `translate3d(${-nextOffset}px, 0, 0)`;
+      activeTrack.style.transform = `translate3d(${-nextOffset}px, 0, 0)`;
 
       if (elapsed < 1) {
         scrollTweenRef.current = window.requestAnimationFrame(animate);
