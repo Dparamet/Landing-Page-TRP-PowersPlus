@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useServiceCategories } from '@/hooks/useServiceCategories';
 
@@ -8,9 +9,11 @@ const LANDING_SERVICE_LIMIT = 3;
 
 export default function Services({ showAll = false }: { showAll?: boolean }) {
   const { t, language } = useLanguage();
+  const pathname = usePathname();
   const serviceCategories = useServiceCategories();
   const visibleServices = showAll ? serviceCategories : serviceCategories.slice(0, LANDING_SERVICE_LIMIT);
   const hasMore = serviceCategories.length > visibleServices.length;
+  const sectionHref = (sectionId: string) => (pathname === '/' ? `#${sectionId}` : `/#${sectionId}`);
 
   return (
     <section id="services" className="section-reveal relative z-0 bg-transparent py-16 text-white md:py-20">
@@ -57,13 +60,13 @@ export default function Services({ showAll = false }: { showAll?: boolean }) {
                 <ul className="mt-5 space-y-3 text-sm font-medium text-slate-700">
                   {service.includes.slice(0, 2).map((item) => (
                     <li key={item.en} className="flex gap-3 transition-all duration-300 group-hover:translate-x-1">
-                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#f08a24] flex-shrink-0 transition-all duration-300 group-hover:scale-125" />
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#f08a24] transition-all duration-300 group-hover:scale-125" />
                       <span>{item[language]}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
-                  href="#service-selector"
+                  href={sectionHref('service-selector')}
                   className="mt-6 inline-flex rounded-full bg-[#f08a24] px-4 py-2 text-sm font-bold text-white transition-all duration-300 group-hover:bg-[#d66d0c] group-hover:shadow-lg group-hover:-translate-y-1 active:translate-y-0"
                 >
                   {t('services.checkFit')}
