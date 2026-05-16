@@ -28,6 +28,17 @@ export type CompanySettingsValidationResult =
 
 export const LOCAL_LOGO_URL_STORAGE_KEY = 'trp-local-logo-url';
 export const LOGO_URL_COLUMN_MIGRATION = '202605160001_site_logo_setting.sql';
+export const SOCIAL_COLUMNS_MIGRATION = '202605150006_social_links_and_admin_policy_repair.sql';
+
+const optionalSiteSettingsColumns = [
+  'logo_url',
+  'instagram_display',
+  'instagram_url',
+  'tiktok_display',
+  'tiktok_url',
+] as const;
+
+export type OptionalSiteSettingsColumn = (typeof optionalSiteSettingsColumns)[number];
 
 export const defaultCompanySettings: CompanySettingsFormValues = {
   logoUrl: '/images/LogoTRP.webp',
@@ -88,6 +99,20 @@ export function isSafeLogoUrl(value: string): boolean {
 
 export function isMissingLogoUrlColumnError(error: { message?: string }) {
   return Boolean(error.message?.includes("'logo_url' column") || error.message?.includes('logo_url'));
+}
+
+export function getMissingOptionalSiteSettingsColumn(error: { message?: string }): OptionalSiteSettingsColumn | null {
+  const message = error.message ?? '';
+  return optionalSiteSettingsColumns.find((column) => message.includes(`'${column}' column`) || message.includes(column)) ?? null;
+}
+
+export function stripOptionalSiteSettingsColumn<T extends Partial<Record<OptionalSiteSettingsColumn, unknown>>>(
+  row: T,
+  column: OptionalSiteSettingsColumn,
+) {
+  const nextRow = { ...row };
+  delete nextRow[column];
+  return nextRow;
 }
 
 function trimCompanySettings(values: CompanySettingsFormValues): CompanySettingsFormValues {

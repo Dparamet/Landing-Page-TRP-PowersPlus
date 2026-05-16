@@ -4,11 +4,15 @@ import { FormEvent, useEffect, useState } from 'react';
 
 import {
   defaultCompanySettings,
+  getMissingOptionalSiteSettingsColumn,
   mapCompanySettingsFormToUpsert,
   mapSiteSettingsRowToForm,
+  SOCIAL_COLUMNS_MIGRATION,
+  stripOptionalSiteSettingsColumn,
   validateCompanySettings,
   type CompanySettingsFormValues,
   type SiteSettingsRow,
+  type SiteSettingsUpsert,
 } from '@/lib/admin/companySettings';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -96,9 +100,23 @@ export default function CompanySettingsForm() {
       return;
     }
 
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert(mapCompanySettingsFormToUpsert(validation.value), { onConflict: 'id' });
+    let upsertRow: SiteSettingsUpsert = mapCompanySettingsFormToUpsert(validation.value);
+    let missingColumnWarning = '';
+    let error: { code?: string; message?: string } | null = null;
+
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const result = await supabase.from('site_settings').upsert(upsertRow, { onConflict: 'id' });
+      error = result.error;
+
+      const missingColumn = error ? getMissingOptionalSiteSettingsColumn(error) : null;
+
+      if (!missingColumn) {
+        break;
+      }
+
+      upsertRow = stripOptionalSiteSettingsColumn(upsertRow, missingColumn) as SiteSettingsUpsert;
+      missingColumnWarning = ` บางช่องยังไม่บันทึกเพราะฐานข้อมูลยังไม่ได้รัน ${SOCIAL_COLUMNS_MIGRATION}`;
+    }
 
     if (error) {
       setStatus('error');
@@ -109,6 +127,7 @@ export default function CompanySettingsForm() {
     setValues(validation.value);
     setStatus('saved');
     setMessage('บันทึกข้อมูลบริษัทแล้ว');
+    setMessage(missingColumnWarning ? `บันทึกข้อมูลบริษัทแล้ว${missingColumnWarning}` : 'บันทึกข้อมูลบริษัทแล้ว');
     requestPreviewRefresh();
   }
 

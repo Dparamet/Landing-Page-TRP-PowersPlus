@@ -3,9 +3,11 @@ import { describe, it } from 'node:test';
 
 import {
   defaultCompanySettings,
+  getMissingOptionalSiteSettingsColumn,
   isMissingLogoUrlColumnError,
   mapCompanySettingsFormToUpsert,
   mapSiteSettingsRowToForm,
+  stripOptionalSiteSettingsColumn,
   validateCompanySettings,
 } from '../src/lib/admin/companySettings.ts';
 
@@ -42,6 +44,22 @@ describe('company settings admin data', () => {
       }),
       true,
     );
+  });
+
+  it('detects missing optional site settings columns', () => {
+    assert.equal(
+      getMissingOptionalSiteSettingsColumn({
+        message: "Could not find the 'instagram_display' column of 'site_settings' in the schema cache",
+      }),
+      'instagram_display',
+    );
+  });
+
+  it('strips missing optional site settings columns for legacy databases', () => {
+    const row = stripOptionalSiteSettingsColumn(mapCompanySettingsFormToUpsert(defaultCompanySettings), 'instagram_display');
+
+    assert.equal(Object.hasOwn(row, 'instagram_display'), false);
+    assert.equal(row.instagram_url, defaultCompanySettings.instagramUrl);
   });
 
   it('rejects phone href values that are not tel-safe international numbers', () => {
