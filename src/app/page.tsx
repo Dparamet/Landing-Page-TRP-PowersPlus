@@ -18,13 +18,13 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
-      <StandardsTechnology />
       <ServiceSelector />
       <SolarCalculator />
       <Portfolio />
       <Process />
-      <Contact />
+      <StandardsTechnology />
       <FAQ />
+      <Contact />
       <Footer />
     </main>
   );
