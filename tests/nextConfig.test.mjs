@@ -9,10 +9,12 @@ function source(path) {
 
 describe('next config', () => {
   it('keeps the Next.js dev indicator from dimming local pages', () => {
-    const config = source('next.config.ts');
+    const config = source('next.config.js');
     const globalCss = source('src/app/globals.css');
 
     assert.match(config, /devIndicators:\s*false/);
+    assert.match(config, /export default nextConfig/);
+    assert.doesNotMatch(config, /module\.exports/);
     assert.match(globalCss, /nextjs-portal\s*\{/);
     assert.match(globalCss, /pointer-events:\s*none\s*!important/);
   });
