@@ -61,12 +61,25 @@ export default function ScrollEffects() {
       });
     };
 
-    const observer = new IntersectionObserver(
+    let observer: IntersectionObserver | null = null;
+
+    const revealElement = (element: Element) => {
+      element.classList.add(CLASS_VISIBLE);
+      element.querySelectorAll(REVEAL_SELECTOR).forEach((child) => {
+        child.classList.add(CLASS_VISIBLE);
+        observer?.unobserve(child);
+      });
+      observer?.unobserve(element);
+    };
+
+    observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           // Apply direction and visibility in one operation
           applyDirection(entry.target, scrollDirection);
-          entry.target.classList.toggle(CLASS_VISIBLE, entry.isIntersecting);
+          if (entry.isIntersecting) {
+            revealElement(entry.target);
+          }
         });
       },
       {
@@ -81,6 +94,16 @@ export default function ScrollEffects() {
       const revealElements = document.querySelectorAll(REVEAL_SELECTOR);
 
       revealElements.forEach((element) => {
+        if (element.classList.contains(CLASS_VISIBLE)) {
+          return;
+        }
+
+        if (element.classList.contains('reveal-item') && element.closest(`.section-reveal.${CLASS_VISIBLE}`)) {
+          revealElement(element);
+          observedElements.add(element);
+          return;
+        }
+
         if (!observedElements.has(element)) {
           applyDirection(element, scrollDirection);
           observer.observe(element);
@@ -89,10 +112,18 @@ export default function ScrollEffects() {
       });
     };
 
-    // Initial observation on mount only (no continuous MutationObserver)
     observeRevealElements();
+
+    const mutationObserver = new MutationObserver(() => {
+      observeRevealElements();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
     
-    // Only add scroll listener, no MutationObserver overhead
+    // Keep dynamic CMS content visible after React swaps fallback rows for database rows.
     window.addEventListener('scroll', updateScrollDirection, { passive: true });
 
     return () => {
@@ -100,7 +131,8 @@ export default function ScrollEffects() {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
-      observer.disconnect();
+      mutationObserver.disconnect();
+      observer?.disconnect();
     };
   }, []);
 

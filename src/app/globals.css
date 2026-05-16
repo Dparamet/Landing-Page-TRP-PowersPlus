@@ -463,6 +463,11 @@ nav a.text-white:hover {
   filter: saturate(1);
 }
 
+.section-reveal.is-visible .reveal-item {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
 .site-background > :where(section, footer).section-reveal:nth-of-type(1) {
   transition-delay: 20ms;
 }
