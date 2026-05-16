@@ -1,6 +1,7 @@
 import type { Database } from '../supabase/database.types';
 
 export type CompanySettingsFormValues = {
+  logoUrl: string;
   name: string;
   phoneDisplay: string;
   phoneHref: string;
@@ -25,7 +26,22 @@ export type CompanySettingsValidationResult =
   | { ok: true; value: CompanySettingsFormValues }
   | { ok: false; message: string };
 
+export const LOCAL_LOGO_URL_STORAGE_KEY = 'trp-local-logo-url';
+export const LOGO_URL_COLUMN_MIGRATION = '202605160001_site_logo_setting.sql';
+export const SOCIAL_COLUMNS_MIGRATION = '202605150006_social_links_and_admin_policy_repair.sql';
+
+const optionalSiteSettingsColumns = [
+  'logo_url',
+  'instagram_display',
+  'instagram_url',
+  'tiktok_display',
+  'tiktok_url',
+] as const;
+
+export type OptionalSiteSettingsColumn = (typeof optionalSiteSettingsColumns)[number];
+
 export const defaultCompanySettings: CompanySettingsFormValues = {
+  logoUrl: '/images/LogoTRP.webp',
   name: 'TRP Powers Plus',
   phoneDisplay: '+66 (0) 12-345-6789',
   phoneHref: '+66012345678',
@@ -45,6 +61,7 @@ export const defaultCompanySettings: CompanySettingsFormValues = {
 };
 
 const requiredFields: Array<[keyof CompanySettingsFormValues, string]> = [
+  ['logoUrl', 'Logo URL'],
   ['name', 'ชื่อบริษัท'],
   ['phoneDisplay', 'เบอร์โทรที่แสดง'],
   ['phoneHref', 'เบอร์โทรสำหรับกดโทร'],
@@ -70,8 +87,37 @@ function isHttpsUrl(value: string): boolean {
   }
 }
 
+export function isSafeLogoUrl(value: string): boolean {
+  const trimmed = value.trim();
+
+  if (trimmed.startsWith('/')) {
+    return !trimmed.startsWith('//') && !trimmed.includes('\\');
+  }
+
+  return isHttpsUrl(trimmed);
+}
+
+export function isMissingLogoUrlColumnError(error: { message?: string }) {
+  return Boolean(error.message?.includes("'logo_url' column") || error.message?.includes('logo_url'));
+}
+
+export function getMissingOptionalSiteSettingsColumn(error: { message?: string }): OptionalSiteSettingsColumn | null {
+  const message = error.message ?? '';
+  return optionalSiteSettingsColumns.find((column) => message.includes(`'${column}' column`) || message.includes(column)) ?? null;
+}
+
+export function stripOptionalSiteSettingsColumn<T extends Partial<Record<OptionalSiteSettingsColumn, unknown>>>(
+  row: T,
+  column: OptionalSiteSettingsColumn,
+) {
+  const nextRow = { ...row };
+  delete nextRow[column];
+  return nextRow;
+}
+
 function trimCompanySettings(values: CompanySettingsFormValues): CompanySettingsFormValues {
   return {
+    logoUrl: values.logoUrl.trim(),
     name: values.name.trim(),
     phoneDisplay: values.phoneDisplay.trim(),
     phoneHref: values.phoneHref.trim(),
@@ -121,6 +167,10 @@ export function validateCompanySettings(values: CompanySettingsFormValues): Comp
     return { ok: false, message: 'Google Maps Embed URL ต้องขึ้นต้นด้วย https://www.google.com/maps/embed' };
   }
 
+  if (!isSafeLogoUrl(trimmed.logoUrl)) {
+    return { ok: false, message: 'Logo URL ต้องเป็น https:// หรือ path ที่ขึ้นต้นด้วย / เท่านั้น' };
+  }
+
   return { ok: true, value: trimmed };
 }
 
@@ -130,6 +180,7 @@ export function mapSiteSettingsRowToForm(row: SiteSettingsRow | null): CompanySe
   }
 
   return {
+    logoUrl: row.logo_url || defaultCompanySettings.logoUrl,
     name: row.name || defaultCompanySettings.name,
     phoneDisplay: row.phone_display || defaultCompanySettings.phoneDisplay,
     phoneHref: row.phone_href || defaultCompanySettings.phoneHref,
@@ -151,6 +202,7 @@ export function mapSiteSettingsRowToForm(row: SiteSettingsRow | null): CompanySe
 export function mapCompanySettingsFormToUpsert(values: CompanySettingsFormValues): SiteSettingsUpsert {
   return {
     id: true,
+    logo_url: values.logoUrl,
     name: values.name,
     phone_display: values.phoneDisplay,
     phone_href: values.phoneHref,

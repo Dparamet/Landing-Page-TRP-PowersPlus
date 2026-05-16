@@ -3,6 +3,7 @@ import type { CompanySettingsFormValues, SiteSettingsRow } from './admin/company
 export type CompanyProfileView = CompanySettingsFormValues;
 
 export const defaultCompanyProfile: CompanyProfileView = {
+  logoUrl: '/images/LogoTRP.webp',
   name: 'TRP Powers Plus',
   phoneDisplay: '+66 (0) 12-345-6789',
   phoneHref: '+66012345678',
@@ -23,6 +24,7 @@ export const defaultCompanyProfile: CompanyProfileView = {
 
 export function mapCompanySettingsToProfile(settings: CompanySettingsFormValues): CompanyProfileView {
   return {
+    logoUrl: settings.logoUrl,
     name: settings.name,
     phoneDisplay: settings.phoneDisplay,
     phoneHref: settings.phoneHref,
@@ -47,6 +49,7 @@ export function mapSiteSettingsRowToProfile(row: SiteSettingsRow | null): Compan
   }
 
   return {
+    logoUrl: row.logo_url || defaultCompanyProfile.logoUrl,
     name: row.name || defaultCompanyProfile.name,
     phoneDisplay: row.phone_display || defaultCompanyProfile.phoneDisplay,
     phoneHref: row.phone_href || defaultCompanyProfile.phoneHref,

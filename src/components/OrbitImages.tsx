@@ -123,7 +123,7 @@ function OrbitItem({
       className="absolute left-1/2 top-1/2 w-[clamp(132px,17vw,220px)] rounded-lg border border-white/25 bg-white/16 p-3 text-white shadow-2xl shadow-slate-950/25 backdrop-blur md:will-change-transform"
       style={{ x, y, scale, opacity, zIndex, translateX: '-50%', translateY: '-50%' }}
     >
-      <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-md border border-white/20 bg-[#0f2a5f]/60">
+      <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-md border border-white/20 bg-[#12345f]/60">
         <Image
           src={project.coverImage.src}
           alt={project.coverImage.alt[language]}

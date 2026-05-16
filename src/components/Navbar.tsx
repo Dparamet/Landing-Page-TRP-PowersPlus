@@ -1,82 +1,73 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const { t } = useLanguage();
+  const router = useRouter();
   const pathname = usePathname();
-  const anchorPrefix = pathname === '/' ? '' : '/';
 
   const navLinks = [
-    { href: `${anchorPrefix}#hero`, label: t('nav.home') },
-    { href: `${anchorPrefix}#services`, label: t('nav.services') },
-    { href: `${anchorPrefix}#portfolio`, label: t('nav.portfolio') },
-    { href: `${anchorPrefix}#calculator`, label: t('nav.calculator') },
-    { href: `${anchorPrefix}#contact`, label: t('nav.contact') },
+    { id: 'hero', label: t('nav.home') },
+    { id: 'services', label: t('nav.services') },
+    { id: 'calculator', label: t('nav.calculator') },
+    { id: 'portfolio', label: t('nav.portfolio') },
+    { id: 'contact', label: t('nav.contact') },
   ];
 
-  // Detect scroll for smooth navbar enhancement
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > 12);
-    };
+  const scrollToSection = (sectionId: string) => {
+    if (pathname !== '/') {
+      router.push(`/#${sectionId}`);
+      return;
+    }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-[#d66d0c] bg-[#f08a24] shadow-lg shadow-orange-300/30 backdrop-blur" role="navigation" aria-label={t('nav.mainNavigation')}>
+    <nav className="main-site-nav sticky top-0 z-50 w-full border-b border-slate-200 bg-white/70 shadow-sm backdrop-blur-md" role="navigation" aria-label={t('nav.mainNavigation')}>
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
         
         {/* Logo with smooth hover */}
         <Link 
           href="/" 
-          className="relative flex h-10 w-32 shrink-0 items-center transition-transform duration-300 hover:scale-105 md:h-12 md:w-40"
+          className="relative flex h-12 w-40 shrink-0 items-center transition-transform duration-300 hover:scale-105 md:h-16 md:w-52"
           aria-label={t('nav.logoLinkLabel')}
         > 
-          <Image 
-            src="/images/LogoTRP.webp" 
-            alt={t('nav.logoAlt')} 
-            fill 
-            className="object-contain transition-transform duration-300"
-            sizes="(min-width: 768px) 192px, 160px"
-            priority 
-          />
+          <CompanyLogo alt={t('nav.logoAlt')} priority className="h-full w-full object-contain transition-transform duration-300" />
         </Link>
 
         {/* เมนูเดสก์ทอป */}
-        <div className="hidden items-center gap-7 text-sm font-bold text-white lg:flex">
+        <div className="hidden items-center gap-7 text-sm font-bold text-[#0f2a5f] lg:flex">
           {navLinks.map((link) => (
-            <Link 
-              key={link.href}
-              href={link.href} 
-              className="relative transition-colors duration-200 after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-0 after:bg-white after:transition-all hover:text-white/80 hover:after:w-full"
+            <button 
+              key={link.id}
+              onClick={() => scrollToSection(link.id)}
+              className="relative transition-colors duration-200 after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-0 after:bg-[#f08a24] after:transition-all hover:text-[#f08a24] hover:after:w-full cursor-pointer"
             >
               {link.label}
-              <span className="absolute -bottom-2 left-0 h-0.5 w-0 bg-gradient-to-r from-[#f08a24] to-[#d66d0c] transition-all duration-320 group-hover:w-full" />
-            </Link>
+            </button>
           ))}
         </div>
 
         {/* Language Switcher + CTA Button - Desktop */}
         <div className="hidden items-center gap-3 md:flex">
           <LanguageSwitcher />
-          <Link 
-            href="#contact" 
-            className="rounded-lg bg-[#f08a24] px-6 py-2 font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#d66d0c] hover:shadow-lg hover:shadow-orange-200"
+          <button 
+            onClick={() => scrollToSection('contact')}
+            className="rounded-lg bg-[#f08a24] px-6 py-2 font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#d66d0c] hover:shadow-lg hover:shadow-orange-200 cursor-pointer"
           >
             {t('hero.cta')}
-          </Link>
+          </button>
         </div>
 
         {/* Hamburger Menu - Mobile */}
@@ -86,36 +77,40 @@ export default function Navbar() {
           aria-label={t('nav.toggleMenu')}
           aria-expanded={mobileMenuOpen}
         >
-          <span className={`h-0.5 w-6 bg-white transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`h-0.5 w-6 bg-white transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`h-0.5 w-6 bg-white transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-[#0f2a5f] transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-[#0f2a5f] transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`h-0.5 w-6 bg-[#0f2a5f] transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
       </div>
 
       {/* Mobile Menu with smooth animation */}
       {mobileMenuOpen && (
-        <div className="border-t border-[#d66d0c] bg-[#f08a24] lg:hidden">
+        <div className="border-t border-slate-200 bg-white/70 backdrop-blur-md lg:hidden">
           <div className="flex flex-col gap-4 px-4 py-4">
             {navLinks.map((link) => (
-              <Link 
-                key={link.href}
-                href={link.href} 
-                className="font-semibold text-white transition-colors hover:text-white/80"
-                onClick={() => setMobileMenuOpen(false)}
+              <button 
+                key={link.id}
+                onClick={() => {
+                  scrollToSection(link.id);
+                  setMobileMenuOpen(false);
+                }}
+                className="font-semibold text-[#0f2a5f] transition-colors hover:text-[#f08a24] text-left cursor-pointer"
               >
                 {link.label}
-              </Link>
+              </button>
             ))}
             <div className="py-2 transition-all duration-300">
               <LanguageSwitcher />
             </div>
-            <Link 
-              href="#contact" 
-              className="rounded-lg bg-[#f08a24] py-3 text-center font-bold text-white transition-all hover:bg-[#d66d0c]"
-              onClick={() => setMobileMenuOpen(false)}
+            <button 
+              onClick={() => {
+                scrollToSection('contact');
+                setMobileMenuOpen(false);
+              }}
+              className="rounded-lg bg-[#f08a24] py-3 text-center font-bold text-white transition-all hover:bg-[#d66d0c] cursor-pointer"
             >
               {t('hero.cta')}
-            </Link>
+            </button>
           </div>
         </div>
       )}

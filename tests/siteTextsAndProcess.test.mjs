@@ -43,6 +43,8 @@ describe('site texts and process content helpers', () => {
         description: { th: 'รายละเอียด', en: 'Details' },
         sort_order: 20,
         published: true,
+        deleted_at: null,
+        purge_after: null,
         created_at: null,
         updated_at: null,
       },
@@ -52,6 +54,8 @@ describe('site texts and process content helpers', () => {
         description: { th: 'ซ่อน', en: 'Hidden' },
         sort_order: 10,
         published: false,
+        deleted_at: null,
+        purge_after: null,
         created_at: null,
         updated_at: null,
       },
@@ -64,6 +68,28 @@ describe('site texts and process content helpers', () => {
     assert.equal(publicSteps.length, 1);
     assert.equal(publicSteps[0].title.th, 'ขั้นตอนใหม่');
     assert.equal(adminSteps[0].title.th, 'ซ่อน');
+  });
+
+  it('falls back when database rows contain no visible process steps', () => {
+    const fallback = buildDefaultProcessSteps(th.process.steps, en.process.steps);
+    const rows = [
+      {
+        id: '83333333-3333-4333-8333-333333333333',
+        title: { th: 'ซ่อน', en: 'Hidden' },
+        description: { th: 'ซ่อน', en: 'Hidden' },
+        sort_order: 10,
+        published: false,
+        deleted_at: null,
+        purge_after: null,
+        created_at: null,
+        updated_at: null,
+      },
+    ];
+
+    const publicSteps = mapProcessStepRows(rows, fallback);
+
+    assert.equal(publicSteps.length, fallback.length);
+    assert.equal(publicSteps[0].title.th, fallback[0].title.th);
   });
 
   it('validates and maps editable process steps', () => {

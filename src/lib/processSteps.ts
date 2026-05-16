@@ -56,8 +56,13 @@ export function mapProcessStepRows(rows: ProcessStepRow[], fallback: ProcessStep
     return fallback;
   }
 
-  return rows
-    .filter((row) => includeUnpublished || (row.published && !row.deleted_at))
+  const visibleRows = rows.filter((row) => includeUnpublished || (row.published && !row.deleted_at));
+
+  if (visibleRows.length === 0) {
+    return fallback;
+  }
+
+  return visibleRows
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((row, index) => {
       const fallbackStep = fallback[index] ?? fallback[0] ?? {

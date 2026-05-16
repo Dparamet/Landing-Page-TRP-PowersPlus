@@ -1,41 +1,20 @@
 # TRP Powers Plus Web
 
-เว็บไซต์ Landing Page สำหรับบริษัท TRP Powers Plus งานระบบไฟฟ้า โซลาร์เซลล์ และบริการประเมินเบื้องต้นสำหรับลูกค้าในประเทศไทย
+เว็บไซต์ Landing Page สำหรับบริษัท TRP Powers Plus ที่ให้บริการงานระบบไฟฟ้า งานโซลาร์เซลล์ และบริการประเมินเบื้องต้นสำหรับลูกค้าในประเทศไทย
 
-โปรเจกต์นี้ถูกจัดให้ส่งมอบต่อได้ง่าย: ข้อมูลธุรกิจและผลงานอยู่ในไฟล์ content กลาง, ข้อความภาษาไทย/อังกฤษอยู่ใน locale files, และมีคู่มือสำหรับคนที่ไม่เคยเขียนโปรแกรมมาก่อน
+โปรเจกต์นี้ออกแบบมาให้ส่งมอบต่อได้ง่าย ข้อมูลธุรกิจและผลงานถูกรวมไว้ในไฟล์ content กลาง ข้อความภาษาไทยและอังกฤษแยกเป็น locale files และมีคู่มือสำหรับผู้ดูแลที่ไม่ใช่นักพัฒนา
 
-## สารบัญ
+## ภาพรวม
 
-- [สิ่งที่ต้องติดตั้งก่อน](#สิ่งที่ต้องติดตั้งก่อน)
-- [เริ่มใช้งานในเครื่อง](#เริ่มใช้งานในเครื่อง)
-- [คำสั่งทั้งหมด](#คำสั่งทั้งหมด)
-- [โครงสร้างโปรเจกต์](#โครงสร้างโปรเจกต์)
-- [แก้ข้อความ รูปภาพ และข้อมูลบริษัท](#แก้ข้อความ-รูปภาพ-และข้อมูลบริษัท)
-- [ระบบคำนวณโซลาร์เซลล์](#ระบบคำนวณโซลาร์เซลล์)
-- [การตรวจงานก่อนส่งมอบ](#การตรวจงานก่อนส่งมอบ)
-- [การ Build และ Deploy](#การ-build-และ-deploy)
-- [แก้ปัญหาที่พบบ่อย](#แก้ปัญหาที่พบบ่อย)
+- Next.js App Router + TypeScript + React
+- Tailwind CSS + custom CSS variables
+- รองรับภาษาไทยและอังกฤษ
+- ตั้งค่าเป็น static export สำหรับ deploy แบบไฟล์ static
+- มีระบบทดสอบสำหรับ content, locale, รูปภาพ, และ solar estimator
 
-## สิ่งที่ต้องติดตั้งก่อน
+## เริ่มใช้งาน
 
-ติดตั้งโปรแกรมเหล่านี้ก่อนเริ่มงาน:
-
-- Node.js 20 ขึ้นไป แนะนำ Node.js 22
-- npm ซึ่งติดมากับ Node.js
-- Git
-- โปรแกรมแก้ไฟล์ เช่น VS Code
-
-ตรวจเวอร์ชัน:
-
-```bash
-node --version
-npm --version
-git --version
-```
-
-## เริ่มใช้งานในเครื่อง
-
-1. เข้าโฟลเดอร์โปรเจกต์
+1. เปิดโฟลเดอร์โปรเจกต์
 
 ```bash
 cd "C:\Users\Acer\Desktop\Project My Future\trp-powers-plus\trp-powers-plus-web"
@@ -47,101 +26,113 @@ cd "C:\Users\Acer\Desktop\Project My Future\trp-powers-plus\trp-powers-plus-web"
 npm install
 ```
 
-3. เปิดเว็บสำหรับพัฒนา
+3. เปิดโหมดพัฒนา
 
 ```bash
 npm run dev
 ```
 
-4. เปิดเว็บใน browser
+4. เปิดเว็บที่
 
 ```text
 http://localhost:3000
 ```
 
-ถ้า port 3000 ถูกใช้อยู่ ให้ใช้:
+ถ้า port 3000 ถูกใช้อยู่ ให้ใช้
 
 ```bash
 npm run dev -- -p 3001
 ```
 
-แล้วเปิด:
+แล้วเปิด
 
 ```text
 http://localhost:3001
 ```
 
-## คำสั่งทั้งหมด
+## สิ่งที่ต้องติดตั้ง
+
+- Node.js 20 ขึ้นไป แนะนำ Node.js 22
+- npm ซึ่งติดมากับ Node.js
+- Git
+- โปรแกรมแก้ไฟล์ เช่น VS Code
+
+ตรวจเวอร์ชันได้ด้วย
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+## คำสั่งหลัก
 
 | คำสั่ง | ใช้ทำอะไร |
 | --- | --- |
-| `npm install` | ติดตั้ง dependencies หลัง clone หรือรับโปรเจกต์มาใหม่ |
+| `npm install` | ติดตั้ง dependencies |
 | `npm run dev` | เปิดเว็บในโหมดพัฒนา |
-| `npm test` | ตรวจสูตรคำนวณ, โครงสร้างภาษา, และ path รูปภาพ |
-| `npm run lint` | ตรวจคุณภาพโค้ดและ accessibility พื้นฐาน |
+| `npm test` | ตรวจสูตรคำนวณ โครงสร้างภาษา และ path รูปภาพ |
+| `npm run lint` | ตรวจคุณภาพโค้ดและรูปแบบการเขียน |
 | `npm run build` | build static site สำหรับส่งขึ้น hosting |
-| `npm run start` | ใช้กับ Next server mode แต่โปรเจกต์นี้ตั้งค่า static export เป็นหลัก |
+| `npm run start` | ใช้กับ Next server mode แต่โปรเจกต์นี้เน้น static export |
 
 ## โครงสร้างโปรเจกต์
 
 ```text
 trp-powers-plus-web/
 ├── docs/
-│   ├── CONTENT_GUIDE.md       คู่มือแก้ข้อความและรูปภาพสำหรับผู้ดูแลเว็บ
-│   └── HANDOFF_SPEC.md        สเปกการจัดโครงสร้างเพื่อส่งมอบ
+│   ├── CONTENT_GUIDE.md   คู่มือแก้ข้อความและรูปภาพ
+│   └── HANDOFF_SPEC.md    แนวทางการส่งมอบและโครงสร้างเนื้อหา
 ├── public/
 │   └── images/
-│       ├── LogoTRP.webp       โลโก้หลัก
-│       └── portfolio/         ใส่รูปผลงานที่นี่
+│       ├── LogoTRP.webp   โลโก้หลัก
+│       └── portfolio/     รูปผลงาน
 ├── src/
-│   ├── app/                   Next.js App Router, metadata, global CSS
-│   ├── components/            ส่วนประกอบ UI เช่น Hero, Portfolio, Calculator
-│   ├── content/
-│   │   └── site.ts            ข้อมูลบริษัท ช่องทางติดต่อ และผลงาน
-│   ├── context/               Language และ cookie consent providers
-│   ├── data/                  compatibility export สำหรับไฟล์เก่า
-│   ├── lib/                   logic ใช้ซ้ำ เช่น solar estimator
-│   └── locales/               ข้อความภาษาไทยและอังกฤษ
-├── tests/                     test files
-├── next.config.ts             ตั้งค่า static export และ image mode
-├── package.json               scripts และ dependencies
-└── README.md                  คู่มือหลัก
+│   ├── app/               หน้าเว็บ, layout, globals.css
+│   ├── components/        ส่วนประกอบ UI หลัก
+│   ├── content/           ข้อมูลบริษัท บริการ และผลงาน
+│   ├── context/           providers สำหรับภาษาและ cookie consent
+│   ├── data/              compatibility export สำหรับไฟล์เก่า
+│   ├── lib/               logic ใช้ซ้ำ เช่น solar estimator
+│   └── locales/           ข้อความภาษาไทยและอังกฤษ
+├── tests/                 test files
+├── next.config.ts         static export และ image settings
+├── package.json           scripts และ dependencies
+└── README.md              คู่มือหลัก
 ```
 
-## แก้ข้อความ รูปภาพ และข้อมูลบริษัท
+## แก้ข้อความและข้อมูล
 
-สำหรับผู้ดูแลที่ไม่เขียนโปรแกรม ให้เริ่มจากคู่มือนี้:
+ถ้าต้องการแก้ข้อความ รูปภาพ หรือข้อมูลบริษัท ให้เริ่มจาก [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
 
-[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
+ไฟล์สำคัญมีดังนี้
 
-ไฟล์ที่ต้องรู้มี 3 กลุ่ม:
-
-| สิ่งที่จะแก้ | ไฟล์หรือโฟลเดอร์ |
+| สิ่งที่ต้องแก้ | ไฟล์หรือโฟลเดอร์ |
 | --- | --- |
 | ข้อความภาษาไทย | `src/locales/th.json` |
 | ข้อความภาษาอังกฤษ | `src/locales/en.json` |
 | เบอร์โทร อีเมล Line Facebook แผนที่ | `src/content/site.ts` |
-| รายการบริการและตัวเลือกประเภทงาน | `src/content/site.ts` |
+| รายการบริการ | `src/content/site.ts` |
 | รายการผลงาน | `src/content/site.ts` |
 | รูปผลงาน | `public/images/portfolio/` |
 | โลโก้ | `public/images/LogoTRP.webp` |
 
-หลังแก้ทุกครั้งให้รัน:
+หลังแก้ content ให้รัน
 
 ```bash
 npm test
 npm run build
 ```
 
-### วิธีเพิ่มรูปผลงานแบบสั้น
+### เพิ่มรูปผลงาน
 
 1. วางรูปใน `public/images/portfolio/`
 2. ตั้งชื่อไฟล์เป็นภาษาอังกฤษ ไม่มีเว้นวรรค เช่น `factory-solar.webp`
 3. เปิด `src/content/site.ts`
 4. หา project ที่ต้องการแก้
-5. เปลี่ยน `coverImage.src` หรือรูปใน `gallery` เป็น path ของรูปใหม่
+5. เปลี่ยน `coverImage.src` หรือรูปใน `gallery` ให้ชี้ไปที่ path ใหม่
 
-ตัวอย่าง:
+ตัวอย่าง
 
 ```ts
 coverImage: {
@@ -153,31 +144,31 @@ coverImage: {
 },
 ```
 
-ถ้าพิมพ์ชื่อไฟล์ผิด `npm test` จะฟ้องว่า image file is missing
+ถ้าพิมพ์ชื่อไฟล์ผิด `npm test` จะรายงานว่า image file is missing
 
-### วิธีเพิ่มผลงานใหม่แบบสั้น
+### เพิ่มผลงานใหม่
 
 เปิด `src/content/site.ts` แล้วเพิ่ม object ใหม่ใน `portfolioProjects`
 
-สิ่งที่ต้องกรอก:
+ช่องที่ควรกรอก
 
 - `title`: ชื่อผลงานไทย/อังกฤษ
-- `categoryKey`: ประเภทสำหรับปุ่มกรอง ต้องตรงกับ `serviceCategories.key`
+- `categoryKey`: ต้องตรงกับ `serviceCategories.key`
 - `category`: ประเภทงานไทย/อังกฤษ
 - `description`: คำอธิบายไทย/อังกฤษ
-- `systemType`: ประเภทระบบหรืองาน เช่น ออนกริด, ระบบไฟฟ้าอาคาร, ตู้ควบคุม
-- `metrics`: ข้อมูลตัดสินใจของงานนั้น เช่น ขนาดระบบ, ขอบเขตงาน, โหลดไฟ, ผลประหยัด, ผลลัพธ์
+- `systemType`: ประเภทระบบ เช่น ออนกริด, ระบบไฟฟ้าอาคาร, ตู้ควบคุม
+- `metrics`: ข้อมูลสำคัญของงาน เช่น ขนาดระบบ ขอบเขตงาน ผลประหยัด
 - `location`: พื้นที่ไทย/อังกฤษ
 - `province`: จังหวัดหรือพื้นที่บริการ
 - `accent`: ใช้ได้แค่ `orange` หรือ `blue`
 - `coverImage`: รูปหลักของผลงาน
 - `gallery`: รูปก่อนติดตั้ง ระหว่างติดตั้ง และหลังติดตั้ง
 
-### วิธีเพิ่มหรือแก้บริการแบบสั้น
+### เพิ่มหรือแก้บริการ
 
 เปิด `src/content/site.ts` แล้วแก้รายการใน `serviceCategories`
 
-สิ่งที่ต้องกรอก:
+ช่องที่ควรกรอก
 
 - `key`: รหัสบริการ เช่น `residential`, `building`, `factory`, `solar`, `maintenance`, `controlPanel`
 - `title` และ `shortTitle`: ชื่อบริการเต็มและชื่อสั้น
@@ -185,18 +176,18 @@ coverImage: {
 - `bestFor`: เหมาะกับลูกค้าแบบไหน
 - `includes`: งานที่รับอย่างน้อย 3 รายการ
 - `prepare`: ข้อมูลที่ลูกค้าควรเตรียมอย่างน้อย 3 รายการ
-- `lineMessage`: ข้อความตั้งต้นสำหรับให้ลูกค้าส่งใน LINE
+- `lineMessage`: ข้อความเริ่มต้นสำหรับส่งใน LINE
 - `accent`: ใช้ `orange` หรือ `blue`
 
-## ระบบคำนวณโซลาร์เซลล์
+## Solar Calculator
 
-ไฟล์หลัก:
+ไฟล์ที่เกี่ยวข้อง
 
 - UI: `src/components/SolarCalculator.tsx`
 - สูตรคำนวณ: `src/lib/solarEstimator.ts`
 - Test: `tests/solarEstimator.test.mjs`
 
-ระบบคำนวณตอนนี้ใช้:
+ระบบคำนวณใช้หลักการดังนี้
 
 - ค่าไฟบ้านแบบขั้นบันได
 - ค่า Ft `0.1623 บาท/หน่วย`
@@ -205,15 +196,15 @@ coverImage: {
 - ปัดขนาดติดตั้งเป็นขั้น `0.5 kWp`
 - แยก On-grid และ Hybrid
 
-ก่อนเปลี่ยนค่าไฟหรือสูตร ให้แก้ test ใน `tests/solarEstimator.test.mjs` ให้สะท้อนพฤติกรรมใหม่ แล้วรัน:
+ถ้าจะเปลี่ยนค่าไฟหรือสูตร ให้แก้ test ใน `tests/solarEstimator.test.mjs` ให้ตรงกับพฤติกรรมใหม่ แล้วรัน
 
 ```bash
 npm test
 ```
 
-## การตรวจงานก่อนส่งมอบ
+## ตรวจงานก่อนส่งมอบ
 
-รันทุกคำสั่งนี้ก่อนส่งงาน:
+รันคำสั่งเหล่านี้ก่อนส่งงาน
 
 ```bash
 npm test
@@ -221,35 +212,33 @@ npm run lint
 npm run build
 ```
 
-ผลที่ต้องการ:
+ผลที่ควรได้
 
-- `npm test`: ผ่านทั้งหมด
-- `npm run lint`: ไม่มี error
-- `npm run build`: build สำเร็จและสร้างไฟล์ใน `out/`
+- `npm test` ผ่านทั้งหมด
+- `npm run lint` ไม่มี error
+- `npm run build` สำเร็จและสร้างไฟล์ใน `out/`
 
-ห้ามส่งงานถ้า build ไม่ผ่าน
+## Build และ Deploy
 
-## การ Build และ Deploy
+โปรเจกต์นี้ตั้งค่า static export ไว้ใน `next.config.ts`
 
-โปรเจกต์นี้ตั้งค่า static export ใน `next.config.ts`
-
-Build:
+Build ด้วย
 
 ```bash
 npm run build
 ```
 
-ไฟล์เว็บสำหรับ deploy จะอยู่ใน:
+ไฟล์สำหรับ deploy จะอยู่ใน
 
 ```text
 out/
 ```
 
-นำโฟลเดอร์ `out/` ไปใช้กับ static hosting ได้ เช่น GitHub Pages, Netlify, Vercel static output หรือ hosting ที่รองรับไฟล์ HTML/CSS/JS
+นำโฟลเดอร์ `out/` ไปใช้กับ static hosting ได้ เช่น GitHub Pages, Netlify, Vercel static output หรือ hosting ที่รองรับ HTML/CSS/JS
 
-## แก้ปัญหาที่พบบ่อย
+## ปัญหาที่พบบ่อย
 
-### เปิด dev server ไม่ได้ เพราะ port 3000 ถูกใช้
+### เปิด dev server ไม่ได้เพราะ port 3000 ถูกใช้
 
 ```bash
 npm run dev -- -p 3001
@@ -257,13 +246,13 @@ npm run dev -- -p 3001
 
 ### รูปผลงานไม่ขึ้น
 
-ตรวจ 3 จุด:
+ตรวจ 3 จุด
 
-1. รูปอยู่ใน `public/images/portfolio/` หรือไม่
-2. ชื่อไฟล์ตรงกับ `coverImage.src` หรือ `gallery[].src` ใน `src/content/site.ts` หรือไม่
-3. path ขึ้นต้นด้วย `/images/portfolio/` หรือไม่
+1. รูปอยู่ใน `public/images/portfolio/`
+2. ชื่อไฟล์ตรงกับ `coverImage.src` หรือ `gallery[].src` ใน `src/content/site.ts`
+3. path ขึ้นต้นด้วย `/images/portfolio/`
 
-จากนั้นรัน:
+จากนั้นรัน
 
 ```bash
 npm test
@@ -271,17 +260,17 @@ npm test
 
 ### แก้ภาษาแล้ว test fail
 
-แปลว่า `src/locales/th.json` และ `src/locales/en.json` มี key ไม่ตรงกัน
+มักเกิดจาก `src/locales/th.json` และ `src/locales/en.json` มี key ไม่ตรงกัน
 
-วิธีแก้:
+วิธีแก้
 
-1. ดูข้อความ error จาก `npm test`
+1. ดู error จาก `npm test`
 2. เพิ่ม key ที่หายไปในอีกภาษา
-3. อย่าลืม comma และเครื่องหมายคำพูดใน JSON
+3. ตรวจ comma และเครื่องหมายคำพูดใน JSON
 
 ### Build fail หลังรับโปรเจกต์มาใหม่
 
-ลบ dependencies แล้วติดตั้งใหม่:
+ติดตั้ง dependencies ใหม่แล้วลอง build อีกครั้ง
 
 ```bash
 Remove-Item -Recurse -Force node_modules
@@ -291,32 +280,15 @@ npm run build
 
 ## ข้อควรระวัง
 
-- อย่าแก้ไฟล์ใน `.next/` หรือ `out/` เพราะเป็นไฟล์ที่ระบบสร้างใหม่เอง
+- อย่าแก้ไฟล์ใน `.next/` หรือ `out/` เพราะเป็นไฟล์ที่ระบบสร้างใหม่
 - อย่า commit password, token, API key หรือข้อมูลลับ
 - อย่าลบ tests เพื่อให้คำสั่งผ่าน
 - ถ้าจะเปลี่ยนสูตรค่าไฟ ให้แก้ test พร้อมกันเสมอ
 
-## ข้อมูลอ้างอิงเพิ่มเติม
+## ข้อมูลอ้างอิง
 
 - [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
 - [docs/HANDOFF_SPEC.md](docs/HANDOFF_SPEC.md)
 - [Next.js Docs](https://nextjs.org/docs)
 - [React Docs](https://react.dev)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
-
-## สถานะล่าสุด
-
-- Last updated: May 15, 2026
-- Maintained for: TRP Powers Plus
-- Project type: Static Next.js landing page
-- Current branch: `main` (active)
-- Development branch: `dev` (available)
-
-### ความเปลี่ยนแปลงล่าสุด (May 2026)
-
-- ✅ เพิ่ม SolarCalculator component สำหรับคำนวณต้นทุนโซลาร์เซลล์
-- ✅ ปรับปรุง localization (Thai/English)
-- ✅ ปรับปรุง Navbar และ Hero component
-- ✅ เพิ่ม Language Switcher
-- ✅ เพิ่ม Cookie Consent Modal
-- ✅ ปรับปรุง Footer และ Content components

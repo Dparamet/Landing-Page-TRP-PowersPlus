@@ -3,8 +3,11 @@ import { describe, it } from 'node:test';
 
 import {
   defaultCompanySettings,
+  getMissingOptionalSiteSettingsColumn,
+  isMissingLogoUrlColumnError,
   mapCompanySettingsFormToUpsert,
   mapSiteSettingsRowToForm,
+  stripOptionalSiteSettingsColumn,
   validateCompanySettings,
 } from '../src/lib/admin/companySettings.ts';
 
@@ -18,6 +21,45 @@ describe('company settings admin data', () => {
       ok: false,
       message: 'URL ภายนอกต้องเป็น https:// เท่านั้น',
     });
+  });
+
+  it('accepts a hosted logo URL for the admin logo setting', () => {
+    const result = validateCompanySettings({ ...defaultCompanySettings, logoUrl: 'https://cdn.example.com/logo.webp' });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.ok ? result.value.logoUrl : '', 'https://cdn.example.com/logo.webp');
+  });
+
+  it('rejects unsafe logo URLs', () => {
+    assert.deepEqual(validateCompanySettings({ ...defaultCompanySettings, logoUrl: 'javascript:alert(1)' }), {
+      ok: false,
+      message: 'Logo URL ต้องเป็น https:// หรือ path ที่ขึ้นต้นด้วย / เท่านั้น',
+    });
+  });
+
+  it('detects missing logo_url schema cache errors', () => {
+    assert.equal(
+      isMissingLogoUrlColumnError({
+        message: "Could not find the 'logo_url' column of 'site_settings' in the schema cache",
+      }),
+      true,
+    );
+  });
+
+  it('detects missing optional site settings columns', () => {
+    assert.equal(
+      getMissingOptionalSiteSettingsColumn({
+        message: "Could not find the 'instagram_display' column of 'site_settings' in the schema cache",
+      }),
+      'instagram_display',
+    );
+  });
+
+  it('strips missing optional site settings columns for legacy databases', () => {
+    const row = stripOptionalSiteSettingsColumn(mapCompanySettingsFormToUpsert(defaultCompanySettings), 'instagram_display');
+
+    assert.equal(Object.hasOwn(row, 'instagram_display'), false);
+    assert.equal(row.instagram_url, defaultCompanySettings.instagramUrl);
   });
 
   it('rejects phone href values that are not tel-safe international numbers', () => {
@@ -51,6 +93,7 @@ describe('company settings admin data', () => {
 
     assert.equal(form.phoneDisplay, defaultCompanySettings.phoneDisplay);
     assert.equal(form.email, defaultCompanySettings.email);
+    assert.equal(form.logoUrl, defaultCompanySettings.logoUrl);
   });
 
   it('maps form values to the Supabase upsert shape', () => {
@@ -61,6 +104,7 @@ describe('company settings admin data', () => {
     assert.equal(upsert.instagram_url, defaultCompanySettings.instagramUrl);
     assert.equal(upsert.tiktok_url, defaultCompanySettings.tiktokUrl);
     assert.equal(upsert.google_maps_embed_url, defaultCompanySettings.googleMapsEmbedUrl);
+    assert.equal(upsert.logo_url, defaultCompanySettings.logoUrl);
     assert.match(upsert.updated_at, /^\d{4}-\d{2}-\d{2}T/);
   });
 
