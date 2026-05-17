@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCookieConsent } from '@/context/CookieConsentContext';
@@ -8,8 +9,10 @@ import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function FooterContent() {
   const { t } = useLanguage();
+  const pathname = usePathname();
   const { openSettings } = useCookieConsent();
   const companyProfile = useCompanyProfile();
+  const sectionHref = (sectionId: string) => (pathname === '/' ? `#${sectionId}` : `/#${sectionId}`);
 
   return (
     <>
@@ -31,11 +34,11 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#0f2a5f]">{t('footer.menu')}</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><Link href="#hero" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.home')}</Link></li>
-              <li><Link href="#services" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.services')}</Link></li>
-              <li><Link href="#portfolio" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.portfolio')}</Link></li>
-              <li><Link href="#calculator" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.calculator')}</Link></li>
-              <li><Link href="#contact" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.contact')}</Link></li>
+              <li><Link href={sectionHref('hero')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.home')}</Link></li>
+              <li><Link href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.services')}</Link></li>
+              <li><Link href={sectionHref('portfolio')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.portfolio')}</Link></li>
+              <li><Link href={sectionHref('calculator')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.calculator')}</Link></li>
+              <li><Link href={sectionHref('contact')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.contact')}</Link></li>
               <li>
                 <button type="button" onClick={openSettings} className="no-hover-bounce relative text-left transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">
                   {t('footer.cookieSettings')}
@@ -48,10 +51,10 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#0f2a5f]">{t('footer.services')}</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><a href="#services" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.solar')}</a></li>
-              <li><a href="#services" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.electrical')}</a></li>
-              <li><a href="#services" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.maintenance')}</a></li>
-              <li><a href="#contact" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.consultation')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.solar')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.electrical')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.maintenance')}</a></li>
+              <li><a href={sectionHref('contact')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.consultation')}</a></li>
             </ul>
           </div>
 
