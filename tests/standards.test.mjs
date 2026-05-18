@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { fallbackStandardItems, mapStandardItemRows } from '../src/lib/standards.ts';
@@ -67,5 +69,13 @@ describe('standard items', () => {
 
     assert.equal(publicItems[0].altText, 'tester');
     assert.equal(publicItems[0].imageUrl, 'https://example.com/solar.webp');
+  });
+
+  it('keeps partner carousel loop normalized across repeated segments', () => {
+    const source = readFileSync(join(process.cwd(), 'src/components/StandardsTechnology.tsx'), 'utf8');
+
+    assert.match(source, /function normalizeOffset/);
+    assert.match(source, /sourceIndex = items\.length > 0 \? index % items\.length : 0/);
+    assert.match(source, /offsetRef\.current = nextOffset/);
   });
 });

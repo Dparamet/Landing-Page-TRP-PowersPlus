@@ -37,6 +37,27 @@ export default function StandardsTechnology() {
   const offsetRef = useRef(0);
   const carouselItems = Array.from({ length: repeatCount }, () => items).flat();
 
+  function getSegmentWidth(track: HTMLDivElement) {
+    return track.scrollWidth / repeatCount;
+  }
+
+  function normalizeOffset(offset: number, segmentWidth: number) {
+    const centerIndex = Math.floor(repeatCount / 2);
+    const min = segmentWidth * (centerIndex - 1);
+    const max = segmentWidth * (centerIndex + 1);
+    let nextOffset = offset;
+
+    while (nextOffset < min) {
+      nextOffset += segmentWidth;
+    }
+
+    while (nextOffset > max) {
+      nextOffset -= segmentWidth;
+    }
+
+    return nextOffset;
+  }
+
   function moveTrack(delta: number) {
     const track = trackRef.current;
 
@@ -44,18 +65,7 @@ export default function StandardsTechnology() {
       return;
     }
 
-    const segmentWidth = track.scrollWidth / repeatCount;
-    const centerIndex = Math.floor(repeatCount / 2);
-    const min = segmentWidth * (centerIndex - 1);
-    const max = segmentWidth * (centerIndex + 1);
-
-    offsetRef.current += delta;
-
-    if (offsetRef.current < min) {
-      offsetRef.current += segmentWidth;
-    } else if (offsetRef.current > max) {
-      offsetRef.current -= segmentWidth;
-    }
+    offsetRef.current = normalizeOffset(offsetRef.current + delta, getSegmentWidth(track));
 
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
   }
@@ -67,7 +77,7 @@ export default function StandardsTechnology() {
       return;
     }
 
-    const segmentWidth = track.scrollWidth / repeatCount;
+    const segmentWidth = getSegmentWidth(track);
     offsetRef.current = segmentWidth * Math.floor(repeatCount / 2);
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
   }, [items.length]);
@@ -100,7 +110,7 @@ export default function StandardsTechnology() {
         return;
       }
 
-      const segmentWidth = track.scrollWidth / repeatCount;
+      const segmentWidth = getSegmentWidth(track);
       offsetRef.current = segmentWidth * Math.floor(repeatCount / 2);
       track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     }
@@ -135,17 +145,17 @@ export default function StandardsTechnology() {
     function animate(now: number) {
       const elapsed = Math.min(1, (now - startTime) / duration);
       const progress = easeOutCubic(elapsed);
-      const nextOffset = startOffset + (targetOffset - startOffset) * progress;
+      const nextOffset = normalizeOffset(startOffset + (targetOffset - startOffset) * progress, getSegmentWidth(activeTrack));
 
       activeTrack.style.transform = `translate3d(${-nextOffset}px, 0, 0)`;
 
       if (elapsed < 1) {
+        offsetRef.current = nextOffset;
         scrollTweenRef.current = window.requestAnimationFrame(animate);
         return;
       }
 
-      offsetRef.current = targetOffset;
-      moveTrack(0);
+      offsetRef.current = nextOffset;
       isTweeningRef.current = false;
       scrollTweenRef.current = null;
     }
@@ -201,7 +211,8 @@ export default function StandardsTechnology() {
         <div className="overflow-visible pl-36 pr-20 py-8 md:pl-56 md:pr-24 lg:pl-72 lg:pr-28">
           <div ref={trackRef} className="flex w-max items-center gap-14 will-change-transform md:gap-24 lg:gap-32">
           {carouselItems.map((item, index) => {
-            const step = index % 3;
+            const sourceIndex = items.length > 0 ? index % items.length : 0;
+            const step = sourceIndex % 3;
             const zigzagClass = step === 0 ? '-translate-y-8' : step === 1 ? 'translate-y-0' : 'translate-y-8';
             return (
               <article

@@ -18,4 +18,12 @@ describe('admin layout chrome', () => {
     assert.match(clientLayout, /!isAdminRoute \? <ScrollEffects \/> : null/);
     assert.match(clientLayout, /!isAdminRoute \? \(\s*<Suspense fallback=\{null\}>/);
   });
+
+  it('keeps root metadata readable and relevant to TRP electrical contractor services', () => {
+    const layout = source('src/app/layout.tsx');
+
+    assert.match(layout, /รับเหมาติดตั้งระบบไฟฟ้าและโซลาร์เซลล์/);
+    assert.match(layout, /ระบบไฟฟ้า โซลาร์เซลล์ ตู้ควบคุม/);
+    assert.doesNotMatch(layout, /เธ/);
+  });
 });

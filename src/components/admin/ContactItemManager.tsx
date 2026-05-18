@@ -3,8 +3,16 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
+  defaultCompanySettings,
+  mapDefaultContactFormToSettingsPatch,
+  mapSiteSettingsRowToForm,
+  type SiteSettingsRow,
+  type SiteSettingsUpsert,
+} from '@/lib/admin/companySettings';
+import {
   buildDefaultContactItems,
   createBlankContactItemForm,
+  isDefaultContactType,
   mapContactFormToInsert,
   mapContactFormToUpdate,
   mapContactItemToForm,
@@ -16,7 +24,7 @@ import {
 } from '@/lib/admin/contactItems';
 import { formatAdminLoadError, formatAdminRpcError, formatContactItemError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
-import { defaultCompanyProfile } from '@/lib/companyProfile';
+import { mapCompanySettingsToProfile } from '@/lib/companyProfile';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
@@ -25,7 +33,8 @@ const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
 
 export default function ContactItemManager() {
-  const fallbackItems = useMemo(() => buildDefaultContactItems(defaultCompanyProfile), []);
+  const [companySettings, setCompanySettings] = useState(defaultCompanySettings);
+  const fallbackItems = useMemo(() => buildDefaultContactItems(mapCompanySettingsToProfile(companySettings)), [companySettings]);
   const [items, setItems] = useState<ContactItemView[]>(fallbackItems);
   const [values, setValues] = useState<ContactItemFormValues>(mapContactItemToForm(fallbackItems[0]));
   const [status, setStatus] = useState<SaveStatus>('loading');
@@ -40,7 +49,10 @@ export default function ContactItemManager() {
       return;
     }
 
-    const { data, error } = await supabase.from('contact_items').select('*').order('sort_order', { ascending: true });
+    const [{ data: settingsData }, { data, error }] = await Promise.all([
+      supabase.from('site_settings').select('*').eq('id', true).maybeSingle(),
+      supabase.from('contact_items').select('*').order('sort_order', { ascending: true }),
+    ]);
 
     if (error) {
       setStatus('error');
@@ -48,7 +60,10 @@ export default function ContactItemManager() {
       return;
     }
 
-    const nextItems = mapContactRows((data as ContactItemRow[] | null) ?? [], fallbackItems, true);
+    const nextCompanySettings = mapSiteSettingsRowToForm(settingsData as SiteSettingsRow | null);
+    const nextFallbackItems = buildDefaultContactItems(mapCompanySettingsToProfile(nextCompanySettings));
+    setCompanySettings(nextCompanySettings);
+    const nextItems = mapContactRows((data as ContactItemRow[] | null) ?? [], nextFallbackItems, true);
     setItems(nextItems);
     setValues(nextItems[0] ? mapContactItemToForm(nextItems[0]) : createBlankContactItemForm(10));
     setStatus('idle');
@@ -112,6 +127,14 @@ export default function ContactItemManager() {
       return;
     }
 
+    const syncError = await syncCompanySettingsFromContactItem(validation.value, validation.value.published);
+
+    if (syncError) {
+      setStatus('error');
+      setMessage(syncError);
+      return;
+    }
+
     setStatus('saved');
     setMessage('บันทึกช่องทางติดต่อแล้ว');
     await loadItems();
@@ -136,6 +159,16 @@ export default function ContactItemManager() {
       setStatus('error');
       setMessage(formatAdminRpcError('จัดการช่องทางติดต่อ', fn, error));
       return;
+    }
+
+    if (fn === 'soft_delete_contact_item' || fn === 'hard_delete_contact_item') {
+      const syncError = await syncCompanySettingsFromContactItem(values, false);
+
+      if (syncError) {
+        setStatus('error');
+        setMessage(syncError);
+        return;
+      }
     }
 
     setStatus('saved');
@@ -236,6 +269,29 @@ export default function ContactItemManager() {
       ) : null}
     </section>
   );
+}
+
+async function syncCompanySettingsFromContactItem(values: ContactItemFormValues, visible: boolean) {
+  if (!isDefaultContactType(values.type)) {
+    return '';
+  }
+
+  const patch = mapDefaultContactFormToSettingsPatch(values, visible);
+
+  if (!patch) {
+    return '';
+  }
+
+  const supabase = getSupabaseBrowserClient();
+
+  if (!supabase) {
+    return 'ยังไม่ได้ตั้งค่า Supabase env';
+  }
+
+  const row: SiteSettingsUpsert = { id: true, ...patch, updated_at: new Date().toISOString() };
+  const { error } = await supabase.from('site_settings').upsert(row, { onConflict: 'id' });
+
+  return error ? `บันทึกช่องทางติดต่อแล้ว แต่ sync ข้อมูลบริษัทไม่สำเร็จ: ${error.message}` : '';
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {

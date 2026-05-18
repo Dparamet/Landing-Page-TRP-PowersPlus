@@ -106,6 +106,46 @@ describe('contact item CMS helpers', () => {
     assert.equal(items.find((item) => item.type === 'line')?.label.th, 'LINE OA');
   });
 
+  it('omits optional social fallback items when company profile leaves them blank', () => {
+    const fallback = buildDefaultContactItems({
+      ...defaultCompanyProfile,
+      instagramDisplay: '',
+      instagramUrl: '',
+      tiktokDisplay: '',
+      tiktokUrl: '',
+    });
+
+    assert.equal(fallback.some((item) => item.type === 'instagram'), false);
+    assert.equal(fallback.some((item) => item.type === 'tiktok'), false);
+    assert.equal(fallback.some((item) => item.type === 'phone'), true);
+  });
+
+  it('keeps deleted default contact rows hidden instead of restoring fallback values', () => {
+    const fallback = buildDefaultContactItems(defaultCompanyProfile);
+    const rows = [
+      {
+        id: '11111111-1111-4111-8111-111111111111',
+        type: 'instagram',
+        icon: 'instagram',
+        label: { th: 'Instagram', en: 'Instagram' },
+        value: { th: 'TRP Powers Plus', en: 'TRP Powers Plus' },
+        href: 'https://instagram.com/TRPPowersplus',
+        copy_value: 'https://instagram.com/TRPPowersplus',
+        external: true,
+        sort_order: 50,
+        published: false,
+        deleted_at: '2026-05-18T00:00:00.000Z',
+        purge_after: null,
+        created_at: null,
+        updated_at: null,
+      },
+    ];
+
+    const items = mapContactRows(rows, fallback);
+
+    assert.equal(items.some((item) => item.type === 'instagram'), false);
+  });
+
   it('does not use fallback string ids as database ids when editing default contact items', () => {
     const [company] = buildDefaultContactItems(defaultCompanyProfile);
 

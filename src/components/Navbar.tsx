@@ -43,7 +43,7 @@ export default function Navbar() {
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-16 w-48 shrink-0 items-center transition-transform duration-300 ease-in-out hover:scale-110 hover:shadow-xl lg:static lg:top-auto lg:-translate-y-0 lg:translate-x-0 lg:h-20 lg:w-60"
           aria-label={t('nav.logoLinkLabel')}
         >
-          <CompanyLogo alt={t('nav.logoAlt')} className="h-full w-full object-contain transition-transform duration-300 ease-in-out" />
+          <CompanyLogo alt={t('nav.logoAlt')} priority className="h-full w-full object-contain transition-transform duration-300 ease-in-out" />
         </Link>
 
         {/* เมนูเดสก์ทอป */}
