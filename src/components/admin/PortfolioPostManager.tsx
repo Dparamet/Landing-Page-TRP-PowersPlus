@@ -18,6 +18,7 @@ import {
 import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import SortOrderControls from './SortOrderControls';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 type EditablePortfolioOption =
@@ -70,7 +71,7 @@ export default function PortfolioPostManager() {
     const { data, error } = await supabase
       .from('portfolio_projects')
       .select('*')
-      .order('updated_at', { ascending: false, nullsFirst: false });
+      .order('sort_order', { ascending: true });
 
     if (error) {
       setStatus('error');
@@ -139,6 +140,71 @@ export default function PortfolioPostManager() {
     setValues(defaultPortfolioPostFormValues);
     setStatus('saved');
     setMessage(validation.value.id ? 'บันทึกโพสต์ผลงานแล้ว' : 'สร้างโพสต์ผลงานแล้ว');
+    await loadPosts();
+    requestPreviewRefresh();
+  }
+
+  async function moveSelectedPost(direction: -1 | 1) {
+    const currentIndex = editableOptions.findIndex((option) => option.key === selectedOptionKey);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= editableOptions.length) {
+      return;
+    }
+
+    const reorderedOptions = [...editableOptions];
+    const [selectedOption] = reorderedOptions.splice(currentIndex, 1);
+    reorderedOptions.splice(targetIndex, 0, selectedOption);
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const categoryOptions = serviceCategories.length > 0 ? serviceCategories : fallbackServiceCategories;
+
+    for (const [index, option] of reorderedOptions.entries()) {
+      const form = option.source === 'database' ? mapPortfolioProjectRowToForm(option.row) : option.form;
+      const nextForm = { ...form, sortOrder: (index + 1) * 10 };
+      const selectedCategoryIndex = categoryOptions.findIndex((service) => service.key === nextForm.categoryKey);
+      const selectedCategory = categoryOptions[selectedCategoryIndex];
+
+      if (!selectedCategory) {
+        setStatus('error');
+        setMessage(`บันทึกลำดับผลงานไม่สำเร็จ: ไม่พบหมวดบริการ ${nextForm.categoryKey}`);
+        return;
+      }
+
+      const { error: serviceError } = await supabase
+        .from('services')
+        .upsert(mapServiceCategoryToUpsert(selectedCategory, (selectedCategoryIndex + 1) * 10), { onConflict: 'id' });
+
+      if (serviceError) {
+        setStatus('error');
+        setMessage(formatAdminSaveError('หมวดบริการของผลงาน', 'services', serviceError));
+        return;
+      }
+
+      const saveQuery = nextForm.id
+        ? supabase.from('portfolio_projects').update(mapPortfolioPostFormToUpdate(nextForm)).eq('id', nextForm.id)
+        : supabase.from('portfolio_projects').upsert(mapPortfolioPostFormToInsert(nextForm), { onConflict: 'slug' });
+      const { error } = await saveQuery;
+
+      if (error) {
+        setStatus('error');
+        setMessage(formatAdminSaveError('โพสต์ผลงาน', 'portfolio_projects', error));
+        return;
+      }
+    }
+
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับผลงานขึ้นแล้ว' : 'ขยับผลงานลงแล้ว');
     await loadPosts();
     requestPreviewRefresh();
   }
@@ -242,6 +308,7 @@ export default function PortfolioPostManager() {
       })),
   ];
   const selectedOptionKey = values.id ? `database:${values.id}` : values.slug ? `static:${values.slug}` : '';
+  const activeIndex = editableOptions.findIndex((option) => option.key === selectedOptionKey);
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
@@ -327,10 +394,13 @@ export default function PortfolioPostManager() {
         <Field label="พื้นที่ ภาษาอังกฤษ" value={values.locationEn} onChange={(value) => updateField('locationEn', value)} />
         <Field label="Metric หลัก ภาษาไทย" value={values.metricValueTh} onChange={(value) => updateField('metricValueTh', value)} />
         <Field label="Metric หลัก ภาษาอังกฤษ" value={values.metricValueEn} onChange={(value) => updateField('metricValueEn', value)} />
-        <label className="block text-sm font-semibold text-slate-800">
-          ลำดับที่
-          <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
-        </label>
+        <SortOrderControls
+          canMoveUp={activeIndex > 0}
+          canMoveDown={activeIndex >= 0 && activeIndex < editableOptions.length - 1}
+          disabled={isBusy || !selectedOptionKey}
+          onMoveUp={() => void moveSelectedPost(-1)}
+          onMoveDown={() => void moveSelectedPost(1)}
+        />
         <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
         <Textarea label="คำอธิบาย ภาษาอังกฤษ" value={values.descriptionEn} onChange={(value) => updateField('descriptionEn', value)} />
         <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">

@@ -8,10 +8,15 @@ function source(path) {
 }
 
 describe('company logo performance', () => {
-  it('loads the above-the-fold logo eagerly for LCP', () => {
+  it('loads above-the-fold images eagerly for LCP', () => {
+    const hero = source('src/components/Hero.tsx');
     const logo = source('src/components/CompanyLogo.tsx');
     const navbar = source('src/components/Navbar.tsx');
 
+    assert.match(hero, /import Image from 'next\/image'/);
+    assert.match(hero, /<Image[\s\S]+priority/);
+    assert.match(hero, /fetchPriority="high"/);
+    assert.match(hero, /sizes="100vw"/);
     assert.match(navbar, /<CompanyLogo[^>]+priority/);
     assert.match(logo, /loading=\{priority \? 'eager' : 'lazy'\}/);
     assert.match(logo, /fetchPriority=\{priority \? 'high' : 'auto'\}/);

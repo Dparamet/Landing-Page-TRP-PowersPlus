@@ -3,13 +3,22 @@
 import { usePathname } from 'next/navigation';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { CookieConsentProvider } from '@/context/CookieConsentContext';
-import CookieConsentBanner from '@/components/CookieConsentBanner';
-import AnalyticsTracker from '@/components/AnalyticsTracker';
-import ScrollEffects from '@/components/ScrollEffects';
 import { ReactNode, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
+const AnalyticsTracker = dynamic(() => import('@/components/AnalyticsTracker'), {
+  ssr: false,
+});
+
+const CookieConsentBanner = dynamic(() => import('@/components/CookieConsentBanner'), {
+  ssr: false,
+});
+
 const CookieConsentModal = dynamic(() => import('@/components/CookieConsentModal'), {
+  ssr: false,
+});
+
+const ScrollEffects = dynamic(() => import('@/components/ScrollEffects'), {
   ssr: false,
 });
 

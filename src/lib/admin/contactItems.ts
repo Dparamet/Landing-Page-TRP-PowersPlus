@@ -47,6 +47,10 @@ export type ContactItemValidationResult =
   | { ok: true; value: ContactItemFormValues }
   | { ok: false; message: string };
 
+export type DefaultContactType = 'company' | 'phone' | 'line' | 'facebook' | 'instagram' | 'tiktok' | 'email' | 'address';
+
+export const defaultContactTypes: DefaultContactType[] = ['company', 'phone', 'line', 'facebook', 'instagram', 'tiktok', 'email', 'address'];
+
 function localized(th: string, en: string): LocalizedText {
   return { th: th.trim(), en: fillEnglish(th, en) };
 }
@@ -63,7 +67,7 @@ function asLocalizedText(value: Json, fallback: LocalizedText): LocalizedText {
 }
 
 export function buildDefaultContactItems(profile: CompanyProfileView): ContactItemView[] {
-  return [
+  const items: ContactItemView[] = [
     {
       id: 'company',
       databaseId: '',
@@ -103,7 +107,10 @@ export function buildDefaultContactItems(profile: CompanyProfileView): ContactIt
       sortOrder: 30,
       published: true,
     },
-    {
+  ];
+
+  if (profile.facebookDisplay && profile.facebookUrl) {
+    items.push({
       id: 'facebook',
       databaseId: '',
       type: 'facebook',
@@ -115,8 +122,11 @@ export function buildDefaultContactItems(profile: CompanyProfileView): ContactIt
       external: true,
       sortOrder: 40,
       published: true,
-    },
-    {
+    });
+  }
+
+  if (profile.instagramDisplay && profile.instagramUrl) {
+    items.push({
       id: 'instagram',
       databaseId: '',
       type: 'instagram',
@@ -128,8 +138,11 @@ export function buildDefaultContactItems(profile: CompanyProfileView): ContactIt
       external: true,
       sortOrder: 50,
       published: true,
-    },
-    {
+    });
+  }
+
+  if (profile.tiktokDisplay && profile.tiktokUrl) {
+    items.push({
       id: 'tiktok',
       databaseId: '',
       type: 'tiktok',
@@ -141,7 +154,10 @@ export function buildDefaultContactItems(profile: CompanyProfileView): ContactIt
       external: true,
       sortOrder: 60,
       published: true,
-    },
+    });
+  }
+
+  items.push(
     {
       id: 'email',
       databaseId: '',
@@ -168,7 +184,13 @@ export function buildDefaultContactItems(profile: CompanyProfileView): ContactIt
       sortOrder: 80,
       published: true,
     },
-  ];
+  );
+
+  return items;
+}
+
+export function isDefaultContactType(type: string): type is DefaultContactType {
+  return defaultContactTypes.includes(type as DefaultContactType);
 }
 
 export function mapContactRows(rows: ContactItemRow[], fallbackItems: ContactItemView[], includeDeleted = false): ContactItemView[] {

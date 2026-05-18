@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { useStandardItems } from '@/hooks/useStandardItems';
@@ -33,32 +33,44 @@ export default function StandardsTechnology() {
   const trackRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const scrollTweenRef = useRef<number | null>(null);
+  const isHoveringRef = useRef(false);
   const isTweeningRef = useRef(false);
+  const isVisibleRef = useRef(false);
   const offsetRef = useRef(0);
-  const carouselItems = Array.from({ length: repeatCount }, () => items).flat();
+  const carouselItems = useMemo(() => Array.from({ length: repeatCount }, () => items).flat(), [items]);
 
-  function moveTrack(delta: number) {
+  const getSegmentWidth = useCallback((track: HTMLDivElement) => {
+    return track.scrollWidth / repeatCount;
+  }, []);
+
+  const normalizeOffset = useCallback((offset: number, segmentWidth: number) => {
+    const centerIndex = Math.floor(repeatCount / 2);
+    const min = segmentWidth * (centerIndex - 1);
+    const max = segmentWidth * (centerIndex + 1);
+    let nextOffset = offset;
+
+    while (nextOffset < min) {
+      nextOffset += segmentWidth;
+    }
+
+    while (nextOffset > max) {
+      nextOffset -= segmentWidth;
+    }
+
+    return nextOffset;
+  }, []);
+
+  const moveTrack = useCallback((delta: number) => {
     const track = trackRef.current;
 
     if (!track) {
       return;
     }
 
-    const segmentWidth = track.scrollWidth / repeatCount;
-    const centerIndex = Math.floor(repeatCount / 2);
-    const min = segmentWidth * (centerIndex - 1);
-    const max = segmentWidth * (centerIndex + 1);
-
-    offsetRef.current += delta;
-
-    if (offsetRef.current < min) {
-      offsetRef.current += segmentWidth;
-    } else if (offsetRef.current > max) {
-      offsetRef.current -= segmentWidth;
-    }
+    offsetRef.current = normalizeOffset(offsetRef.current + delta, getSegmentWidth(track));
 
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-  }
+  }, [getSegmentWidth, normalizeOffset]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -67,30 +79,65 @@ export default function StandardsTechnology() {
       return;
     }
 
-    const segmentWidth = track.scrollWidth / repeatCount;
+    const segmentWidth = getSegmentWidth(track);
     offsetRef.current = segmentWidth * Math.floor(repeatCount / 2);
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-  }, [items.length]);
+  }, [getSegmentWidth, items.length]);
 
   useEffect(() => {
-    function tick() {
-      const hoveredCard = carouselRef.current?.querySelector('[data-standard-card="true"]:hover') !== null;
+    if (items.length === 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
 
-      if (!hoveredCard && !isTweeningRef.current) {
+    function tick() {
+      if (!isVisibleRef.current) {
+        animationRef.current = null;
+        return;
+      }
+
+      if (isVisibleRef.current && !isHoveringRef.current && !isTweeningRef.current && !document.hidden) {
         moveTrack(0.24);
       }
 
       animationRef.current = window.requestAnimationFrame(tick);
     }
 
-    animationRef.current = window.requestAnimationFrame(tick);
+    const carousel = carouselRef.current;
+    const observer = carousel
+      ? new IntersectionObserver(
+          ([entry]) => {
+            isVisibleRef.current = Boolean(entry?.isIntersecting);
+
+            if (isVisibleRef.current && animationRef.current === null) {
+              animationRef.current = window.requestAnimationFrame(tick);
+            } else if (!isVisibleRef.current && animationRef.current !== null) {
+              window.cancelAnimationFrame(animationRef.current);
+              animationRef.current = null;
+            }
+          },
+          { rootMargin: '160px 0px' },
+        )
+      : null;
+
+    if (carousel && observer) {
+      observer.observe(carousel);
+    } else {
+      isVisibleRef.current = true;
+      animationRef.current = window.requestAnimationFrame(tick);
+    }
 
     return () => {
+      observer?.disconnect();
       if (animationRef.current !== null) {
         window.cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      if (scrollTweenRef.current !== null) {
+        window.cancelAnimationFrame(scrollTweenRef.current);
+        scrollTweenRef.current = null;
       }
     };
-  }, []);
+  }, [items.length, moveTrack]);
 
   useEffect(() => {
     function handleResize() {
@@ -100,14 +147,14 @@ export default function StandardsTechnology() {
         return;
       }
 
-      const segmentWidth = track.scrollWidth / repeatCount;
+      const segmentWidth = getSegmentWidth(track);
       offsetRef.current = segmentWidth * Math.floor(repeatCount / 2);
       track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     }
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [getSegmentWidth]);
 
   function scrollByAmount(direction: -1 | 1) {
     const track = trackRef.current;
@@ -135,17 +182,17 @@ export default function StandardsTechnology() {
     function animate(now: number) {
       const elapsed = Math.min(1, (now - startTime) / duration);
       const progress = easeOutCubic(elapsed);
-      const nextOffset = startOffset + (targetOffset - startOffset) * progress;
+      const nextOffset = normalizeOffset(startOffset + (targetOffset - startOffset) * progress, getSegmentWidth(activeTrack));
 
       activeTrack.style.transform = `translate3d(${-nextOffset}px, 0, 0)`;
 
       if (elapsed < 1) {
+        offsetRef.current = nextOffset;
         scrollTweenRef.current = window.requestAnimationFrame(animate);
         return;
       }
 
-      offsetRef.current = targetOffset;
-      moveTrack(0);
+      offsetRef.current = nextOffset;
       isTweeningRef.current = false;
       scrollTweenRef.current = null;
     }
@@ -196,12 +243,19 @@ export default function StandardsTechnology() {
 
       <div
         ref={carouselRef}
+        onPointerEnter={() => {
+          isHoveringRef.current = true;
+        }}
+        onPointerLeave={() => {
+          isHoveringRef.current = false;
+        }}
         className="group relative mt-7 w-screen overflow-x-hidden overflow-y-visible py-14 md:mt-8 md:py-16"
       >
         <div className="overflow-visible pl-36 pr-20 py-8 md:pl-56 md:pr-24 lg:pl-72 lg:pr-28">
           <div ref={trackRef} className="flex w-max items-center gap-14 will-change-transform md:gap-24 lg:gap-32">
           {carouselItems.map((item, index) => {
-            const step = index % 3;
+            const sourceIndex = items.length > 0 ? index % items.length : 0;
+            const step = sourceIndex % 3;
             const zigzagClass = step === 0 ? '-translate-y-8' : step === 1 ? 'translate-y-0' : 'translate-y-8';
             return (
               <article

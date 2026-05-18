@@ -6,6 +6,8 @@ import {
   getMissingOptionalSiteSettingsColumn,
   isMissingLogoUrlColumnError,
   mapCompanySettingsFormToUpsert,
+  mapCompanySettingsToDefaultContactForms,
+  mapDefaultContactFormToSettingsPatch,
   mapSiteSettingsRowToForm,
   stripOptionalSiteSettingsColumn,
   validateCompanySettings,
@@ -20,6 +22,25 @@ describe('company settings admin data', () => {
     assert.deepEqual(validateCompanySettings({ ...defaultCompanySettings, facebookUrl: 'http://facebook.com/TRP' }), {
       ok: false,
       message: 'URL ภายนอกต้องเป็น https:// เท่านั้น',
+    });
+  });
+
+  it('allows optional social channels to be blank', () => {
+    const result = validateCompanySettings({
+      ...defaultCompanySettings,
+      instagramDisplay: '',
+      instagramUrl: '',
+      tiktokDisplay: '',
+      tiktokUrl: '',
+    });
+
+    assert.equal(result.ok, true);
+  });
+
+  it('rejects partially filled optional social channels', () => {
+    assert.deepEqual(validateCompanySettings({ ...defaultCompanySettings, instagramUrl: '' }), {
+      ok: false,
+      message: 'กรุณากรอกชื่อและ URL ของ Instagram ให้ครบ หรือเว้นว่างทั้งคู่',
     });
   });
 
@@ -96,6 +117,33 @@ describe('company settings admin data', () => {
     assert.equal(form.logoUrl, defaultCompanySettings.logoUrl);
   });
 
+  it('preserves intentionally blank optional social values from database rows', () => {
+    const form = mapSiteSettingsRowToForm({
+      id: true,
+      name: 'TRP Powers Plus',
+      phone_display: '',
+      phone_href: '',
+      email: '',
+      line_id: '',
+      line_url: '',
+      facebook_display: '',
+      facebook_url: '',
+      instagram_display: '',
+      instagram_url: '',
+      tiktok_display: '',
+      tiktok_url: '',
+      address: '',
+      google_maps_search_url: '',
+      google_maps_embed_url: '',
+      created_at: null,
+      updated_at: null,
+    });
+
+    assert.equal(form.instagramDisplay, '');
+    assert.equal(form.instagramUrl, '');
+    assert.equal(form.phoneDisplay, defaultCompanySettings.phoneDisplay);
+  });
+
   it('maps form values to the Supabase upsert shape', () => {
     const upsert = mapCompanySettingsFormToUpsert(defaultCompanySettings);
 
@@ -106,6 +154,66 @@ describe('company settings admin data', () => {
     assert.equal(upsert.google_maps_embed_url, defaultCompanySettings.googleMapsEmbedUrl);
     assert.equal(upsert.logo_url, defaultCompanySettings.logoUrl);
     assert.match(upsert.updated_at, /^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it('maps company settings into synced default contact forms', () => {
+    const forms = mapCompanySettingsToDefaultContactForms({
+      ...defaultCompanySettings,
+      instagramDisplay: '',
+      instagramUrl: '',
+    });
+
+    assert.equal(forms.some((form) => form.type === 'phone' && form.href.startsWith('tel:')), true);
+    assert.equal(forms.some((form) => form.type === 'instagram'), false);
+  });
+
+  it('maps default contact edits back into site_settings patches', () => {
+    const patch = mapDefaultContactFormToSettingsPatch({
+      id: 'instagram',
+      databaseId: '11111111-1111-4111-8111-111111111111',
+      type: 'instagram',
+      icon: 'instagram',
+      labelTh: 'Instagram',
+      labelEn: 'Instagram',
+      valueTh: 'TRP Powers Plus',
+      valueEn: 'TRP Powers Plus',
+      href: 'https://instagram.com/TRPPowersplus',
+      copyValue: 'https://instagram.com/TRPPowersplus',
+      external: true,
+      sortOrder: 50,
+      published: true,
+    });
+
+    assert.deepEqual(patch, {
+      instagram_display: 'TRP Powers Plus',
+      instagram_url: 'https://instagram.com/TRPPowersplus',
+    });
+  });
+
+  it('maps default contact deletion into blank site_settings social fields', () => {
+    const patch = mapDefaultContactFormToSettingsPatch(
+      {
+        id: 'tiktok',
+        databaseId: '',
+        type: 'tiktok',
+        icon: 'tiktok',
+        labelTh: 'TikTok',
+        labelEn: 'TikTok',
+        valueTh: 'TRP Powers Plus',
+        valueEn: 'TRP Powers Plus',
+        href: 'https://www.tiktok.com/@TRPPowersplus',
+        copyValue: 'https://www.tiktok.com/@TRPPowersplus',
+        external: true,
+        sortOrder: 60,
+        published: true,
+      },
+      false,
+    );
+
+    assert.deepEqual(patch, {
+      tiktok_display: '',
+      tiktok_url: '',
+    });
   });
 
 });

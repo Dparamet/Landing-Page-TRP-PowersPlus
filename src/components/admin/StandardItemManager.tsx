@@ -9,6 +9,7 @@ import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { fallbackStandardItems, getStandardItemAltText, type StandardItemRow } from '@/lib/standards';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/database.types';
+import SortOrderControls from './SortOrderControls';
 
 type MediaAsset = Database['public']['Tables']['media_assets']['Row'];
 type StandardItem = StandardItemRow;
@@ -198,6 +199,67 @@ export default function StandardItemManager() {
     setStatus('idle');
   }
 
+  async function moveSelectedItem(direction: -1 | 1) {
+    const currentIndex = displayItems.findIndex((item) => item.id === form.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= displayItems.length) {
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    const reorderedItems = [...displayItems];
+    const [selectedItem] = reorderedItems.splice(currentIndex, 1);
+    reorderedItems.splice(targetIndex, 0, selectedItem);
+    const standardClient = supabase as unknown as StandardItemsClient;
+
+    setStatus('saving');
+    setMessage('');
+
+    for (const [index, item] of reorderedItems.entries()) {
+      const upsertRow = buildStandardItemUpsertRow({
+        id: item.id,
+        title: item.title,
+        imageUrl: item.image_url,
+        hoverImageUrl: item.hover_image_url,
+        altText: getStandardItemAltText(item),
+        assetAltText: getStandardItemAltText(item),
+        sortOrder: (index + 1) * 10,
+        published: item.published,
+      });
+      const { error } = await standardClient.from('standard_items').upsert(upsertRow, { onConflict: 'id' });
+
+      if (error && isMissingStandardHoverColumnError(error)) {
+        const fallbackRow = { ...upsertRow };
+        delete fallbackRow.hover_image_url;
+        const fallbackResult = await standardClient.from('standard_items').upsert(fallbackRow, { onConflict: 'id' });
+
+        if (!fallbackResult.error) {
+          continue;
+        }
+      }
+
+      if (error) {
+        setStatus('error');
+        setMessage(`บันทึกลำดับพาร์ทเนอร์/ลูกค้าไม่สำเร็จ: ${error.message}`);
+        return;
+      }
+    }
+
+    setForm((current) => normalizeForm({ ...current, sortOrder: (targetIndex + 1) * 10 }));
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับรายการขึ้นแล้ว' : 'ขยับรายการลงแล้ว');
+    await loadData();
+    requestPreviewRefresh();
+  }
+
   async function callItemRpc(functionName: 'soft_delete_standard_item' | 'restore_standard_item' | 'hard_delete_standard_item', itemId: string) {
     const supabase = getSupabaseBrowserClient();
 
@@ -222,6 +284,8 @@ export default function StandardItemManager() {
   }
 
   const isBusy = status === 'loading' || status === 'saving';
+  const activeIndex = displayItems.findIndex((item) => item.id === form.id);
+  const hasPersistedItems = items.length > 0;
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5">
@@ -241,17 +305,13 @@ export default function StandardItemManager() {
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]" noValidate>
         <div className="space-y-4">
-          <div className="grid gap-4">
-            <label className="block text-sm font-semibold text-slate-800">
-              ลำดับ
-              <input
-                type="number"
-                value={Number.isFinite(form.sortOrder) ? form.sortOrder : 10}
-                onChange={(event) => updateForm({ sortOrder: Number(event.target.value) })}
-                className={`${fieldClass} mt-2`}
-              />
-            </label>
-          </div>
+          <SortOrderControls
+            canMoveUp={activeIndex > 0}
+            canMoveDown={activeIndex >= 0 && activeIndex < displayItems.length - 1}
+            disabled={isBusy || !form.id}
+            onMoveUp={() => void moveSelectedItem(-1)}
+            onMoveDown={() => void moveSelectedItem(1)}
+          />
 
           <label className="block text-sm font-semibold text-slate-800">
             Alt text
@@ -361,12 +421,12 @@ export default function StandardItemManager() {
               <p className="mt-1 text-xs text-slate-500">
                 {item.deleted_at ? `ถังพัก ลบจริงหลัง ${item.purge_after ?? '-'}` : item.published ? 'ใช้งานอยู่' : 'ซ่อนอยู่'}
               </p>
-              {items.length > 0 ? (
-                <div className="mt-2 flex flex-wrap gap-3">
-                  <button type="button" onClick={() => editItem(item)} className="text-xs font-bold text-[#0f2a5f] transition hover:text-[#d66d0c]">
-                    แก้ไข
-                  </button>
-                  {item.deleted_at ? (
+              <div className="mt-2 flex flex-wrap gap-3">
+                <button type="button" onClick={() => editItem(item)} className="text-xs font-bold text-[#0f2a5f] transition hover:text-[#d66d0c]">
+                  แก้ไข
+                </button>
+                {hasPersistedItems ? (
+                  item.deleted_at ? (
                     <>
                       <button type="button" onClick={() => void callItemRpc('restore_standard_item', item.id)} className="text-xs font-bold text-emerald-700 transition hover:text-emerald-800">
                         กู้คืน
@@ -379,9 +439,9 @@ export default function StandardItemManager() {
                     <button type="button" onClick={() => void callItemRpc('soft_delete_standard_item', item.id)} className="text-xs font-bold text-red-600 transition hover:text-red-700">
                       ลบแบบพักไว้ 30 วัน
                     </button>
-                  )}
-                </div>
-              ) : null}
+                  )
+                ) : null}
+              </div>
             </article>
           ))}
         </div>

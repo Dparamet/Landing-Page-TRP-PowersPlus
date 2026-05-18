@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { fallbackStandardItems, mapStandardItemRows } from '../src/lib/standards.ts';
@@ -67,5 +69,23 @@ describe('standard items', () => {
 
     assert.equal(publicItems[0].altText, 'tester');
     assert.equal(publicItems[0].imageUrl, 'https://example.com/solar.webp');
+  });
+
+  it('keeps partner carousel loop normalized across repeated segments', () => {
+    const source = readFileSync(join(process.cwd(), 'src/components/StandardsTechnology.tsx'), 'utf8');
+
+    assert.match(source, /const normalizeOffset = useCallback/);
+    assert.match(source, /sourceIndex = items\.length > 0 \? index % items\.length : 0/);
+    assert.match(source, /offsetRef\.current = nextOffset/);
+  });
+
+  it('runs partner carousel animation only while the section is near the viewport', () => {
+    const source = readFileSync(join(process.cwd(), 'src/components/StandardsTechnology.tsx'), 'utf8');
+
+    assert.match(source, /new IntersectionObserver/);
+    assert.match(source, /isVisibleRef\.current/);
+    assert.match(source, /prefers-reduced-motion: reduce/);
+    assert.match(source, /document\.hidden/);
+    assert.doesNotMatch(source, /querySelector\('\[data-standard-card="true"\]:hover'\)/);
   });
 });
