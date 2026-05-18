@@ -56,7 +56,6 @@ export default function CompanySettingsForm() {
       setValues(mapSiteSettingsRowToForm(data as SiteSettingsRow | null));
       setStatus('idle');
       setMessage('');
-      requestPreviewRefresh();
     }
 
     void loadSettings();

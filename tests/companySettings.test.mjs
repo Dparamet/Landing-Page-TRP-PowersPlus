@@ -190,4 +190,30 @@ describe('company settings admin data', () => {
     });
   });
 
+  it('maps default contact deletion into blank site_settings social fields', () => {
+    const patch = mapDefaultContactFormToSettingsPatch(
+      {
+        id: 'tiktok',
+        databaseId: '',
+        type: 'tiktok',
+        icon: 'tiktok',
+        labelTh: 'TikTok',
+        labelEn: 'TikTok',
+        valueTh: 'TRP Powers Plus',
+        valueEn: 'TRP Powers Plus',
+        href: 'https://www.tiktok.com/@TRPPowersplus',
+        copyValue: 'https://www.tiktok.com/@TRPPowersplus',
+        external: true,
+        sortOrder: 60,
+        published: true,
+      },
+      false,
+    );
+
+    assert.deepEqual(patch, {
+      tiktok_display: '',
+      tiktok_url: '',
+    });
+  });
+
 });

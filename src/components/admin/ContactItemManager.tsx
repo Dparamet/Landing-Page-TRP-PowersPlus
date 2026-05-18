@@ -32,6 +32,8 @@ type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#f08a24] focus:ring-2 focus:ring-[#f08a24]/20';
 
+const optionalCompanyContactTypes = new Set(['facebook', 'instagram', 'tiktok']);
+
 export default function ContactItemManager() {
   const [companySettings, setCompanySettings] = useState(defaultCompanySettings);
   const fallbackItems = useMemo(() => buildDefaultContactItems(mapCompanySettingsToProfile(companySettings)), [companySettings]);
@@ -68,8 +70,7 @@ export default function ContactItemManager() {
     setValues(nextItems[0] ? mapContactItemToForm(nextItems[0]) : createBlankContactItemForm(10));
     setStatus('idle');
     setMessage('');
-    requestPreviewRefresh();
-  }, [fallbackItems]);
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -141,8 +142,44 @@ export default function ContactItemManager() {
     requestPreviewRefresh();
   }
 
-  async function callItemRpc(fn: 'soft_delete_contact_item' | 'restore_contact_item' | 'hard_delete_contact_item', successMessage: string) {
-    if (!values.databaseId) return;
+  async function softDeleteSelectedContactItem() {
+    if (values.databaseId) {
+      await callItemRpc('soft_delete_contact_item', 'ย้ายช่องทางติดต่อไปถังพักแล้ว');
+      return;
+    }
+
+    if (!optionalCompanyContactTypes.has(values.type)) {
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('contact_items')
+      .insert(mapContactFormToInsert(values))
+      .select('id')
+      .single();
+
+    if (error || !data) {
+      setStatus('error');
+      setMessage(error ? formatContactItemError(error) : 'สร้างรายการติดต่อสำหรับพักลบไม่สำเร็จ');
+      return;
+    }
+
+    await callItemRpc('soft_delete_contact_item', 'ย้ายช่องทางติดต่อไปถังพักแล้ว', data.id);
+  }
+
+  async function callItemRpc(fn: 'soft_delete_contact_item' | 'restore_contact_item' | 'hard_delete_contact_item', successMessage: string, itemId = values.databaseId) {
+    if (!itemId) return;
 
     const supabase = getSupabaseBrowserClient();
 
@@ -153,7 +190,7 @@ export default function ContactItemManager() {
     }
 
     setStatus('saving');
-    const { error } = await supabase.rpc(fn, fn === 'soft_delete_contact_item' ? { item_id: values.databaseId, retention_days: 30 } : { item_id: values.databaseId });
+    const { error } = await supabase.rpc(fn, fn === 'soft_delete_contact_item' ? { item_id: itemId, retention_days: 30 } : { item_id: itemId });
 
     if (error) {
       setStatus('error');
@@ -171,6 +208,16 @@ export default function ContactItemManager() {
       }
     }
 
+    if (fn === 'restore_contact_item') {
+      const syncError = await syncCompanySettingsFromContactItem(values, true);
+
+      if (syncError) {
+        setStatus('error');
+        setMessage(syncError);
+        return;
+      }
+    }
+
     setStatus('saved');
     setMessage(successMessage);
     await loadItems();
@@ -179,6 +226,7 @@ export default function ContactItemManager() {
 
   const activeItem = items.find((item) => item.id === values.id);
   const isBusy = status === 'loading' || status === 'saving';
+  const canSoftDelete = Boolean(values.databaseId) || optionalCompanyContactTypes.has(values.type);
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
@@ -247,7 +295,7 @@ export default function ContactItemManager() {
             <button type="submit" disabled={isBusy} className="rounded-lg bg-[#12345f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0d2748] disabled:cursor-not-allowed disabled:opacity-60">
               {status === 'saving' ? 'กำลังบันทึก...' : 'บันทึกรายการ'}
             </button>
-            <button type="button" onClick={() => void callItemRpc('soft_delete_contact_item', 'ย้ายช่องทางติดต่อไปถังพักแล้ว')} disabled={!values.databaseId || isBusy} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
+            <button type="button" onClick={() => void softDeleteSelectedContactItem()} disabled={!canSoftDelete || isBusy} className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">
               ลบแบบพักไว้ 30 วัน
             </button>
             <button type="button" onClick={() => void callItemRpc('restore_contact_item', 'กู้คืนช่องทางติดต่อแล้ว')} disabled={!values.databaseId || isBusy} className="rounded-lg border border-emerald-200 px-4 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60">
