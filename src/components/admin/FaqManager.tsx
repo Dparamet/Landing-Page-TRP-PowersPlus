@@ -16,6 +16,7 @@ import { buildDefaultFaqItems, mapFaqRows, type FaqItem, type FaqRow } from '@/l
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import en from '@/locales/en.json';
 import th from '@/locales/th.json';
+import SortOrderControls from './SortOrderControls';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
@@ -72,6 +73,54 @@ export default function FaqManager() {
   function selectFaq(item: FaqItem) {
     setValues(mapFaqItemToForm(item));
     setMessage('');
+  }
+
+  async function moveSelectedFaq(direction: -1 | 1) {
+    const currentIndex = items.findIndex((item) => item.id === values.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= items.length) {
+      return;
+    }
+
+    const reorderedItems = [...items];
+    const [selectedItem] = reorderedItems.splice(currentIndex, 1);
+    reorderedItems.splice(targetIndex, 0, selectedItem);
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    for (const [index, item] of reorderedItems.entries()) {
+      const form = { ...mapFaqItemToForm(item), sortOrder: (index + 1) * 10 };
+      const itemId = await ensureFaqRow(form);
+
+      if (!itemId) {
+        setStatus('error');
+        setMessage('สร้าง FAQ เพื่อบันทึกลำดับไม่สำเร็จ');
+        return;
+      }
+
+      const { error } = await supabase.from('faq_items').update({ sort_order: form.sortOrder, updated_at: new Date().toISOString() }).eq('id', itemId);
+
+      if (error) {
+        setStatus('error');
+        setMessage(formatAdminSaveError('FAQ', 'faq_items', error));
+        return;
+      }
+    }
+
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับ FAQ ขึ้นแล้ว' : 'ขยับ FAQ ลงแล้ว');
+    await loadFaqs();
+    requestPreviewRefresh();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -204,6 +253,9 @@ export default function FaqManager() {
     requestPreviewRefresh();
   }
 
+  const activeIndex = items.findIndex((item) => item.id === values.id);
+  const isBusy = status === 'loading' || status === 'saving';
+
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -246,16 +298,13 @@ export default function FaqManager() {
           <Field label="คำถาม ภาษาอังกฤษ" value={values.questionEn} onChange={(value) => updateField('questionEn', value)} />
           <Textarea label="คำตอบ ภาษาไทย" value={values.answerTh} onChange={(value) => updateField('answerTh', value)} />
           <Textarea label="คำตอบ ภาษาอังกฤษ" value={values.answerEn} onChange={(value) => updateField('answerEn', value)} />
-          <label className="block text-sm font-semibold text-slate-800">
-            ลำดับที่
-            <input
-              type="number"
-              min="0"
-              value={values.sortOrder}
-              onChange={(event) => updateField('sortOrder', Number(event.target.value))}
-              className={`${inputClass} mt-2`}
-            />
-          </label>
+          <SortOrderControls
+            canMoveUp={activeIndex > 0}
+            canMoveDown={activeIndex >= 0 && activeIndex < items.length - 1}
+            disabled={isBusy}
+            onMoveUp={() => void moveSelectedFaq(-1)}
+            onMoveDown={() => void moveSelectedFaq(1)}
+          />
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
             <input
               type="checkbox"
@@ -329,4 +378,24 @@ function Textarea({ label, value, onChange }: { label: string; value: string; on
       <textarea value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2 min-h-24 resize-y`} />
     </label>
   );
+}
+
+async function ensureFaqRow(values: FaqFormValues) {
+  if (values.id && !values.id.startsWith('fallback-')) {
+    return values.id;
+  }
+
+  const supabase = getSupabaseBrowserClient();
+
+  if (!supabase) {
+    return '';
+  }
+
+  const { data, error } = await supabase.from('faq_items').insert(mapFaqFormToInsert({ ...values, id: null })).select('id').single();
+
+  if (error || !data) {
+    return '';
+  }
+
+  return data.id;
 }

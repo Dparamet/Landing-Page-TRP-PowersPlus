@@ -1,15 +1,18 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import CompanyLogo from '@/components/CompanyLogo';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCookieConsent } from '@/context/CookieConsentContext';
 import { useCompanyProfile } from '@/hooks/useCompanyProfile';
 
 export default function FooterContent() {
   const { t } = useLanguage();
+  const pathname = usePathname();
   const { openSettings } = useCookieConsent();
   const companyProfile = useCompanyProfile();
+  const sectionHref = (sectionId: string) => (pathname === '/' ? `#${sectionId}` : `/#${sectionId}`);
 
   return (
     <>
@@ -19,13 +22,7 @@ export default function FooterContent() {
           {/* Company Info */}
           <div>
             <div className="mb-4 flex flex-col items-start gap-3">
-              <Image
-                src="/images/LogoTRP.webp"
-                alt="TRP Powers Plus"
-                width={190}
-                height={74}
-                className="h-auto w-40 object-contain"
-              />
+              <CompanyLogo alt="TRP Powers Plus" className="h-auto w-40 object-contain" />
               <h3 className="text-lg font-black text-[#0f2a5f]">{companyProfile.name}</h3>
             </div>
             <p className="text-sm leading-relaxed text-slate-600">
@@ -37,13 +34,13 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#0f2a5f]">{t('footer.menu')}</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><Link href="#hero" className="transition hover:text-[#0f2a5f]">{t('nav.home')}</Link></li>
-              <li><Link href="#services" className="transition hover:text-[#0f2a5f]">{t('nav.services')}</Link></li>
-              <li><Link href="#portfolio" className="transition hover:text-[#0f2a5f]">{t('nav.portfolio')}</Link></li>
-              <li><Link href="#calculator" className="transition hover:text-[#0f2a5f]">{t('nav.calculator')}</Link></li>
-              <li><Link href="#contact" className="transition hover:text-[#0f2a5f]">{t('nav.contact')}</Link></li>
+              <li><Link href={sectionHref('hero')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.home')}</Link></li>
+              <li><Link href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.services')}</Link></li>
+              <li><Link href={sectionHref('portfolio')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.portfolio')}</Link></li>
+              <li><Link href={sectionHref('calculator')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.calculator')}</Link></li>
+              <li><Link href={sectionHref('contact')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('nav.contact')}</Link></li>
               <li>
-                <button type="button" onClick={openSettings} className="text-left transition hover:text-[#0f2a5f]">
+                <button type="button" onClick={openSettings} className="no-hover-bounce relative text-left transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">
                   {t('footer.cookieSettings')}
                 </button>
               </li>
@@ -54,10 +51,10 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#0f2a5f]">{t('footer.services')}</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><a href="#services" className="transition hover:text-[#0f2a5f]">{t('services.solar')}</a></li>
-              <li><a href="#services" className="transition hover:text-[#0f2a5f]">{t('services.electrical')}</a></li>
-              <li><a href="#services" className="transition hover:text-[#0f2a5f]">{t('services.maintenance')}</a></li>
-              <li><a href="#contact" className="transition hover:text-[#0f2a5f]">{t('services.consultation')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.solar')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.electrical')}</a></li>
+              <li><a href={sectionHref('services')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.maintenance')}</a></li>
+              <li><a href={sectionHref('contact')} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">{t('services.consultation')}</a></li>
             </ul>
           </div>
 
@@ -65,12 +62,12 @@ export default function FooterContent() {
           <div>
             <h4 className="mb-4 font-bold text-[#0f2a5f]">{t('contact.title')}</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><a href={`tel:${companyProfile.phoneHref}`} className="transition hover:text-[#0f2a5f]">☎ {companyProfile.phoneDisplay}</a></li>
-              <li><a href={`mailto:${companyProfile.email}`} className="transition hover:text-[#0f2a5f]">@ {companyProfile.email}</a></li>
-              <li><a href={companyProfile.lineUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">LINE {companyProfile.lineId}</a></li>
-              <li><a href={companyProfile.facebookUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">Facebook {companyProfile.facebookDisplay}</a></li>
-              <li><a href={companyProfile.instagramUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">Instagram {companyProfile.instagramDisplay}</a></li>
-              <li><a href={companyProfile.tiktokUrl} target="_blank" rel="noopener noreferrer" className="transition hover:text-[#0f2a5f]">TikTok {companyProfile.tiktokDisplay}</a></li>
+              <li><a href={`tel:${companyProfile.phoneHref}`} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">☎ {companyProfile.phoneDisplay}</a></li>
+              <li><a href={`mailto:${companyProfile.email}`} className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">@ {companyProfile.email}</a></li>
+              <li><a href={companyProfile.lineUrl} target="_blank" rel="noopener noreferrer" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">LINE {companyProfile.lineId}</a></li>
+              <li><a href={companyProfile.facebookUrl} target="_blank" rel="noopener noreferrer" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">Facebook {companyProfile.facebookDisplay}</a></li>
+              <li><a href={companyProfile.instagramUrl} target="_blank" rel="noopener noreferrer" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">Instagram {companyProfile.instagramDisplay}</a></li>
+              <li><a href={companyProfile.tiktokUrl} target="_blank" rel="noopener noreferrer" className="relative transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#0f2a5f] after:transition-all hover:text-[#0f2a5f] hover:after:w-full">TikTok {companyProfile.tiktokDisplay}</a></li>
             </ul>
           </div>
         </div>

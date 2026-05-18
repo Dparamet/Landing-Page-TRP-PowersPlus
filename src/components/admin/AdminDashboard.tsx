@@ -1,25 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
-import AdminAnalyticsDashboard from '@/components/admin/AdminAnalyticsDashboard';
-import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
-import ContactItemManager from '@/components/admin/ContactItemManager';
-import FaqManager from '@/components/admin/FaqManager';
-import MediaUploadManager from '@/components/admin/MediaUploadManager';
-import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
-import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
-import ProcessStepManager from '@/components/admin/ProcessStepManager';
-import ServiceManager from '@/components/admin/ServiceManager';
-import SiteTextManager from '@/components/admin/SiteTextManager';
 import { ADMIN_PREVIEW_REFRESH_EVENT } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
+const AdminAnalyticsDashboard = dynamic(() => import('@/components/admin/AdminAnalyticsDashboard'), { loading: AdminSectionLoading });
+const CompanySettingsForm = dynamic(() => import('@/components/admin/CompanySettingsForm'), { loading: AdminSectionLoading });
+const ContactItemManager = dynamic(() => import('@/components/admin/ContactItemManager'), { loading: AdminSectionLoading });
+const FaqManager = dynamic(() => import('@/components/admin/FaqManager'), { loading: AdminSectionLoading });
+const LogoSettingsForm = dynamic(() => import('@/components/admin/LogoSettingsForm'), { loading: AdminSectionLoading });
+const MediaUploadManager = dynamic(() => import('@/components/admin/MediaUploadManager'), { loading: AdminSectionLoading });
+const PortfolioImageManager = dynamic(() => import('@/components/admin/PortfolioImageManager'), { loading: AdminSectionLoading });
+const PortfolioPostManager = dynamic(() => import('@/components/admin/PortfolioPostManager'), { loading: AdminSectionLoading });
+const ProcessStepManager = dynamic(() => import('@/components/admin/ProcessStepManager'), { loading: AdminSectionLoading });
+const ServiceManager = dynamic(() => import('@/components/admin/ServiceManager'), { loading: AdminSectionLoading });
+const SiteTextManager = dynamic(() => import('@/components/admin/SiteTextManager'), { loading: AdminSectionLoading });
+const StandardItemManager = dynamic(() => import('@/components/admin/StandardItemManager'), { loading: AdminSectionLoading });
+
 type AdminSectionKey =
   | 'analytics'
+  | 'logo'
   | 'texts'
   | 'services'
+  | 'standards'
   | 'media'
   | 'portfolioImages'
   | 'portfolioPosts'
@@ -43,8 +49,10 @@ const adminSections: Array<{
   detailsPreviewHash: string;
 }> = [
   { key: 'analytics', label: 'แดชบอร์ด', description: 'ดูการเคลื่อนไหวหน้าเว็บ', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#hero' },
+  { key: 'logo', label: 'โลโก้', description: 'แก้รูปโลโก้หลักของเว็บไซต์', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#contact' },
   { key: 'texts', label: 'ข้อความ', description: 'หัวข้อและ copy หลัก', landingPreviewPath: '/', landingPreviewHash: '#hero', detailsPreviewPath: '/', detailsPreviewHash: '#hero' },
   { key: 'services', label: 'บริการ', description: 'การ์ดและข้อมูลเตรียมงาน', landingPreviewPath: '/', landingPreviewHash: '#services', detailsPreviewPath: '/services', detailsPreviewHash: '#services' },
+  { key: 'standards', label: 'พาร์ทเนอร์/ลูกค้า', description: 'โลโก้และรูป hover ของพาร์ทเนอร์หรือลูกค้าที่เคยใช้บริการ', landingPreviewPath: '/', landingPreviewHash: '#standards', detailsPreviewPath: '/', detailsPreviewHash: '#standards' },
   { key: 'portfolioPosts', label: 'ผลงาน', description: 'ข้อมูลโครงการ', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'portfolioImages', label: 'รูปผลงาน', description: 'หน้าปกและ gallery', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
   { key: 'media', label: 'คลังรูป', description: 'อัปโหลดรูป', landingPreviewPath: '/', landingPreviewHash: '#portfolio', detailsPreviewPath: '/portfolio', detailsPreviewHash: '#portfolio' },
@@ -56,7 +64,7 @@ const adminSections: Array<{
 export default function AdminDashboard() {
   const router = useRouter();
   const [state, setState] = useState<DashboardState>({ status: 'loading' });
-  const [activeSection, setActiveSection] = useState<AdminSectionKey>('analytics');
+  const [activeSection, setActiveSection] = useState<AdminSectionKey>('logo');
   const [previewPageMode, setPreviewPageMode] = useState<PreviewPageMode>('landing');
   const [previewVersion, setPreviewVersion] = useState(0);
 
@@ -280,10 +288,14 @@ function renderAdminSection(section: AdminSectionKey) {
   switch (section) {
     case 'analytics':
       return <AdminAnalyticsDashboard />;
+    case 'logo':
+      return <LogoSettingsForm />;
     case 'texts':
       return <SiteTextManager />;
     case 'services':
       return <ServiceManager />;
+    case 'standards':
+      return <StandardItemManager />;
     case 'media':
       return <MediaUploadManager />;
     case 'portfolioImages':
@@ -309,6 +321,14 @@ function AdminNotice({ title, body }: { title: string; body: string }) {
     <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900" role="status">
       <h1 className="text-lg font-black">{title}</h1>
       <p className="mt-2 text-sm">{body}</p>
+    </div>
+  );
+}
+
+function AdminSectionLoading() {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-600" aria-busy="true">
+      กำลังโหลดส่วนจัดการ...
     </div>
   );
 }

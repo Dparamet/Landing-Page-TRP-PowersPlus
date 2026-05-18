@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useFaqItems } from '@/hooks/useFaqItems';
 
@@ -10,9 +11,11 @@ const LANDING_FAQ_LIMIT = 6;
 export default function FAQ({ showAll = false }: { showAll?: boolean }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { t, language } = useLanguage();
+  const pathname = usePathname();
   const faqs = useFaqItems();
   const visibleFaqs = showAll ? faqs : faqs.slice(0, LANDING_FAQ_LIMIT);
   const hasMore = faqs.length > visibleFaqs.length;
+  const sectionHref = (sectionId: string) => (pathname === '/' ? `#${sectionId}` : `/#${sectionId}`);
 
   return (
     <section id="faq" className="section-reveal bg-transparent py-20">
@@ -77,7 +80,7 @@ export default function FAQ({ showAll = false }: { showAll?: boolean }) {
             {t('faq.cta')}
           </p>
           <a
-            href="#contact"
+            href={sectionHref('contact')}
             className="inline-block rounded-lg glass-button bg-[#f08a24] px-8 py-4 font-black text-white transition-all duration-300 hover:bg-[#d66d0c] hover:shadow-lg hover:-translate-y-1 active:translate-y-0"
           >
             {t('contact.title')}

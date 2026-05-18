@@ -4,12 +4,18 @@ import { FormEvent, useEffect, useState } from 'react';
 
 import {
   defaultCompanySettings,
+  getMissingOptionalSiteSettingsColumn,
+  mapCompanySettingsToDefaultContactForms,
   mapCompanySettingsFormToUpsert,
   mapSiteSettingsRowToForm,
+  SOCIAL_COLUMNS_MIGRATION,
+  stripOptionalSiteSettingsColumn,
   validateCompanySettings,
   type CompanySettingsFormValues,
   type SiteSettingsRow,
+  type SiteSettingsUpsert,
 } from '@/lib/admin/companySettings';
+import { defaultContactTypes, mapContactFormToInsert } from '@/lib/admin/contactItems';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -50,7 +56,6 @@ export default function CompanySettingsForm() {
       setValues(mapSiteSettingsRowToForm(data as SiteSettingsRow | null));
       setStatus('idle');
       setMessage('');
-      requestPreviewRefresh();
     }
 
     void loadSettings();
@@ -96,9 +101,23 @@ export default function CompanySettingsForm() {
       return;
     }
 
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert(mapCompanySettingsFormToUpsert(validation.value), { onConflict: 'id' });
+    let upsertRow: SiteSettingsUpsert = mapCompanySettingsFormToUpsert(validation.value);
+    let missingColumnWarning = '';
+    let error: { code?: string; message?: string } | null = null;
+
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const result = await supabase.from('site_settings').upsert(upsertRow, { onConflict: 'id' });
+      error = result.error;
+
+      const missingColumn = error ? getMissingOptionalSiteSettingsColumn(error) : null;
+
+      if (!missingColumn) {
+        break;
+      }
+
+      upsertRow = stripOptionalSiteSettingsColumn(upsertRow, missingColumn) as SiteSettingsUpsert;
+      missingColumnWarning = ` บางช่องยังไม่บันทึกเพราะฐานข้อมูลยังไม่ได้รัน ${SOCIAL_COLUMNS_MIGRATION}`;
+    }
 
     if (error) {
       setStatus('error');
@@ -106,9 +125,18 @@ export default function CompanySettingsForm() {
       return;
     }
 
+    const syncError = await syncDefaultContactItems(validation.value);
+
+    if (syncError) {
+      setStatus('error');
+      setMessage(syncError);
+      return;
+    }
+
     setValues(validation.value);
     setStatus('saved');
     setMessage('บันทึกข้อมูลบริษัทแล้ว');
+    setMessage(missingColumnWarning ? `บันทึกข้อมูลบริษัทแล้ว${missingColumnWarning}` : 'บันทึกข้อมูลบริษัทแล้ว');
     requestPreviewRefresh();
   }
 
@@ -205,6 +233,51 @@ export default function CompanySettingsForm() {
       ) : null}
     </form>
   );
+}
+
+async function syncDefaultContactItems(values: CompanySettingsFormValues) {
+  const supabase = getSupabaseBrowserClient();
+
+  if (!supabase) {
+    return 'ยังไม่ได้ตั้งค่า Supabase env';
+  }
+
+  const forms = mapCompanySettingsToDefaultContactForms(values);
+  const formByType = new Map(forms.map((form) => [form.type, form]));
+  const { data, error } = await supabase.from('contact_items').select('id,type').in('type', defaultContactTypes);
+
+  if (error) {
+    return `บันทึกข้อมูลบริษัทแล้ว แต่ sync ช่องทางติดต่อไม่สำเร็จ: ${error.message}`;
+  }
+
+  const existingIdByType = new Map(((data ?? []) as Array<{ id: string; type: string }>).map((row) => [row.type, row.id]));
+
+  for (const type of defaultContactTypes) {
+    const form = formByType.get(type);
+    const existingId = existingIdByType.get(type);
+
+    if (form) {
+      const row = { ...mapContactFormToInsert(form), deleted_at: null, purge_after: null };
+      const result = existingId
+        ? await supabase.from('contact_items').update(row).eq('id', existingId)
+        : await supabase.from('contact_items').insert(row);
+
+      if (result.error) {
+        return `บันทึกข้อมูลบริษัทแล้ว แต่ sync ${type} ไม่สำเร็จ: ${result.error.message}`;
+      }
+    } else if (existingId) {
+      const result = await supabase
+        .from('contact_items')
+        .update({ published: false, deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq('id', existingId);
+
+      if (result.error) {
+        return `บันทึกข้อมูลบริษัทแล้ว แต่ซ่อน ${type} ไม่สำเร็จ: ${result.error.message}`;
+      }
+    }
+  }
+
+  return '';
 }
 
 function formatSaveError(error: { code?: string; message?: string }) {

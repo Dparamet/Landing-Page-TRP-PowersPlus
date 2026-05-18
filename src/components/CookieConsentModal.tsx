@@ -42,8 +42,8 @@ function CookieConsentDialog({
   const categories: CookieCategoryId[] = ['necessary', 'analytics', 'marketing', 'preferences'];
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/35 p-3 sm:items-center sm:p-6">
-      <div className={`w-full max-w-xl overflow-hidden rounded-lg ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-2xl shadow-slate-950/15 border ${COOKIE_COLORS.borderPrimary}`}>
+    <div className="pointer-events-none fixed inset-0 z-[80] flex items-end justify-center bg-transparent p-3 sm:items-center sm:p-6">
+      <div className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-lg ${COOKIE_COLORS.bgPrimary} ${COOKIE_COLORS.textPrimary} shadow-2xl shadow-slate-950/15 border ${COOKIE_COLORS.borderPrimary}`}>
         <div className={`border-b ${COOKIE_COLORS.borderPrimary} bg-[#f8fafc] p-5 sm:p-6`}>
           <h2 className="text-xl font-black text-[#0f2a5f]">{t('cookie.settingsTitle')}</h2>
           <p className={`mt-2 text-sm ${COOKIE_COLORS.textSecondary}`}>

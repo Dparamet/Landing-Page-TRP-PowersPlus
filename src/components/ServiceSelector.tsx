@@ -112,7 +112,7 @@ function InfoColumn({ title, items }: { title: string; items: Array<{ th: string
     <div className="glass-card rounded-lg border border-[#f08a24] bg-[#f8fafc] p-4 transition-all duration-300 hover:shadow-md hover:border-[#d66d0c]">
       <h4 className="text-sm font-black text-[#0f2a5f] transition-colors duration-300">{title}</h4>
       <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <li key={item.en} className="flex gap-2 transition-all duration-300 hover:translate-x-1">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f08a24] transition-all duration-300" />
             <span>{item[language]}</span>

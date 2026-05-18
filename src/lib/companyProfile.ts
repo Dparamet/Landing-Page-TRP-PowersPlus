@@ -3,6 +3,7 @@ import type { CompanySettingsFormValues, SiteSettingsRow } from './admin/company
 export type CompanyProfileView = CompanySettingsFormValues;
 
 export const defaultCompanyProfile: CompanyProfileView = {
+  logoUrl: '/images/LogoTRP.webp',
   name: 'TRP Powers Plus',
   phoneDisplay: '+66 (0) 12-345-6789',
   phoneHref: '+66012345678',
@@ -23,6 +24,7 @@ export const defaultCompanyProfile: CompanyProfileView = {
 
 export function mapCompanySettingsToProfile(settings: CompanySettingsFormValues): CompanyProfileView {
   return {
+    logoUrl: settings.logoUrl,
     name: settings.name,
     phoneDisplay: settings.phoneDisplay,
     phoneHref: settings.phoneHref,
@@ -47,18 +49,19 @@ export function mapSiteSettingsRowToProfile(row: SiteSettingsRow | null): Compan
   }
 
   return {
+    logoUrl: row.logo_url || defaultCompanyProfile.logoUrl,
     name: row.name || defaultCompanyProfile.name,
     phoneDisplay: row.phone_display || defaultCompanyProfile.phoneDisplay,
     phoneHref: row.phone_href || defaultCompanyProfile.phoneHref,
     email: row.email || defaultCompanyProfile.email,
     lineId: row.line_id || defaultCompanyProfile.lineId,
     lineUrl: row.line_url || defaultCompanyProfile.lineUrl,
-    facebookDisplay: row.facebook_display || defaultCompanyProfile.facebookDisplay,
-    facebookUrl: row.facebook_url || defaultCompanyProfile.facebookUrl,
-    instagramDisplay: row.instagram_display || defaultCompanyProfile.instagramDisplay,
-    instagramUrl: row.instagram_url || defaultCompanyProfile.instagramUrl,
-    tiktokDisplay: row.tiktok_display || defaultCompanyProfile.tiktokDisplay,
-    tiktokUrl: row.tiktok_url || defaultCompanyProfile.tiktokUrl,
+    facebookDisplay: row.facebook_display ?? defaultCompanyProfile.facebookDisplay,
+    facebookUrl: row.facebook_url ?? defaultCompanyProfile.facebookUrl,
+    instagramDisplay: row.instagram_display ?? defaultCompanyProfile.instagramDisplay,
+    instagramUrl: row.instagram_url ?? defaultCompanyProfile.instagramUrl,
+    tiktokDisplay: row.tiktok_display ?? defaultCompanyProfile.tiktokDisplay,
+    tiktokUrl: row.tiktok_url ?? defaultCompanyProfile.tiktokUrl,
     address: row.address || defaultCompanyProfile.address,
     googleMapsSearchUrl: row.google_maps_search_url || defaultCompanyProfile.googleMapsSearchUrl,
     googleMapsEmbedUrl: row.google_maps_embed_url || defaultCompanyProfile.googleMapsEmbedUrl,

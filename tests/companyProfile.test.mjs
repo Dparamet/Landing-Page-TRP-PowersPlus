@@ -12,11 +12,13 @@ describe('public company profile mapping', () => {
     assert.equal(profile.phoneHref, defaultCompanySettings.phoneHref);
     assert.equal(profile.instagramUrl, defaultCompanySettings.instagramUrl);
     assert.equal(profile.tiktokUrl, defaultCompanySettings.tiktokUrl);
+    assert.equal(profile.logoUrl, defaultCompanySettings.logoUrl);
   });
 
   it('falls back to default values for an empty database row', () => {
     const profile = mapSiteSettingsRowToProfile(null);
 
     assert.equal(profile.name, 'TRP Powers Plus');
+    assert.equal(profile.logoUrl, defaultCompanySettings.logoUrl);
   });
 });

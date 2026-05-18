@@ -6,6 +6,7 @@ import { serviceCategories } from '@/content/site';
 import {
   applyServiceRowsForAdmin,
   createBlankServiceForm,
+  mapServiceCategoryToUpsert,
   mapServiceFormToUpsert,
   mapServiceToForm,
   validateServiceForm,
@@ -17,6 +18,7 @@ import {
 import { formatAdminLoadError, formatAdminRpcError, formatAdminSaveError } from '@/lib/admin/databaseErrors';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import SortOrderControls from './SortOrderControls';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
@@ -106,6 +108,45 @@ export default function ServiceManager() {
 
   function updateField<K extends keyof ServiceFormValues>(field: K, value: ServiceFormValues[K]) {
     setValues((current) => ({ ...current, [field]: value }));
+  }
+
+  async function moveSelectedService(direction: -1 | 1) {
+    const currentIndex = services.findIndex((service) => service.key === activeId);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= services.length) {
+      return;
+    }
+
+    const reorderedServices = [...services];
+    const [selectedService] = reorderedServices.splice(currentIndex, 1);
+    reorderedServices.splice(targetIndex, 0, selectedService);
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    for (const [index, service] of reorderedServices.entries()) {
+      const { error } = await supabase.from('services').upsert(mapServiceCategoryToUpsert(service, (index + 1) * 10), { onConflict: 'id' });
+
+      if (error) {
+        setStatus('error');
+        setMessage(formatAdminSaveError('บริการ', 'services', error));
+        return;
+      }
+    }
+
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับบริการขึ้นแล้ว' : 'ขยับบริการลงแล้ว');
+    await loadServices();
+    requestPreviewRefresh();
   }
 
   function updateListField(field: 'includes' | 'prepare', index: number, language: keyof LocalizedText, value: string) {
@@ -232,6 +273,9 @@ export default function ServiceManager() {
     requestPreviewRefresh();
   }
 
+  const isBusy = status === 'loading' || status === 'saving';
+  const activeIndex = services.findIndex((service) => service.key === activeId);
+
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -274,10 +318,13 @@ export default function ServiceManager() {
 
         <form id="service-manager-form" onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2" noValidate>
           <Field label="Service ID" value={values.id} onChange={(value) => updateField('id', value)} />
-          <label className="block text-sm font-semibold text-slate-800">
-            ลำดับที่
-            <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
-          </label>
+          <SortOrderControls
+            canMoveUp={activeIndex > 0}
+            canMoveDown={activeIndex >= 0 && activeIndex < services.length - 1}
+            disabled={isBusy || !activeId}
+            onMoveUp={() => void moveSelectedService(-1)}
+            onMoveDown={() => void moveSelectedService(1)}
+          />
           <Field label="ชื่อบริการ ภาษาไทย" value={values.titleTh} onChange={(value) => updateField('titleTh', value)} />
           <Field label="ชื่อบริการ ภาษาอังกฤษ" value={values.titleEn} onChange={(value) => updateField('titleEn', value)} />
           <Field label="ชื่อสั้น ภาษาไทย" value={values.shortTitleTh} onChange={(value) => updateField('shortTitleTh', value)} />

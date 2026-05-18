@@ -1,16 +1,19 @@
-// src/app/layout.tsx
+﻿// src/app/layout.tsx
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { ClientLayout } from "./ClientLayout";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://trppowersplus.com"),
-  title: "TRP Powers Plus | บริษัทติดตั้งระบบไฟฟ้า โซลาร์เซลล์ รับเหมาครบวงจร",
-  description: "บริษัทติดตั้งระบบไฟฟ้า โซลาร์เซลล์ และพลังงานทดแทน โดยวิศวกรผู้ชำนาญการ ประเมินหน้างานฟรี รับประกัน 5 ปี",
-  keywords: "ติดตั้งไฟฟ้า,โซลาร์เซลล์,รับเหมาไฟฟ้า,วิศวกรไฟฟ้า,ประเมินหน้างาน,ระบบไฟฟ้า,โซลูชั่นพลังงาน",
+  title: "TRP Powers Plus | รับเหมาติดตั้งระบบไฟฟ้าและโซลาร์เซลล์",
+  description:
+    "TRP Powers Plus ให้บริการรับเหมาติดตั้งระบบไฟฟ้า โซลาร์เซลล์ ตู้ควบคุม ตรวจสอบ และบำรุงรักษาระบบไฟฟ้าสำหรับบ้าน อาคาร โรงงาน และธุรกิจ พร้อมสำรวจหน้างานและออกแบบตามการใช้งานจริง",
+  keywords:
+    "รับเหมาไฟฟ้า,ติดตั้งระบบไฟฟ้า,ติดตั้งโซลาร์เซลล์,ระบบไฟฟ้าอาคาร,ระบบไฟฟ้าโรงงาน,ตู้ควบคุมไฟฟ้า,ตรวจสอบระบบไฟฟ้า,TRP Powers Plus",
   openGraph: {
-    title: "TRP Powers Plus - บริษัทติดตั้งระบบไฟฟ้าและโซลาร์เซลล์",
-    description: "บริการติดตั้งระบบไฟฟ้า โซลาร์เซลล์ ประเมินราคาฟรี รับประกัน 5 ปี",
+    title: "TRP Powers Plus - รับเหมาติดตั้งระบบไฟฟ้าและโซลาร์เซลล์",
+    description:
+      "บริการระบบไฟฟ้า โซลาร์เซลล์ ตู้ควบคุม ตรวจสอบ และบำรุงรักษาสำหรับบ้าน อาคาร โรงงาน และธุรกิจ",
     type: "website",
     locale: "th_TH",
     images: [
@@ -48,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className="scroll-smooth">
+    <html lang="th" className="scroll-smooth" data-scroll-behavior="smooth">
       <body className="bg-[oklch(99%_0.006_78)] text-gray-900">
         <ClientLayout>{children}</ClientLayout>
       </body>
