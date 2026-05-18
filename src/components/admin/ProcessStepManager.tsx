@@ -16,6 +16,7 @@ import { buildDefaultProcessSteps, mapProcessStepRows, type ProcessStep, type Pr
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import en from '@/locales/en.json';
 import th from '@/locales/th.json';
+import SortOrderControls from './SortOrderControls';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
@@ -67,6 +68,54 @@ export default function ProcessStepManager() {
     const nextSortOrder = items.reduce((max, item) => Math.max(max, item.sortOrder), 0) + 10;
     setValues(createBlankProcessStepForm(nextSortOrder));
     setMessage('');
+  }
+
+  async function moveSelectedStep(direction: -1 | 1) {
+    const currentIndex = items.findIndex((item) => item.id === values.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= items.length) {
+      return;
+    }
+
+    const reorderedItems = [...items];
+    const [selectedItem] = reorderedItems.splice(currentIndex, 1);
+    reorderedItems.splice(targetIndex, 0, selectedItem);
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    for (const [index, item] of reorderedItems.entries()) {
+      const form = { ...mapProcessStepToForm(item), sortOrder: (index + 1) * 10 };
+      const itemId = await ensureProcessStepRow(form);
+
+      if (!itemId) {
+        setStatus('error');
+        setMessage('สร้างขั้นตอนเพื่อบันทึกลำดับไม่สำเร็จ');
+        return;
+      }
+
+      const { error } = await supabase.from('process_steps').update({ sort_order: form.sortOrder, updated_at: new Date().toISOString() }).eq('id', itemId);
+
+      if (error) {
+        setStatus('error');
+        setMessage(formatAdminSaveError('ขั้นตอนทำงาน', 'process_steps', error));
+        return;
+      }
+    }
+
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับขั้นตอนขึ้นแล้ว' : 'ขยับขั้นตอนลงแล้ว');
+    await loadSteps();
+    requestPreviewRefresh();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -193,6 +242,9 @@ export default function ProcessStepManager() {
     requestPreviewRefresh();
   }
 
+  const activeIndex = items.findIndex((item) => item.id === values.id);
+  const isBusy = status === 'loading' || status === 'saving';
+
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -232,10 +284,13 @@ export default function ProcessStepManager() {
           <Field label="หัวข้อ ภาษาอังกฤษ" value={values.titleEn} onChange={(value) => updateField('titleEn', value)} />
           <Textarea label="คำอธิบาย ภาษาไทย" value={values.descriptionTh} onChange={(value) => updateField('descriptionTh', value)} />
           <Textarea label="คำอธิบาย ภาษาอังกฤษ" value={values.descriptionEn} onChange={(value) => updateField('descriptionEn', value)} />
-          <label className="block text-sm font-semibold text-slate-800">
-            ลำดับที่
-            <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
-          </label>
+          <SortOrderControls
+            canMoveUp={activeIndex > 0}
+            canMoveDown={activeIndex >= 0 && activeIndex < items.length - 1}
+            disabled={isBusy}
+            onMoveUp={() => void moveSelectedStep(-1)}
+            onMoveDown={() => void moveSelectedStep(1)}
+          />
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
             <input type="checkbox" checked={values.published} onChange={(event) => updateField('published', event.target.checked)} className="h-4 w-4 rounded border-slate-300" />
             แสดงบนหน้าเว็บ
@@ -284,4 +339,24 @@ function Textarea({ label, value, onChange }: { label: string; value: string; on
       <textarea value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} mt-2 min-h-24 resize-y`} />
     </label>
   );
+}
+
+async function ensureProcessStepRow(values: ProcessStepFormValues) {
+  if (values.id && !values.id.startsWith('fallback-process-')) {
+    return values.id;
+  }
+
+  const supabase = getSupabaseBrowserClient();
+
+  if (!supabase) {
+    return '';
+  }
+
+  const { data, error } = await supabase.from('process_steps').insert(mapProcessStepFormToInsert({ ...values, id: null })).select('id').single();
+
+  if (error || !data) {
+    return '';
+  }
+
+  return data.id;
 }

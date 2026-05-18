@@ -26,6 +26,7 @@ import { formatAdminLoadError, formatAdminRpcError, formatContactItemError } fro
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
 import { mapCompanySettingsToProfile } from '@/lib/companyProfile';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import SortOrderControls from './SortOrderControls';
 
 type SaveStatus = 'idle' | 'loading' | 'saving' | 'saved' | 'error';
 
@@ -328,28 +329,13 @@ export default function ContactItemManager() {
           <Field label="ค่าที่แสดง ภาษาอังกฤษ" value={values.valueEn} onChange={(value) => updateField('valueEn', value)} />
           <Field label="ลิงก์เปิด" value={values.href} onChange={(value) => updateField('href', value)} />
           <Field label="ค่าที่ใช้ copy" value={values.copyValue} onChange={(value) => updateField('copyValue', value)} />
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <p className="text-sm font-black text-[#12345f]">ลำดับการแสดงผล</p>
-            <p className="mt-1 text-xs text-slate-500">เลือกรายการด้านซ้าย แล้วกดขยับตำแหน่ง</p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => void moveSelectedItem(-1)}
-                disabled={!canMoveUp || isBusy}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#d66d0c] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                ขยับขึ้น
-              </button>
-              <button
-                type="button"
-                onClick={() => void moveSelectedItem(1)}
-                disabled={!canMoveDown || isBusy}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#d66d0c] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                ขยับลง
-              </button>
-            </div>
-          </div>
+          <SortOrderControls
+            canMoveUp={canMoveUp}
+            canMoveDown={canMoveDown}
+            disabled={isBusy}
+            onMoveUp={() => void moveSelectedItem(-1)}
+            onMoveDown={() => void moveSelectedItem(1)}
+          />
           <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
               <input type="checkbox" checked={values.external} onChange={(event) => updateField('external', event.target.checked)} className="h-4 w-4 rounded border-slate-300" />

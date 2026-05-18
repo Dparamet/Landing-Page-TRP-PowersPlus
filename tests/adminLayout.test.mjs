@@ -48,13 +48,27 @@ describe('admin layout chrome', () => {
     assert.match(contactManager, /syncCompanySettingsFromContactItem\(values, true\)/);
   });
 
-  it('uses move buttons instead of a manual sort-order number field for contacts', () => {
-    const contactManager = source('src/components/admin/ContactItemManager.tsx');
+  it('uses move buttons instead of manual sort-order number fields across admin managers', () => {
+    const sortControls = source('src/components/admin/SortOrderControls.tsx');
+    const managers = [
+      ['src/components/admin/ContactItemManager.tsx', /async function moveSelectedItem\(direction: -1 \| 1\)/],
+      ['src/components/admin/FaqManager.tsx', /async function moveSelectedFaq\(direction: -1 \| 1\)/],
+      ['src/components/admin/PortfolioPostManager.tsx', /async function moveSelectedPost\(direction: -1 \| 1\)/],
+      ['src/components/admin/ProcessStepManager.tsx', /async function moveSelectedStep\(direction: -1 \| 1\)/],
+      ['src/components/admin/ServiceManager.tsx', /async function moveSelectedService\(direction: -1 \| 1\)/],
+      ['src/components/admin/StandardItemManager.tsx', /async function moveSelectedItem\(direction: -1 \| 1\)/],
+    ];
 
-    assert.match(contactManager, /async function moveSelectedItem\(direction: -1 \| 1\)/);
-    assert.match(contactManager, /ขยับขึ้น/);
-    assert.match(contactManager, /ขยับลง/);
-    assert.match(contactManager, /sortOrder: \(index \+ 1\) \* 10/);
-    assert.doesNotMatch(contactManager, /<input type="number" min="0" value=\{values\.sortOrder\}/);
+    for (const [path, moveFunctionPattern] of managers) {
+      const manager = source(path);
+
+      assert.match(manager, /SortOrderControls/);
+      assert.match(manager, moveFunctionPattern);
+      assert.match(manager, /\(index \+ 1\) \* 10/);
+      assert.doesNotMatch(manager, /type="number"[\s\S]{0,180}sortOrder/);
+    }
+
+    assert.match(sortControls, /ขยับขึ้น/);
+    assert.match(sortControls, /ขยับลง/);
   });
 });
