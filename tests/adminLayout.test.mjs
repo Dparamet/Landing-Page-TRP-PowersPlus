@@ -47,4 +47,14 @@ describe('admin layout chrome', () => {
     assert.match(contactManager, /syncCompanySettingsFromContactItem\(values, false\)/);
     assert.match(contactManager, /syncCompanySettingsFromContactItem\(values, true\)/);
   });
+
+  it('uses move buttons instead of a manual sort-order number field for contacts', () => {
+    const contactManager = source('src/components/admin/ContactItemManager.tsx');
+
+    assert.match(contactManager, /async function moveSelectedItem\(direction: -1 \| 1\)/);
+    assert.match(contactManager, /ขยับขึ้น/);
+    assert.match(contactManager, /ขยับลง/);
+    assert.match(contactManager, /sortOrder: \(index \+ 1\) \* 10/);
+    assert.doesNotMatch(contactManager, /<input type="number" min="0" value=\{values\.sortOrder\}/);
+  });
 });

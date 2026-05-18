@@ -95,6 +95,54 @@ export default function ContactItemManager() {
     setMessage('');
   }
 
+  async function moveSelectedItem(direction: -1 | 1) {
+    const currentIndex = items.findIndex((item) => item.id === values.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= items.length) {
+      return;
+    }
+
+    const reorderedItems = [...items];
+    const [selectedItem] = reorderedItems.splice(currentIndex, 1);
+    reorderedItems.splice(targetIndex, 0, selectedItem);
+
+    const supabase = getSupabaseBrowserClient();
+
+    if (!supabase) {
+      setStatus('error');
+      setMessage('ยังไม่ได้ตั้งค่า Supabase env');
+      return;
+    }
+
+    setStatus('saving');
+    setMessage('');
+
+    for (const [index, item] of reorderedItems.entries()) {
+      const form = { ...mapContactItemToForm(item), sortOrder: (index + 1) * 10 };
+      const itemId = await ensureContactItemRow(form);
+
+      if (!itemId) {
+        setStatus('error');
+        setMessage('สร้างรายการติดต่อเพื่อบันทึกลำดับไม่สำเร็จ');
+        return;
+      }
+
+      const { error } = await supabase.from('contact_items').update({ sort_order: form.sortOrder, updated_at: new Date().toISOString() }).eq('id', itemId);
+
+      if (error) {
+        setStatus('error');
+        setMessage(formatContactItemError(error));
+        return;
+      }
+    }
+
+    setStatus('saved');
+    setMessage(direction < 0 ? 'ขยับรายการขึ้นแล้ว' : 'ขยับรายการลงแล้ว');
+    await loadItems();
+    requestPreviewRefresh();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -225,8 +273,11 @@ export default function ContactItemManager() {
   }
 
   const activeItem = items.find((item) => item.id === values.id);
+  const activeIndex = items.findIndex((item) => item.id === values.id);
   const isBusy = status === 'loading' || status === 'saving';
   const canSoftDelete = Boolean(values.databaseId) || optionalCompanyContactTypes.has(values.type);
+  const canMoveUp = activeIndex > 0;
+  const canMoveDown = activeIndex >= 0 && activeIndex < items.length - 1;
 
   return (
     <section className="admin-card rounded-lg border border-slate-200 bg-white p-5">
@@ -277,10 +328,28 @@ export default function ContactItemManager() {
           <Field label="ค่าที่แสดง ภาษาอังกฤษ" value={values.valueEn} onChange={(value) => updateField('valueEn', value)} />
           <Field label="ลิงก์เปิด" value={values.href} onChange={(value) => updateField('href', value)} />
           <Field label="ค่าที่ใช้ copy" value={values.copyValue} onChange={(value) => updateField('copyValue', value)} />
-          <label className="block text-sm font-semibold text-slate-800">
-            ลำดับที่
-            <input type="number" min="0" value={values.sortOrder} onChange={(event) => updateField('sortOrder', Number(event.target.value))} className={`${inputClass} mt-2`} />
-          </label>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-sm font-black text-[#12345f]">ลำดับการแสดงผล</p>
+            <p className="mt-1 text-xs text-slate-500">เลือกรายการด้านซ้าย แล้วกดขยับตำแหน่ง</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => void moveSelectedItem(-1)}
+                disabled={!canMoveUp || isBusy}
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#d66d0c] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                ขยับขึ้น
+              </button>
+              <button
+                type="button"
+                onClick={() => void moveSelectedItem(1)}
+                disabled={!canMoveDown || isBusy}
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-[#12345f] transition hover:border-[#f08a24] hover:text-[#d66d0c] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                ขยับลง
+              </button>
+            </div>
+          </div>
           <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-800">
               <input type="checkbox" checked={values.external} onChange={(event) => updateField('external', event.target.checked)} className="h-4 w-4 rounded border-slate-300" />
@@ -340,6 +409,30 @@ async function syncCompanySettingsFromContactItem(values: ContactItemFormValues,
   const { error } = await supabase.from('site_settings').upsert(row, { onConflict: 'id' });
 
   return error ? `บันทึกช่องทางติดต่อแล้ว แต่ sync ข้อมูลบริษัทไม่สำเร็จ: ${error.message}` : '';
+}
+
+async function ensureContactItemRow(values: ContactItemFormValues) {
+  if (values.databaseId) {
+    return values.databaseId;
+  }
+
+  const supabase = getSupabaseBrowserClient();
+
+  if (!supabase) {
+    return '';
+  }
+
+  const { data, error } = await supabase
+    .from('contact_items')
+    .insert(mapContactFormToInsert(values))
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    return '';
+  }
+
+  return data.id;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
