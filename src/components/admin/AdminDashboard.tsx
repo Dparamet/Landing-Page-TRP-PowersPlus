@@ -1,22 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
-import AdminAnalyticsDashboard from '@/components/admin/AdminAnalyticsDashboard';
-import CompanySettingsForm from '@/components/admin/CompanySettingsForm';
-import ContactItemManager from '@/components/admin/ContactItemManager';
-import FaqManager from '@/components/admin/FaqManager';
-import LogoSettingsForm from '@/components/admin/LogoSettingsForm';
-import MediaUploadManager from '@/components/admin/MediaUploadManager';
-import PortfolioImageManager from '@/components/admin/PortfolioImageManager';
-import PortfolioPostManager from '@/components/admin/PortfolioPostManager';
-import ProcessStepManager from '@/components/admin/ProcessStepManager';
-import ServiceManager from '@/components/admin/ServiceManager';
-import SiteTextManager from '@/components/admin/SiteTextManager';
-import StandardItemManager from '@/components/admin/StandardItemManager';
 import { ADMIN_PREVIEW_REFRESH_EVENT } from '@/lib/admin/previewRefresh';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+
+const AdminAnalyticsDashboard = dynamic(() => import('@/components/admin/AdminAnalyticsDashboard'), { loading: AdminSectionLoading });
+const CompanySettingsForm = dynamic(() => import('@/components/admin/CompanySettingsForm'), { loading: AdminSectionLoading });
+const ContactItemManager = dynamic(() => import('@/components/admin/ContactItemManager'), { loading: AdminSectionLoading });
+const FaqManager = dynamic(() => import('@/components/admin/FaqManager'), { loading: AdminSectionLoading });
+const LogoSettingsForm = dynamic(() => import('@/components/admin/LogoSettingsForm'), { loading: AdminSectionLoading });
+const MediaUploadManager = dynamic(() => import('@/components/admin/MediaUploadManager'), { loading: AdminSectionLoading });
+const PortfolioImageManager = dynamic(() => import('@/components/admin/PortfolioImageManager'), { loading: AdminSectionLoading });
+const PortfolioPostManager = dynamic(() => import('@/components/admin/PortfolioPostManager'), { loading: AdminSectionLoading });
+const ProcessStepManager = dynamic(() => import('@/components/admin/ProcessStepManager'), { loading: AdminSectionLoading });
+const ServiceManager = dynamic(() => import('@/components/admin/ServiceManager'), { loading: AdminSectionLoading });
+const SiteTextManager = dynamic(() => import('@/components/admin/SiteTextManager'), { loading: AdminSectionLoading });
+const StandardItemManager = dynamic(() => import('@/components/admin/StandardItemManager'), { loading: AdminSectionLoading });
 
 type AdminSectionKey =
   | 'analytics'
@@ -319,6 +321,14 @@ function AdminNotice({ title, body }: { title: string; body: string }) {
     <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-900" role="status">
       <h1 className="text-lg font-black">{title}</h1>
       <p className="mt-2 text-sm">{body}</p>
+    </div>
+  );
+}
+
+function AdminSectionLoading() {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-600" aria-busy="true">
+      กำลังโหลดส่วนจัดการ...
     </div>
   );
 }

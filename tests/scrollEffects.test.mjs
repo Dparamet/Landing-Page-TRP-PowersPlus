@@ -16,6 +16,8 @@ describe('scroll reveal effects', () => {
     assert.match(scrollEffects, /classList\.add\(CLASS_VISIBLE\)/);
     assert.match(scrollEffects, /observer\?\.unobserve\(element\)/);
     assert.match(scrollEffects, /new MutationObserver/);
+    assert.match(scrollEffects, /mutationRafId = requestAnimationFrame/);
+    assert.match(scrollEffects, /observedElements\.forEach\(\(element\) =>/);
     assert.match(css, /\.section-reveal\.is-visible \.reveal-item/);
   });
 });

@@ -218,6 +218,32 @@ npm run build
 - `npm run lint` ไม่มี error
 - `npm run build` สำเร็จและสร้างไฟล์ใน `out/`
 
+## Performance และ latency guard
+
+โปรเจกต์นี้มี guard สำหรับลดอาการหน่วงบนหน้า public และหน้า admin:
+
+- หน้า admin ใช้ dynamic import แยก manager แต่ละแท็บ เพื่อลดการ hydrate ฟอร์มและ dashboard ที่ยังไม่ได้เปิด
+- widget ฝั่ง public เช่น analytics, cookie UI และ scroll effects โหลดเฉพาะ route ที่ไม่ใช่ `/admin`
+- partner carousel จะ animate เฉพาะตอน section อยู่ใกล้ viewport, หยุดตาม `prefers-reduced-motion`, และไม่ query hover state ทุก frame
+- scroll reveal throttle งานจาก `MutationObserver` ผ่าน `requestAnimationFrame`
+- preview refresh ใน admin ถูก debounce เพื่อลดการ reload iframe ติดกันหลายครั้ง
+- hero background ใช้ `next/image` พร้อม `priority`, `fetchPriority="high"` และ `sizes="100vw"` สำหรับ LCP
+
+ก่อนแก้ performance เพิ่ม ให้รัน baseline:
+
+```bash
+npm run build
+Get-ChildItem -Recurse -File .next\static\chunks | Sort-Object Length -Descending | Select-Object -First 12 @{Name='KB';Expression={[math]::Round($_.Length/1KB,1)}},Name | Format-Table -AutoSize
+```
+
+หลังแก้ต้องรัน:
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
 ## Build และ Deploy
 
 โปรเจกต์นี้ตั้งค่า static export ไว้ใน `next.config.ts`

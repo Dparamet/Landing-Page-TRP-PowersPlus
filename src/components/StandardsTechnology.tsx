@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { useStandardItems } from '@/hooks/useStandardItems';
@@ -33,15 +33,17 @@ export default function StandardsTechnology() {
   const trackRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const scrollTweenRef = useRef<number | null>(null);
+  const isHoveringRef = useRef(false);
   const isTweeningRef = useRef(false);
+  const isVisibleRef = useRef(false);
   const offsetRef = useRef(0);
-  const carouselItems = Array.from({ length: repeatCount }, () => items).flat();
+  const carouselItems = useMemo(() => Array.from({ length: repeatCount }, () => items).flat(), [items]);
 
-  function getSegmentWidth(track: HTMLDivElement) {
+  const getSegmentWidth = useCallback((track: HTMLDivElement) => {
     return track.scrollWidth / repeatCount;
-  }
+  }, []);
 
-  function normalizeOffset(offset: number, segmentWidth: number) {
+  const normalizeOffset = useCallback((offset: number, segmentWidth: number) => {
     const centerIndex = Math.floor(repeatCount / 2);
     const min = segmentWidth * (centerIndex - 1);
     const max = segmentWidth * (centerIndex + 1);
@@ -56,9 +58,9 @@ export default function StandardsTechnology() {
     }
 
     return nextOffset;
-  }
+  }, []);
 
-  function moveTrack(delta: number) {
+  const moveTrack = useCallback((delta: number) => {
     const track = trackRef.current;
 
     if (!track) {
@@ -68,7 +70,7 @@ export default function StandardsTechnology() {
     offsetRef.current = normalizeOffset(offsetRef.current + delta, getSegmentWidth(track));
 
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-  }
+  }, [getSegmentWidth, normalizeOffset]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -80,27 +82,62 @@ export default function StandardsTechnology() {
     const segmentWidth = getSegmentWidth(track);
     offsetRef.current = segmentWidth * Math.floor(repeatCount / 2);
     track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-  }, [items.length]);
+  }, [getSegmentWidth, items.length]);
 
   useEffect(() => {
-    function tick() {
-      const hoveredCard = carouselRef.current?.querySelector('[data-standard-card="true"]:hover') !== null;
+    if (items.length === 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
 
-      if (!hoveredCard && !isTweeningRef.current) {
+    function tick() {
+      if (!isVisibleRef.current) {
+        animationRef.current = null;
+        return;
+      }
+
+      if (isVisibleRef.current && !isHoveringRef.current && !isTweeningRef.current && !document.hidden) {
         moveTrack(0.24);
       }
 
       animationRef.current = window.requestAnimationFrame(tick);
     }
 
-    animationRef.current = window.requestAnimationFrame(tick);
+    const carousel = carouselRef.current;
+    const observer = carousel
+      ? new IntersectionObserver(
+          ([entry]) => {
+            isVisibleRef.current = Boolean(entry?.isIntersecting);
+
+            if (isVisibleRef.current && animationRef.current === null) {
+              animationRef.current = window.requestAnimationFrame(tick);
+            } else if (!isVisibleRef.current && animationRef.current !== null) {
+              window.cancelAnimationFrame(animationRef.current);
+              animationRef.current = null;
+            }
+          },
+          { rootMargin: '160px 0px' },
+        )
+      : null;
+
+    if (carousel && observer) {
+      observer.observe(carousel);
+    } else {
+      isVisibleRef.current = true;
+      animationRef.current = window.requestAnimationFrame(tick);
+    }
 
     return () => {
+      observer?.disconnect();
       if (animationRef.current !== null) {
         window.cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      if (scrollTweenRef.current !== null) {
+        window.cancelAnimationFrame(scrollTweenRef.current);
+        scrollTweenRef.current = null;
       }
     };
-  }, []);
+  }, [items.length, moveTrack]);
 
   useEffect(() => {
     function handleResize() {
@@ -117,7 +154,7 @@ export default function StandardsTechnology() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [getSegmentWidth]);
 
   function scrollByAmount(direction: -1 | 1) {
     const track = trackRef.current;
@@ -206,6 +243,12 @@ export default function StandardsTechnology() {
 
       <div
         ref={carouselRef}
+        onPointerEnter={() => {
+          isHoveringRef.current = true;
+        }}
+        onPointerLeave={() => {
+          isHoveringRef.current = false;
+        }}
         className="group relative mt-7 w-screen overflow-x-hidden overflow-y-visible py-14 md:mt-8 md:py-16"
       >
         <div className="overflow-visible pl-36 pr-20 py-8 md:pl-56 md:pr-24 lg:pl-72 lg:pr-28">

@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import HeroContent from './HeroContent';
 import { useHeroBackgroundImage } from '@/hooks/useHeroBackgroundImage';
 
@@ -22,11 +24,14 @@ export default function Hero() {
       <section id="hero" className="section-reveal relative z-10 flex min-h-[560px] w-full items-center justify-center overflow-visible bg-transparent px-0 py-12 sm:min-h-[620px] md:min-h-[680px] md:py-20">
         {/* Background image (DB override via hook) */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img
+          <Image
             src={heroImage?.src ?? '/images/hero-bg.jpg'}
             alt={heroImage?.alt ?? 'Hero background'}
-            className="object-cover w-full h-full brightness-90"
-            loading="eager"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover brightness-90"
           />
           {/* Blue glass overlay to sit above the image */}
           <div className="absolute inset-0 pointer-events-none">

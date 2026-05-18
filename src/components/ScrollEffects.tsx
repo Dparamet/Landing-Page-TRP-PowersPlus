@@ -38,6 +38,8 @@ export default function ScrollEffects() {
     let lastScrollY = window.scrollY;
     let scrollDirection: ScrollDirection = 'down';
     let rafId: number | null = null;
+    let mutationRafId: number | null = null;
+    const observedElements = new Set<Element>();
 
     // Debounced scroll direction update using RAF
     const updateScrollDirection = () => {
@@ -54,10 +56,10 @@ export default function ScrollEffects() {
           
           if (newDirection !== scrollDirection) {
             scrollDirection = newDirection;
-            // Update all currently observed elements
-            const revealElements = document.querySelectorAll(REVEAL_SELECTOR);
-            revealElements.forEach(element => {
-              applyDirection(element, scrollDirection);
+            observedElements.forEach((element) => {
+              if (!element.classList.contains(CLASS_VISIBLE)) {
+                applyDirection(element, scrollDirection);
+              }
             });
           }
           
@@ -94,7 +96,6 @@ export default function ScrollEffects() {
       }
     );
 
-    const observedElements = new Set<Element>();
     const isHomeRoute = pathname === '/';
 
     const observeRevealElements = () => {
@@ -129,7 +130,14 @@ export default function ScrollEffects() {
     observeRevealElements();
 
     const mutationObserver = new MutationObserver(() => {
-      observeRevealElements();
+      if (mutationRafId !== null) {
+        return;
+      }
+
+      mutationRafId = requestAnimationFrame(() => {
+        mutationRafId = null;
+        observeRevealElements();
+      });
     });
 
     mutationObserver.observe(document.body, {
@@ -144,6 +152,9 @@ export default function ScrollEffects() {
       window.removeEventListener('scroll', updateScrollDirection);
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
+      }
+      if (mutationRafId !== null) {
+        cancelAnimationFrame(mutationRafId);
       }
       mutationObserver.disconnect();
       observer?.disconnect();

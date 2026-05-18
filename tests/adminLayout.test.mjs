@@ -12,11 +12,23 @@ describe('admin layout chrome', () => {
     const clientLayout = source('src/app/ClientLayout.tsx');
 
     assert.match(clientLayout, /usePathname/);
+    assert.match(clientLayout, /dynamic\(\(\) => import\('@\/components\/AnalyticsTracker'\)/);
+    assert.match(clientLayout, /dynamic\(\(\) => import\('@\/components\/CookieConsentBanner'\)/);
+    assert.match(clientLayout, /dynamic\(\(\) => import\('@\/components\/ScrollEffects'\)/);
     assert.match(clientLayout, /pathname\.startsWith\('\/admin'\)/);
     assert.match(clientLayout, /!isAdminRoute && <CookieConsentBanner \/>/);
     assert.match(clientLayout, /!isAdminRoute && <CookieConsentModal \/>/);
     assert.match(clientLayout, /!isAdminRoute \? <ScrollEffects \/> : null/);
     assert.match(clientLayout, /!isAdminRoute \? \(\s*<Suspense fallback=\{null\}>/);
+  });
+
+  it('lazy-loads admin sections so the dashboard does not hydrate every manager up front', () => {
+    const dashboard = source('src/components/admin/AdminDashboard.tsx');
+
+    assert.match(dashboard, /dynamic\(\(\) => import\('@\/components\/admin\/AdminAnalyticsDashboard'\)/);
+    assert.match(dashboard, /dynamic\(\(\) => import\('@\/components\/admin\/MediaUploadManager'\)/);
+    assert.match(dashboard, /dynamic\(\(\) => import\('@\/components\/admin\/StandardItemManager'\)/);
+    assert.match(dashboard, /loading: AdminSectionLoading/);
   });
 
   it('keeps root metadata readable and relevant to TRP electrical contractor services', () => {
