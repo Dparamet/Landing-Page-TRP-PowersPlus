@@ -8,15 +8,10 @@ import { formatMediaAssetDeleteError } from '@/lib/admin/databaseErrors';
 import {
   buildMediaStoragePath,
   formatBytes,
-  getCoverCropRect,
-  getHeroOutputSize,
-  HERO_BACKGROUND_HEIGHT,
-  HERO_BACKGROUND_WIDTH,
   MEDIA_BUCKET,
   MEDIA_OUTPUT_MIME,
   MEDIA_WEBP_QUALITY,
   scaleImageSize,
-  validateHeroCropSize,
   validateMediaFile,
 } from '@/lib/admin/mediaUpload';
 import { requestPreviewRefresh } from '@/lib/admin/previewRefresh';
@@ -26,7 +21,6 @@ import type { Database } from '@/lib/supabase/database.types';
 type MediaAsset = Database['public']['Tables']['media_assets']['Row'];
 
 type UploadStatus = 'idle' | 'compressing' | 'uploading' | 'deleting' | 'saved' | 'error';
-type UploadPreset = 'standard' | 'hero';
 
 type ProcessedImage = {
   blob: Blob;
@@ -47,7 +41,6 @@ export default function MediaUploadManager() {
   const [message, setMessage] = useState('');
   const [processed, setProcessed] = useState<ProcessedImage | null>(null);
   const [assets, setAssets] = useState<MediaAsset[]>([]);
-  const [uploadPreset, setUploadPreset] = useState<UploadPreset>('standard');
 
   useEffect(() => {
     void loadAssets();
@@ -71,49 +64,6 @@ export default function MediaUploadManager() {
       }
     };
   }, [processedPreviewUrl]);
-
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
-
-    if (uploadPreset !== 'hero') {
-      return;
-    }
-
-    const selectedFile = file;
-    let isCurrent = true;
-
-    async function processHeroPreview() {
-      setStatus('compressing');
-      setMessage('');
-
-      try {
-        const cropped = await compressImageToWebp(selectedFile, 'hero');
-
-        if (!isCurrent) {
-          return;
-        }
-
-        setProcessed(cropped);
-        setStatus('idle');
-      } catch (error) {
-        if (!isCurrent) {
-          return;
-        }
-
-        setProcessed(null);
-        setStatus('error');
-        setMessage(error instanceof Error ? error.message : 'crop รูป Hero ไม่สำเร็จ กรุณาลองไฟล์อื่น');
-      }
-    }
-
-    void processHeroPreview();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [file, uploadPreset]);
 
   const compressionSummary = useMemo(() => {
     if (!processed) {
@@ -205,14 +155,6 @@ export default function MediaUploadManager() {
     setStatus('idle');
   }
 
-  function selectUploadPreset(nextPreset: UploadPreset) {
-    setUploadPreset(nextPreset);
-
-    if (nextPreset !== 'hero') {
-      setProcessed(null);
-    }
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -242,7 +184,7 @@ export default function MediaUploadManager() {
     let compressed: ProcessedImage;
 
     try {
-      compressed = uploadPreset === 'hero' && processed ? processed : await compressImageToWebp(file, uploadPreset);
+      compressed = await compressImageToWebp(file);
       setProcessed(compressed);
     } catch (error) {
       setStatus('error');
@@ -290,7 +232,6 @@ export default function MediaUploadManager() {
     setFile(null);
     setAltTh('');
     setAltEn('');
-    setUploadPreset('standard');
     await loadAssets();
     requestPreviewRefresh();
   }
@@ -311,12 +252,11 @@ export default function MediaUploadManager() {
         <div className="space-y-4">
           <label className="block text-sm font-semibold text-slate-800">
             ประเภทการใช้งาน
-            <select value={uploadPreset} onChange={(event) => selectUploadPreset(event.target.value as UploadPreset)} className={`${fieldClass} mt-2`}>
+            <select defaultValue="standard" className={`${fieldClass} mt-2`}>
               <option value="standard">รูปทั่วไป</option>
-              <option value="hero">พื้นหลัง Hero (crop อัตโนมัติ)</option>
             </select>
             <span className="mt-2 block text-xs font-semibold leading-relaxed text-slate-500">
-              โหมด Hero จะ crop กลางภาพทันทีตอนเลือกไฟล์ และบันทึกได้สูงสุด {HERO_BACKGROUND_WIDTH}×{HERO_BACKGROUND_HEIGHT} px
+              ระบบจะแปลงรูปเป็น WebP และลดขนาดไฟล์ก่อน upload
             </span>
           </label>
 
@@ -328,9 +268,6 @@ export default function MediaUploadManager() {
               onChange={handleFileChange}
               className="mt-2 block w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-[#0f2a5f] file:px-3 file:py-2 file:text-sm file:font-bold file:text-white"
             />
-            <span className="mt-2 block text-xs font-semibold leading-relaxed text-slate-500">
-              พื้นหลัง Hero ควรใช้รูปแนวนอนขนาดใหญ่ และวางจุดสำคัญไว้กลางภาพ
-            </span>
           </label>
 
           <label className="block text-sm font-semibold text-slate-800">
@@ -353,11 +290,11 @@ export default function MediaUploadManager() {
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <div className={`relative flex items-center justify-center overflow-hidden rounded-lg bg-white ${uploadPreset === 'hero' ? 'aspect-[256/110] min-h-0' : 'min-h-56'}`}>
+          <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-lg bg-white">
             {processedPreviewUrl ? (
-              <Image src={processedPreviewUrl} alt="Preview cropped upload" fill className="object-cover" unoptimized />
+              <Image src={processedPreviewUrl} alt="Preview compressed upload" fill className="object-contain p-3" unoptimized />
             ) : previewUrl ? (
-              <Image src={previewUrl} alt="Preview selected upload" fill className={uploadPreset === 'hero' ? 'object-cover' : 'object-contain p-3'} unoptimized />
+              <Image src={previewUrl} alt="Preview selected upload" fill className="object-contain p-3" unoptimized />
             ) : (
               <p className="text-sm font-semibold text-slate-500">ยังไม่ได้เลือกรูป</p>
             )}
@@ -428,20 +365,9 @@ export default function MediaUploadManager() {
   );
 }
 
-async function compressImageToWebp(file: File, preset: UploadPreset): Promise<ProcessedImage> {
+async function compressImageToWebp(file: File): Promise<ProcessedImage> {
   const bitmap = await createImageBitmap(file);
-  const heroCrop = preset === 'hero' ? getCoverCropRect(bitmap.width, bitmap.height, HERO_BACKGROUND_WIDTH, HERO_BACKGROUND_HEIGHT) : null;
-
-  if (heroCrop) {
-    const validation = validateHeroCropSize(heroCrop.width, heroCrop.height);
-
-    if (!validation.ok) {
-      bitmap.close();
-      throw new Error(validation.message);
-    }
-  }
-
-  const size = heroCrop ? getHeroOutputSize(heroCrop.width, heroCrop.height) : scaleImageSize(bitmap.width, bitmap.height);
+  const size = scaleImageSize(bitmap.width, bitmap.height);
   const canvas = document.createElement('canvas');
   canvas.width = size.width;
   canvas.height = size.height;
@@ -453,11 +379,7 @@ async function compressImageToWebp(file: File, preset: UploadPreset): Promise<Pr
     throw new Error('Canvas is unavailable.');
   }
 
-  if (heroCrop) {
-    context.drawImage(bitmap, heroCrop.x, heroCrop.y, heroCrop.width, heroCrop.height, 0, 0, size.width, size.height);
-  } else {
-    context.drawImage(bitmap, 0, 0, size.width, size.height);
-  }
+  context.drawImage(bitmap, 0, 0, size.width, size.height);
 
   bitmap.close();
 
