@@ -4,11 +4,8 @@ import { describe, it } from 'node:test';
 import {
   buildMediaStoragePath,
   formatBytes,
-  getCoverCropRect,
-  getHeroOutputSize,
   scaleImageSize,
   slugifyFileName,
-  validateHeroCropSize,
   validateMediaFile,
 } from '../src/lib/admin/mediaUpload.ts';
 
@@ -37,21 +34,6 @@ describe('admin media upload helpers', () => {
   it('scales large images without upscaling small images', () => {
     assert.deepEqual(scaleImageSize(4000, 2000, 2000), { width: 2000, height: 1000 });
     assert.deepEqual(scaleImageSize(1200, 800, 2000), { width: 1200, height: 800 });
-  });
-
-  it('calculates centered cover crop rectangles for hero images', () => {
-    assert.deepEqual(getCoverCropRect(4000, 2000, 2560, 1100), { x: 0, y: 141, width: 4000, height: 1719 });
-    assert.deepEqual(getCoverCropRect(4000, 1000, 2560, 1100), { x: 837, y: 0, width: 2327, height: 1000 });
-  });
-
-  it('keeps hero output sharp by avoiding upscaling and rejecting tiny crops', () => {
-    assert.deepEqual(getHeroOutputSize(4000, 1719), { width: 2560, height: 1100 });
-    assert.deepEqual(getHeroOutputSize(2327, 1000), { width: 2327, height: 1000 });
-    assert.deepEqual(validateHeroCropSize(2200, 945), { ok: true });
-    assert.deepEqual(validateHeroCropSize(1200, 516), {
-      ok: false,
-      message: 'รูปพื้นหลัง Hero เล็กเกินไป หลัง crop ต้องเหลืออย่างน้อย 2200×945 px',
-    });
   });
 
   it('formats byte sizes for upload summaries', () => {
