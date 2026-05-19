@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { validateAdminLoginInput } from '@/lib/admin/authValidation';
+import { clearAdminLoginRateLimit, getAdminLoginRateLimitState, recordFailedAdminLogin } from '@/lib/admin/rateLimit';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type LoginState = {
@@ -37,6 +38,16 @@ export default function AdminLoginForm() {
       return;
     }
 
+    const rateLimit = getAdminLoginRateLimitState(window.localStorage);
+
+    if (!rateLimit.allowed) {
+      setState((current) => ({
+        ...current,
+        message: `ลองใหม่อีกครั้งใน ${formatRetryAfter(rateLimit.retryAfterMs)}`,
+      }));
+      return;
+    }
+
     const supabase = getSupabaseBrowserClient();
 
     if (!supabase) {
@@ -52,10 +63,13 @@ export default function AdminLoginForm() {
     const { data, error } = await supabase.auth.signInWithPassword(validation.value);
 
     if (error || !data.user) {
+      const nextLimit = recordFailedAdminLogin(window.localStorage);
       setState((current) => ({
         ...current,
         isSubmitting: false,
-        message: 'เข้าสู่ระบบไม่สำเร็จ ตรวจสอบอีเมลหรือรหัสผ่านอีกครั้ง',
+        message: nextLimit.allowed
+          ? `เข้าสู่ระบบไม่สำเร็จ ตรวจสอบอีเมลหรือรหัสผ่านอีกครั้ง เหลือ ${nextLimit.remainingAttempts} ครั้ง`
+          : `พยายามเข้าสู่ระบบหลายครั้งเกินไป ลองใหม่ใน ${formatRetryAfter(nextLimit.retryAfterMs)}`,
       }));
       return;
     }
@@ -68,14 +82,16 @@ export default function AdminLoginForm() {
 
     if (!profile) {
       await supabase.auth.signOut();
+      const nextLimit = recordFailedAdminLogin(window.localStorage);
       setState((current) => ({
         ...current,
         isSubmitting: false,
-        message: 'บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแลเว็บ',
+        message: nextLimit.allowed ? 'บัญชีนี้ยังไม่มีสิทธิ์ผู้ดูแลเว็บ' : `ลองใหม่อีกครั้งใน ${formatRetryAfter(nextLimit.retryAfterMs)}`,
       }));
       return;
     }
 
+    clearAdminLoginRateLimit(window.localStorage);
     router.replace('/admin');
   }
 
@@ -126,4 +142,10 @@ export default function AdminLoginForm() {
       </button>
     </form>
   );
+}
+
+function formatRetryAfter(milliseconds: number) {
+  const minutes = Math.max(1, Math.ceil(milliseconds / 60000));
+
+  return `${minutes} นาที`;
 }
