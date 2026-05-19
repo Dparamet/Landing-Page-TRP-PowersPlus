@@ -75,6 +75,7 @@ git --version
 | `npm run lint` | ตรวจคุณภาพโค้ดและรูปแบบการเขียน |
 | `npm run build` | build static site สำหรับส่งขึ้น hosting |
 | `npm run start` | ใช้กับ Next server mode แต่โปรเจกต์นี้เน้น static export |
+| `npm audit --audit-level=high` | ตรวจ dependency vulnerabilities ระดับ high/critical ก่อนส่งงาน |
 
 ## โครงสร้างโปรเจกต์
 
@@ -96,7 +97,9 @@ trp-powers-plus-web/
 │   ├── lib/               logic ใช้ซ้ำ เช่น solar estimator
 │   └── locales/           ข้อความภาษาไทยและอังกฤษ
 ├── tests/                 test files
-├── next.config.ts         static export และ image settings
+├── public/_headers        security headers สำหรับ static host ที่รองรับ
+├── vercel.json            security headers สำหรับ Vercel
+├── next.config.js         static export และ image settings
 ├── package.json           scripts และ dependencies
 └── README.md              คู่มือหลัก
 ```
@@ -210,6 +213,7 @@ npm test
 npm test
 npm run lint
 npm run build
+npm audit --audit-level=high
 ```
 
 ผลที่ควรได้
@@ -217,6 +221,21 @@ npm run build
 - `npm test` ผ่านทั้งหมด
 - `npm run lint` ไม่มี error
 - `npm run build` สำเร็จและสร้างไฟล์ใน `out/`
+- `npm audit --audit-level=high` ไม่มี high/critical vulnerabilities
+
+หมายเหตุ audit ล่าสุด: `npm audit fix` แก้ transitive dependency ที่แก้ได้โดยไม่ใช้ `--force` แล้ว เหลือ `postcss <8.5.10` ระดับ `moderate` ผ่าน `next` ซึ่ง npm เสนอ `npm audit fix --force` แล้วจะ downgrade เป็น `next@9.3.3` จึงไม่ควรใช้ในรอบนี้ ให้ติดตาม Next.js patch ที่แก้ advisory นี้โดยไม่ breaking downgrade
+
+## Security guard
+
+ระบบมี guard พื้นฐานดังนี้:
+
+- Admin login มี client-side rate limit: ล็อกหลังผิด 5 ครั้งใน 15 นาที และ reset เมื่อ login สำเร็จ
+- Supabase access ใช้ client SDK query builder/RPC แทน raw SQL string
+- Test scan กัน `dangerouslySetInnerHTML`, `innerHTML`, `eval(` และ raw SQL execution ใน `src/`
+- `.gitignore` กัน `.env*`, `*.pem`, `*.key` และอนุญาต commit เฉพาะ `.env.example`
+- Static deployment headers อยู่ใน `vercel.json` และ `public/_headers`: CSP, HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`
+
+ข้อจำกัดสำคัญ: โปรเจกต์นี้ใช้ `output: 'export'` จึงไม่มี server runtime ของ Next สำหรับ server-side rate limit หรือ middleware headers ต้องให้ hosting นำ `vercel.json` หรือ `public/_headers` ไปใช้จริง และควรคุม brute force เพิ่มที่ Supabase/Auth provider ถ้าเปิด production
 
 ## Performance และ latency guard
 
@@ -246,7 +265,7 @@ npm run build
 
 ## Build และ Deploy
 
-โปรเจกต์นี้ตั้งค่า static export ไว้ใน `next.config.ts`
+โปรเจกต์นี้ตั้งค่า static export ไว้ใน `next.config.js`
 
 Build ด้วย
 
@@ -261,6 +280,8 @@ out/
 ```
 
 นำโฟลเดอร์ `out/` ไปใช้กับ static hosting ได้ เช่น GitHub Pages, Netlify, Vercel static output หรือ hosting ที่รองรับ HTML/CSS/JS
+
+ถ้า hosting ไม่อ่าน `vercel.json` หรือ `public/_headers` อัตโนมัติ ให้ตั้งค่า security headers เทียบเท่าบน hosting ก่อนเปิด production
 
 ## ปัญหาที่พบบ่อย
 
@@ -310,6 +331,7 @@ npm run build
 - อย่า commit password, token, API key หรือข้อมูลลับ
 - อย่าลบ tests เพื่อให้คำสั่งผ่าน
 - ถ้าจะเปลี่ยนสูตรค่าไฟ ให้แก้ test พร้อมกันเสมอ
+- อย่าใช้ `npm audit fix --force` โดยไม่ review เพราะอาจ downgrade framework แบบ breaking change
 
 ## ข้อมูลอ้างอิง
 
