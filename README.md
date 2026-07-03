@@ -109,6 +109,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxx
 
 กติกาสำคัญ: เพิ่มไฟล์ migration ใหม่พร้อม timestamp ใหม่เสมอ ห้ามแก้ไฟล์ migration เก่าที่รันไปแล้ว
 
+### ย้าย/สำรองฐานข้อมูลไป Supabase project อื่น
+
+ดูวิธีและสคริปต์ที่ [docs/DB_MIGRATION.md](docs/DB_MIGRATION.md) (ใช้ `scripts/migrate-supabase.ps1`)
+
 ## คำสั่งหลัก
 
 | คำสั่ง | ใช้ทำอะไร |
@@ -383,6 +387,7 @@ npm run build
 
 - [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
 - [docs/HANDOFF_SPEC.md](docs/HANDOFF_SPEC.md)
+- [docs/DB_MIGRATION.md](docs/DB_MIGRATION.md)
 - [Next.js Docs](https://nextjs.org/docs)
 - [React Docs](https://react.dev)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
