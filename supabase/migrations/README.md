@@ -27,6 +27,8 @@ Run these files in order when creating or updating a Supabase database.
 21. `202605160001_site_logo_setting.sql`
 22. `202605160002_standard_item_slug_ids.sql`
 23. `202605160003_standard_item_image_alt_compat.sql`
+24. `202607040001_drop_is_admin_user.sql`
+25. `202607040002_drop_site_text_delete_rpc.sql`
 
 Rules:
 
