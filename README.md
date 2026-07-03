@@ -141,8 +141,7 @@ trp-powers-plus-web/
 │   ├── lib/               logic ใช้ซ้ำ เช่น solar estimator
 │   └── locales/           ข้อความภาษาไทยและอังกฤษ
 ├── supabase/
-│   ├── migrations/        ไฟล์ SQL อัปเดตฐานข้อมูล รันตามลำดับ (มี README ในโฟลเดอร์)
-│   └── schema.sql         snapshot อ้างอิงโครงสร้างเก่า ไม่ใช่ไฟล์ที่ใช้รันจริง
+│   └── migrations/        ไฟล์ SQL อัปเดตฐานข้อมูล รันตามลำดับ (มี README ในโฟลเดอร์)
 ├── tests/                 test files
 ├── public/_headers        security headers สำหรับ static host ที่รองรับ
 ├── vercel.json            security headers สำหรับ Vercel

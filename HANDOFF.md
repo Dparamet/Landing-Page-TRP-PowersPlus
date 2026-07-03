@@ -9,6 +9,22 @@
 | `supabase/fix-admin-policies.sql` | ซ้ำ 100% กับ `migrations/202605100002_fix_admin_policies.sql` (`diff` ว่าง) ไม่ถูกอ้างจากที่ไหน | ลบไฟล์ |
 | ฟังก์ชัน `is_admin_user(uuid)` | ทำงานเหมือน `is_admin(uuid)` เป๊ะ ใช้แค่ใน RLS ของ `web_events` | `202607040001_drop_is_admin_user.sql` |
 | ฟังก์ชัน `soft_delete_site_text` / `hard_delete_site_text` / `restore_site_text` | ไม่เคยถูกเรียกจาก frontend เลย (SiteTextManager ใช้ `.upsert()` ตรง ไม่มี UI ลบ) | `202607040002_drop_site_text_delete_rpc.sql` |
+| `supabase/schema.sql` | snapshot เก่า สร้าง `is_admin()` แบบไม่มี arg + `is_admin_user` ที่ migration ตั้งใจ drop ไปแล้ว การรันซ้ำบน DB จริงทำให้ฟังก์ชันซ้ำ → error `is_admin() is not unique` เป็น footgun ไม่มีใครอ้างถึง | ลบไฟล์ |
+
+## ⚠️ ถ้าเคยเผลอรัน schema.sql บน DB จริง
+
+จะเจอ error `function public.is_admin() is not unique` เพราะมี `is_admin()` (ไม่มี arg) ซ้ำกับ `is_admin(uuid)` แก้ด้วยการรันใน Supabase SQL Editor:
+
+```sql
+drop function if exists public.is_admin();
+```
+
+ตรวจว่าเหลือตัวเดียว (`is_admin | p_user_id uuid`):
+
+```sql
+select proname, pg_get_function_identity_arguments(oid) as args
+from pg_proc where proname in ('is_admin', 'is_admin_user');
+```
 
 ## ไฟล์โค้ดที่แก้
 
