@@ -65,6 +65,54 @@ npm --version
 git --version
 ```
 
+## ฐานข้อมูล Supabase
+
+เว็บนี้เก็บข้อมูลที่แก้ผ่านหน้า admin (บริการ ผลงาน คำถามที่พบบ่อย ช่องทางติดต่อ ข้อความในเว็บ ฯลฯ) ไว้ในฐานข้อมูล Supabase
+
+### ตั้งค่าการเชื่อมต่อ (.env.local)
+
+สร้างไฟล์ `.env.local` ในโฟลเดอร์โปรเจกต์ แล้วใส่ค่า 2 บรรทัดนี้ (ดูค่าได้จากหน้า Supabase project ที่ Settings > API)
+
+```text
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxx
+```
+
+ค่าเหล่านี้เป็น key ฝั่ง public (anon) ปลอดภัยที่จะอยู่ในเว็บ เพราะสิทธิ์การอ่าน/เขียนจริงถูกคุมด้วย RLS ที่ตัวฐานข้อมูล ห้ามนำ service role key มาใส่ในไฟล์นี้
+
+### ตารางในฐานข้อมูล
+
+| ตาราง | เก็บอะไร |
+| --- | --- |
+| `admin_profiles` | รายชื่อบัญชีที่มีสิทธิ์เข้าหน้า admin |
+| `services` | รายการบริการ |
+| `standard_items` | รายการมาตรฐาน/สินค้าแบบรายการ |
+| `portfolio_projects` | ผลงาน |
+| `portfolio_image_overrides` | การแทนที่รูปในผลงาน |
+| `media_assets` | ไฟล์รูปที่อัปโหลดผ่าน admin |
+| `faq_items` | คำถามที่พบบ่อย |
+| `process_steps` | ขั้นตอนการทำงาน |
+| `contact_items` | ช่องทางติดต่อ |
+| `site_texts` | ข้อความต่างๆ ในเว็บ |
+| `site_settings` | ตั้งค่าเว็บ เช่น โลโก้ |
+| `web_events` | สถิติการเข้าชม (สำหรับ dashboard) |
+
+### สิทธิ์การเข้าถึง (RLS)
+
+ทุกตารางเปิด Row Level Security ไว้ ผู้เข้าชมทั่วไปอ่านได้เฉพาะข้อมูลที่เผยแพร่ ส่วนการแก้ไข/ลบทำได้เฉพาะบัญชีที่อยู่ในตาราง `admin_profiles` เท่านั้น โดยเช็คผ่านฟังก์ชัน `is_admin(auth.uid())` ที่ฝั่งฐานข้อมูล ทำให้ต่อให้เปิดหน้า `/admin` ได้ ก็แก้ข้อมูลไม่ได้ถ้าไม่มีสิทธิ์
+
+### migrations (อัปเดตโครงสร้างฐานข้อมูล)
+
+การเปลี่ยนแปลงโครงสร้างฐานข้อมูลทุกครั้งจะอยู่ในไฟล์ SQL ที่ `supabase/migrations/` เรียงตามชื่อ (timestamp) รายการทั้งหมดและลำดับการรันดูได้ที่ [supabase/migrations/README.md](supabase/migrations/README.md)
+
+วิธีตั้งค่าฐานข้อมูลใหม่หรืออัปเดต: เปิด Supabase SQL Editor แล้วเปิดไฟล์ `.sql` ในโฟลเดอร์ `supabase/migrations/` ทีละไฟล์ตามลำดับ คัดลอกเนื้อหาไปวางแล้วกด Run (วางเนื้อหาไฟล์ ไม่ใช่วาง path)
+
+กติกาสำคัญ: เพิ่มไฟล์ migration ใหม่พร้อม timestamp ใหม่เสมอ ห้ามแก้ไฟล์ migration เก่าที่รันไปแล้ว
+
+### ย้าย/สำรองฐานข้อมูลไป Supabase project อื่น
+
+ดูวิธีและสคริปต์ที่ [docs/DB_MIGRATION.md](docs/DB_MIGRATION.md) (ใช้ `scripts/migrate-supabase.ps1`)
+
 ## คำสั่งหลัก
 
 | คำสั่ง | ใช้ทำอะไร |
@@ -96,6 +144,8 @@ trp-powers-plus-web/
 │   ├── data/              compatibility export สำหรับไฟล์เก่า
 │   ├── lib/               logic ใช้ซ้ำ เช่น solar estimator
 │   └── locales/           ข้อความภาษาไทยและอังกฤษ
+├── supabase/
+│   └── migrations/        ไฟล์ SQL อัปเดตฐานข้อมูล รันตามลำดับ (มี README ในโฟลเดอร์)
 ├── tests/                 test files
 ├── public/_headers        security headers สำหรับ static host ที่รองรับ
 ├── vercel.json            security headers สำหรับ Vercel
@@ -337,6 +387,7 @@ npm run build
 
 - [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)
 - [docs/HANDOFF_SPEC.md](docs/HANDOFF_SPEC.md)
+- [docs/DB_MIGRATION.md](docs/DB_MIGRATION.md)
 - [Next.js Docs](https://nextjs.org/docs)
 - [React Docs](https://react.dev)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)

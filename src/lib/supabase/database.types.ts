@@ -616,18 +616,6 @@ export type Database = {
         Args: { step_id: string };
         Returns: undefined;
       };
-      soft_delete_site_text: {
-        Args: { text_key: string; retention_days?: number };
-        Returns: undefined;
-      };
-      hard_delete_site_text: {
-        Args: { text_key: string };
-        Returns: undefined;
-      };
-      restore_site_text: {
-        Args: { text_key: string };
-        Returns: undefined;
-      };
       soft_delete_portfolio_image_override: {
         Args: { override_project_key: string; override_image_slot: string; retention_days?: number };
         Returns: undefined;
