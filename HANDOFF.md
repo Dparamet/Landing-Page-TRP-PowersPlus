@@ -32,6 +32,13 @@ from pg_proc where proname in ('is_admin', 'is_admin_user');
 - `supabase/migrations/README.md` — เพิ่มรายการ migration 24, 25
 - `README.md` — เพิ่ม section ฐานข้อมูล Supabase (env, ตาราง, RLS, migrations) + supabase/ ใน project tree
 
+## เครื่องมือย้าย/สำรอง DB (เพิ่มใหม่)
+
+- `scripts/migrate-supabase.ps1` — dump `public` schema + optional restore ไป project อื่น (ข้าม `admin_profiles` เป็นค่าเริ่มต้นเพราะ FK ไป `auth.users`) มี `-SelfTest` ตรวจ logic
+- `docs/DB_MIGRATION.md` — วิธีใช้ + กับดัก auth.users + หมายเหตุ scale
+- `.gitignore` — เพิ่ม `/backups/` กัน dump ข้อมูลจริงหลุด git
+- ตรวจ logic ก่อนใช้จริง: `./scripts/migrate-supabase.ps1 -SelfTest` (7 asserts)
+
 ## ⚠️ ต้องทำเองก่อนถือว่าเสร็จ
 
 migration 2 ไฟล์ **ยังไม่ได้รันบน Supabase** (rule: ห้าม apply ไป production ให้เอง) ให้เปิด Supabase SQL Editor แล้วรันตามลำดับ:
